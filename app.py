@@ -6,12 +6,14 @@ from flask_sqlalchemy import SQLAlchemy # 変更
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
 from collections import defaultdict
 from datetime import timedelta
+from flask_bootstrap import Bootstrap
 
 class FlaskWithHamlish(Flask):
     jinja_options = ImmutableDict(
         extensions=[HamlishExtension]
     )
 app = FlaskWithHamlish(__name__)
+bootstrap = Bootstrap(app)
 # app = Flask(__name__)
 
 login_manager = LoginManager()

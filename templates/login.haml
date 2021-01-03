@@ -1,6 +1,17 @@
-%html
-  %body
-    %form(action="" method="POST")
-      %input(type="text" name="username")
-      %input(type="text" name="password")
-      %input(type="submit")
+-extends "bootstrap/base.html"
+
+{% block title %}Hello{% endblock %}
+
+{% block content %}
+
+  %div.container
+    %div.page-header
+      %h1 Hello World!
+
+      %form(action="" method="POST")
+        %input.form-control(type="text" name="username")
+        %input.form-control(type="text" name="password")
+        %input.btn.btn-primary(type="submit")
+
+{% endblock %}
+
