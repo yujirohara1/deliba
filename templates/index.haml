@@ -1,0 +1,12 @@
+%html
+  %body
+    %ul.entries
+      -for entry in entries:
+        %li
+          {{ entry.id | safe }} &nbsp
+          {{ entry.code | safe }} &nbsp
+          {{ entry.name1 | safe }}
+    %form(action="/post" method="POST")
+      %input(type="text" name="code")
+      %input(type="text" name="name1")
+      %input(type="submit")
