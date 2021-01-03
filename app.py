@@ -13,7 +13,7 @@ app = FlaskWithHamlish(__name__)
 
 # app = Flask(__name__)
 
-db_uri = "sqlite:///" + os.path.join(app.root_path, 'milk.db') # 追加
+db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #"sqlite:///" + os.path.join(app.root_path, 'milk.db') # 追加
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri # 追加
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app) # 追加
