@@ -1,9 +1,11 @@
--extends "bootstrap/base.html"
+-extends "common.html"
 
 {% block title %}Hello{% endblock %}
 
 {% block content %}
 
+ 
+ 
   %div.container
     %div.page-header
       %h1 Hello World!
@@ -13,5 +15,36 @@
         %input.form-control(type="text" name="password")
         %input.btn.btn-primary(type="submit")
 
+  %div.container
+    %table.table.table-bordered#footable
+      %thead
+          %tr
+            %th
+              No
+            %th
+              name
+      %tbody
+          %tr
+             %td
+               1
+             %td
+               北海道
+          %tr
+             %td
+               2
+             %td
+               niigata北海道
+
 {% endblock %}
 
+{% block scripts %}
+
+
+<script>
+  $(function() {
+    alert(1);
+    $("#footable").DataTable();
+    alert(2);
+  });
+</script>
+{% endblock  %}
