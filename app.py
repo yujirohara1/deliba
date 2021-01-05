@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g, request, redirect, url_for, Response, abort, session 
+from flask import Flask, render_template, g, request, redirect, url_for, Response, abort, session, jsonify 
 from hamlish_jinja import HamlishExtension
 from werkzeug.datastructures import ImmutableDict
 import os
