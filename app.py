@@ -55,6 +55,10 @@ class Item(db.Model): # 追加
     code = db.Column(db.String(), nullable=False) # 追加
     name1 = db.Column(db.String(), nullable=False) # 追加
 
+@app.route("/favicon.ico")
+def favicon():
+    return app.send_static_file("favicon.ico")
+    
 @app.route('/')
 @login_required
 def hello_world():
