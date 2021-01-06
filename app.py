@@ -7,6 +7,8 @@ from flask_login import LoginManager, login_user, logout_user, login_required, U
 from collections import defaultdict
 from datetime import timedelta
 from flask_bootstrap import Bootstrap
+from flask_marshmallow import Marshmallow
+from marshmallow_sqlalchemy import ModelSchema
 
 class FlaskWithHamlish(Flask):
     jinja_options = ImmutableDict(
@@ -48,6 +50,7 @@ db_uri = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri # 追加
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app) # 追加
+ma = Marshmallow(app)
 
 class Item(db.Model): # 追加
     __tablename__ = "item" # 追加
@@ -55,6 +58,11 @@ class Item(db.Model): # 追加
     code = db.Column(db.String(), nullable=False) # 追加
     name1 = db.Column(db.String(), nullable=False) # 追加
 
+class ItemSchema(ma.SQLAlchemyAutoSchema):
+      class Meta:
+            model = Item
+            load_instance = True
+        
 @app.route("/favicon.ico")
 def favicon():
     return app.send_static_file("favicon.ico")
@@ -66,6 +74,14 @@ def hello_world():
     # return render_template('login.haml', entries=entries)
     return render_template('index.haml', entries=entries)
 
+@app.route('/json')
+def show_entries_json():
+        # entries = Item.query.order_by(Item.id.desc()).all()
+        entries = Item.query.all() #変更
+        entries_schema = ItemSchema(many=True)
+        return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
+        # return jsonify({'entries': entries_schema.dumps(entries, ensure_ascii=False)})
+        
 # @app.route('/post', methods=['POST'])
 # def add_entry():
 #     entry = Item()
