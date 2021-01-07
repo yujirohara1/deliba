@@ -29,3 +29,19 @@ $(document).ready(function() {
     });
 });
 
+$(document).ready(function() {
+
+  var select = $('#selGroupKb');
+  $.getJSON("/getMstSetting_Main", function(json) {
+    list = JSON.parse(json.data);
+    $.each(list, function(i, item) {
+        var option = $('<option>').text(item.param_val1).val(item.param_no);
+        select.append(option);
+    });
+  });
+});
+  
+$("#selGroupKb").change(function(){
+  var str = $(this).val();
+  alert(str);
+});

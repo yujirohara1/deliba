@@ -10,6 +10,7 @@ from marshmallow_sqlalchemy import ModelSchema
 from api.database import db, ma
 from models.item import Item, ItemSchema
 from models.customer import Customer, CustomerSchema
+from models.mstsetting import MstSetting, MstSettingSchema
 
 class FlaskWithHamlish(Flask):
     jinja_options = ImmutableDict(
@@ -90,7 +91,16 @@ def resJson_getCustomer_Main():
         customers_schema = CustomerSchema(many=True)
         # return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
         return jsonify({'data': customers_schema.dumps(customers, ensure_ascii=False)})
-        
+
+
+
+@app.route('/getMstSetting_Main')
+def resJson_getMstSetting_Main():
+        setting = MstSetting.query.filter(MstSetting.param_id=="GROUP_KB").all() #変更
+        setting_schema = MstSettingSchema(many=True)
+        return jsonify({'data': setting_schema.dumps(setting, ensure_ascii=False)})
+
+
         
 # @app.route('/post', methods=['POST'])
 # def add_entry():
