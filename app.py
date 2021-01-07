@@ -2,13 +2,13 @@ from flask import Flask, render_template, g, request, redirect, url_for, Respons
 from hamlish_jinja import HamlishExtension
 from werkzeug.datastructures import ImmutableDict
 import os
-from flask_sqlalchemy import SQLAlchemy # 変更
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
 from collections import defaultdict
 from datetime import timedelta
 from flask_bootstrap import Bootstrap
-from flask_marshmallow import Marshmallow
 from marshmallow_sqlalchemy import ModelSchema
+from api.database import db, ma
+from models.item import Item, ItemSchema
 
 class FlaskWithHamlish(Flask):
     jinja_options = ImmutableDict(
@@ -16,7 +16,7 @@ class FlaskWithHamlish(Flask):
     )
 app = FlaskWithHamlish(__name__)
 bootstrap = Bootstrap(app)
-# app = Flask(__name__)
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -45,23 +45,15 @@ for i in users.values():
 def load_user(user_id):
     return users.get(int(user_id))
 
-db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #"sqlite:///" + os.path.join(app.root_path, 'milk.db') # 追加
-# db_uri = os.environ.get('DATABASE_URL')
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri # 追加
+# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #"sqlite:///" + os.path.join(app.root_path, 'milk.db') 
+db_uri = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app) # 追加
-ma = Marshmallow(app)
+# db = SQLAlchemy(app) 
+# ma = Marshmallow(app)
 
-class Item(db.Model): # 追加
-    __tablename__ = "item" # 追加
-    id = db.Column(db.Integer, primary_key=True) # 追加
-    code = db.Column(db.String(), nullable=False) # 追加
-    name1 = db.Column(db.String(), nullable=False) # 追加
-
-class ItemSchema(ma.SQLAlchemyAutoSchema):
-      class Meta:
-            model = Item
-            load_instance = True
+db.init_app(app)
+ma.init_app(app)
         
 @app.route("/favicon.ico")
 def favicon():
