@@ -13,13 +13,16 @@
 
     %div.container-fluid
       %div.row
-        %div.col-md-12
-          %table.table.table-bordered#footable
+        %div.col-md-3
+          %table.table-striped.table-bordered#footable
             %thead
               %tr
-                %th id
-                %th code
-                %th name1
+                %th 
+                  顧客ID
+                %th
+                  配達順
+                %th
+                  氏名
             %tbody
 
 {% endblock %}
@@ -27,3 +30,4 @@
 {% block scripts %}
     <script src="../static/main/js/main.js"></script>
 {% endblock  %}
+

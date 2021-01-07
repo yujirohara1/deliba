@@ -9,6 +9,7 @@ from flask_bootstrap import Bootstrap
 from marshmallow_sqlalchemy import ModelSchema
 from api.database import db, ma
 from models.item import Item, ItemSchema
+from models.customer import Customer, CustomerSchema
 
 class FlaskWithHamlish(Flask):
     jinja_options = ImmutableDict(
@@ -81,6 +82,14 @@ def show_json_api():
         entries_schema = ItemSchema(many=True)
         # return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
         return jsonify({'data': entries_schema.dumps(entries, ensure_ascii=False)})
+
+
+@app.route('/getCustomer_Main')
+def resJson_getCustomer_Main():
+        customers = Customer.query.all() #変更
+        customers_schema = CustomerSchema(many=True)
+        # return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
+        return jsonify({'data': customers_schema.dumps(customers, ensure_ascii=False)})
         
         
 # @app.route('/post', methods=['POST'])

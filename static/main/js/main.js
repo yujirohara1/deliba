@@ -3,7 +3,7 @@ $(document).ready(function() {
         bInfo: true,
         bSort: true,
         ajax: {
-            url: "/api",
+            url: "/getCustomer_Main", //"/api",
             dataType: "json",
             dataSrc: function ( json ) {
                 //console.log(tmpdata);
@@ -13,14 +13,16 @@ $(document).ready(function() {
             contentType:"application/json; charset=utf-8",
         },
         columns: [
-            { data: 'id' },
-            { data: 'code' },
-            { data: 'name1' }
+            { data: 'id'     ,width: '20%'},
+            { data: 'list'   ,width: '20%'},
+            { data: 'name1'  ,width: '60%'}
         ],
         language: {
            url: "../static/main/js/japanese.json"
         },
-        "scrollY":        "200px",
+        "scrollY":        "500px",
+        "pageLength": 1000,
+        "lengthMenu": [100, 300, 500, 1000],
     });
 });
 
