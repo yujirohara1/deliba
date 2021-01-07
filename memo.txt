@@ -1,6 +1,4 @@
 C:\Users\yujir>psql -U postgres deliba_db
 ユーザ postgres のパスワード:yjrhr1102
-psql (13.1)
-"help"でヘルプを表示します。
 
-deliba_db=#
+Heroku CLI heroku pg:psql postgresql-cylindrical-36948 --app deliba

@@ -13,9 +13,9 @@ $(document).ready(function() {
             contentType:"application/json; charset=utf-8",
         },
         columns: [
-            { data: 'id'     ,width: '20%'},
-            { data: 'list'   ,width: '20%'},
-            { data: 'name1'  ,width: '60%'}
+            { data: 'id'     ,width: '25%'},
+            { data: 'list'   ,width: '25%'},
+            { data: 'name1'  ,width: '50%'}
         ],
         language: {
            url: "../static/main/js/japanese.json"
@@ -23,6 +23,9 @@ $(document).ready(function() {
         "scrollY":        "500px",
         "pageLength": 1000,
         "lengthMenu": [100, 300, 500, 1000],
+        dom:"<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>"
     });
 });
 
