@@ -87,12 +87,18 @@ def show_json_api():
 #@app.route('/hello/<name>')
 #def hello(name=None):
 
-@app.route('/getCustomer_Main/<group_kb>')
-def resJson_getCustomer_Main(group_kb=100):
-        customers = Customer.query.filter(Customer.group_id==group_kb).all() #変更
-        customers_schema = CustomerSchema(many=True)
-        # return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
-        return jsonify({'data': customers_schema.dumps(customers, ensure_ascii=False)})
+@app.route('/getCustomer_Main/<group_kb>/<yuko_muko>')
+def resJson_getCustomer_Main(group_kb, yuko_muko):
+      if yuko_muko == "2":
+        customers = Customer.query.filter(Customer.group_id==group_kb).all()
+      elif yuko_muko == "1":
+        customers = Customer.query.filter(Customer.group_id==group_kb, Customer.list!=None).all()
+      else:
+        customers = Customer.query.filter(Customer.group_id==group_kb, Customer.list==None).all()
+        
+      customers_schema = CustomerSchema(many=True)
+      # return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
+      return jsonify({'data': customers_schema.dumps(customers, ensure_ascii=False)})
 
 
 

@@ -23,6 +23,22 @@
             %div.form-group
                 %select.form-control.input-sm#selGroupKb
           %br
+          
+          %div.row
+            %div.col-md-3
+              %div.form-group
+                %input#chkYuko(type="checkbox" value="checkboxA" checked)
+                &nbsp;
+                %label(for="chkYuko")
+                  有効
+            %div.col-md-3
+              %div.form-group
+                %input#chkMuko(type="checkbox" value="checkboxB")
+                &nbsp;
+                %label(for="chkMuko")
+                  無効
+            
+          %br
                     
           %table.table-striped.table-bordered#footable
             %thead
