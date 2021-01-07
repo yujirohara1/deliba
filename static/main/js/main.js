@@ -20,6 +20,7 @@ $(document).ready(function() {
         language: {
            url: "../static/main/js/japanese.json"
         },
+        "scrollY":        "200px",
     });
 });
 

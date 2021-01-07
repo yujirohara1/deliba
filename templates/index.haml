@@ -1,12 +1,29 @@
-%html
-  %body
-    %ul.entries
-      -for entry in entries:
-        %li
-          {{ entry.id | safe }} &nbsp
-          {{ entry.code | safe }} &nbsp
-          {{ entry.name1 | safe }}
-    %form(action="/post" method="POST")
-      %input(type="text" name="code")
-      %input(type="text" name="name1")
-      %input(type="submit")
+{% extends 'common.html' %}
+ 
+{% block title %}Hello{% endblock %}
+
+{% block content %}
+    %div.container-fluid
+      %div.row
+        %div.col-md-12
+          <img src="../static/image/logo_small.png" class="img-responsive" align="left">
+          %h1(style="font-size:50px")
+            &nbsp;latte らて
+          %br
+
+    %div.container-fluid
+      %div.row
+        %div.col-md-12
+          %table.table.table-bordered#footable
+            %thead
+              %tr
+                %th id
+                %th code
+                %th name1
+            %tbody
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="../static/main/js/main.js"></script>
+{% endblock  %}

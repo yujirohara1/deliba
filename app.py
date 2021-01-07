@@ -45,8 +45,8 @@ for i in users.values():
 def load_user(user_id):
     return users.get(int(user_id))
 
-# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #"sqlite:///" + os.path.join(app.root_path, 'milk.db') # 追加
-db_uri = os.environ.get('DATABASE_URL')
+db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #"sqlite:///" + os.path.join(app.root_path, 'milk.db') # 追加
+# db_uri = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri # 追加
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app) # 追加
@@ -67,12 +67,12 @@ class ItemSchema(ma.SQLAlchemyAutoSchema):
 def favicon():
     return app.send_static_file("favicon.ico")
     
-@app.route('/')
-@login_required
-def hello_world():
-    entries = Item.query.all() #変更
-    # return render_template('login.haml', entries=entries)
-    return render_template('index.haml', entries=entries)
+#@app.route('/')
+#@login_required
+#def hello_world():
+#    entries = Item.query.all() #変更
+#    # return render_template('login.haml', entries=entries)
+#    return render_template('index.haml', entries=entries)
 
 @app.route('/json')
 def show_entries_json():
@@ -110,7 +110,7 @@ def protected():
     ''')
 
 # ログインパス
-@app.route('/login/', methods=["GET", "POST"])
+@app.route('/', methods=["GET", "POST"])
 def login():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=1)
