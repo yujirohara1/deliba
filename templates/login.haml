@@ -1,39 +1,26 @@
 -extends "common.html"
 
-{% block title %}Hello{% endblock %}
+{% block title %}latte{% endblock %}
 
 {% block content %}
-
  
- 
-  %div.container_fruid.bg-primary
-    %div.page-header
-      %h1 Hello World!
-
-      %form(action="" method="POST")
-        %input.form-control(type="text" name="username")
-        %input.form-control(type="text" name="password")
-        %input.btn.btn-primary(type="submit")
-
   %div.container
-    %table.table.table-bordered#footable
-      %thead
-          %tr
-            %th
-              No
-            %th
-              name
-      %tbody
-          %tr
-             %td
-               1
-             %td
-               北海道
-          %tr
-             %td
-               2
-             %td
-               niigata北海道
+    %div.row
+      %div.col-md-5
+        <img src="../static/image/logo_small.png" class="img-responsive" align="left">
+        %h1(style="font-size:50px")
+          &nbsp;latte らて
+        %form(action="" method="POST")
+          %div.input-group
+            %span.input-group-addon
+              ユーザー名
+            %input.form-control(type="text" name="username")
+          %div.input-group
+            %span.input-group-addon
+              パスワード
+            %input.form-control(type="password" name="password")
+          %br
+          %input.btn.btn-primary(type="submit" value="サインイン")
 
 {% endblock %}
 
