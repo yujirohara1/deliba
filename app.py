@@ -84,10 +84,12 @@ def show_json_api():
         # return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
         return jsonify({'data': entries_schema.dumps(entries, ensure_ascii=False)})
 
+#@app.route('/hello/<name>')
+#def hello(name=None):
 
-@app.route('/getCustomer_Main')
-def resJson_getCustomer_Main():
-        customers = Customer.query.all() #変更
+@app.route('/getCustomer_Main/<group_kb>')
+def resJson_getCustomer_Main(group_kb=100):
+        customers = Customer.query.filter(Customer.group_id==group_kb).all() #変更
         customers_schema = CustomerSchema(many=True)
         # return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
         return jsonify({'data': customers_schema.dumps(customers, ensure_ascii=False)})
