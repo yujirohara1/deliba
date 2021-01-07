@@ -82,6 +82,15 @@ def show_entries_json():
         return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
         # return jsonify({'entries': entries_schema.dumps(entries, ensure_ascii=False)})
         
+@app.route('/api')
+def show_json_api():
+        # entries = Item.query.order_by(Item.id.desc()).all()
+        entries = Item.query.all() #変更
+        entries_schema = ItemSchema(many=True)
+        # return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
+        return jsonify({'data': entries_schema.dumps(entries, ensure_ascii=False)})
+        
+        
 # @app.route('/post', methods=['POST'])
 # def add_entry():
 #     entry = Item()

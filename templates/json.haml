@@ -1,3 +1,31 @@
-<div class="col">
-  {{ entries }}
-</div>
+{% extends 'common.html' %}
+ 
+{% block title %}Hello{% endblock %}
+
+{% block content %}
+  %div.container_fruid.bg-primary
+    %div.page-header
+      %h1 Hello World!
+
+      %form(action="" method="POST")
+        %input.form-control(type="text" name="username")
+        %input.form-control(type="text" name="password")
+        %input.btn.btn-primary(type="submit")
+
+  %div.container
+    %table.table.table-bordered#footable
+      %thead
+        %tr
+          %th id
+          %th code
+          %th name1
+      %tbody
+
+  %div.col
+    {{ entries }}
+    
+{% endblock %}
+
+{% block scripts %}
+    <script src="../static/main/js/main.js"></script>
+{% endblock  %}
