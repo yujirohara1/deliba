@@ -1,5 +1,5 @@
 {
-    "sProcessing":   "処理中...",
+    "sProcessing":   "<img src='static/image/load_anime.gif' />",
     "sLengthMenu":   "_MENU_ 件表示",
     "sZeroRecords":  "データはありません。",
     "sInfo":         " _TOTAL_ 件中 _START_ から _END_ まで表示",

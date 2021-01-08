@@ -87,11 +87,14 @@ function createCustomerTables_Main(){
     yukomuko = 0;
   }
   
+  // 処理前に Loading 画像を表示
+  // dispLoading("処理中...");
   
   $('#footable').DataTable({
       bInfo: true,
       bSort: true,
       destroy: true,
+      "processing": true,
       ajax: {
           url: "/getCustomer_Main/" + groupkb + "/" + yukomuko + "",
           dataType: "json",
@@ -99,6 +102,9 @@ function createCustomerTables_Main(){
               return JSON.parse(json.data);
           },
           contentType:"application/json; charset=utf-8",
+          complete: function () {
+              return; //removeLoading();
+          }
       },
       columns: [
           { data: 'id'     ,width: '25%'},
@@ -117,5 +123,6 @@ function createCustomerTables_Main(){
           "<'row'<'col-sm-5'i><'col-sm-7'p>>"
   });
 }
+
 
 

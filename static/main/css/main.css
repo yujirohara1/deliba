@@ -5,4 +5,3 @@ td.highlight {
 .row_selected td {
     background-color: #dbedff !important; /* Add !important to make sure override datables base styles */
 }
- 
