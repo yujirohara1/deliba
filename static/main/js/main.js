@@ -87,8 +87,6 @@ function createCustomerTables_Main(){
     yukomuko = 0;
   }
   
-  // 処理前に Loading 画像を表示
-  // dispLoading("処理中...");
   
   $('#footable').DataTable({
       bInfo: true,
@@ -103,7 +101,7 @@ function createCustomerTables_Main(){
           },
           contentType:"application/json; charset=utf-8",
           complete: function () {
-              return; //removeLoading();
+              return; 
           }
       },
       columns: [
