@@ -87,17 +87,15 @@ function createItemTables_DaichoSub(){
           }
       },
       columns: [
-          { data: 'id'     ,width: '25%'},
-          { data: 'code'   ,width: '25%'},
-          { data: 'name1'  ,width: '50%'}
+          { data: 'id'     ,width: '15%'},
+          { data: 'code'   ,width: '15%'},
+          { data: 'name1'  ,width: '50%'},
+          { data: 'tanka'  ,width: '20%' ,className: 'dt-body-right'}
       ],
-        columnDefs: [
-            { orderable: false, targets: [ 0, 1, 2 ] } //This part was wrong
-        ],
       language: {
          url: "../static/main/js/japanese.json"
       },
-      "scrollY":"200px",
+      "scrollY":"400px",
       "pageLength": 1000,
       paging: true,
       "order": [ 1, "asc" ],
@@ -113,6 +111,14 @@ function createItemTables_DaichoSub(){
 
 $('#modalAddDaicho').on("shown.bs.modal", function (e) {
     createItemTables_DaichoSub();
+});
+
+
+$('#modalAddDaicho').on("show.bs.modal", function (e) {
+    var a = $('#tableAddDaicho').dataTable({
+       destroy: true
+   });
+   a.fnClearTable();
 });
 
 
