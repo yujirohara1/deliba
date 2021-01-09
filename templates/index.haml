@@ -7,8 +7,8 @@
       %div.row
         %div.col-md-12
           <img src="../static/image/logo_small.png" class="img-responsive" align="left">
-          %h1(style="font-size:50px")
-            &nbsp;latte らて
+          %h1(style="font-size:45px")
+            &nbsp;latte Cloud
           %br
     %div.container-fluid
       %div.row
@@ -79,32 +79,72 @@
 
 <!-- 台帳への商品追加モーダル -->
 %div.modal.fade#modalAddDaicho(tabindex="-1")
-  %div.modal-dialog
+  %div.modal-dialog.modal-lg
     %div.modal-content
       %div.modal-header
         %button.close(type="button" data-dismiss="modal")
           %span
             ×
-        %h4.modal-title
+        %h4.modal-title#subAtitle
           タイトル
       %div.modal-body
-        %table.table-bordered.row.hover#tableAddDaicho
-          %thead
-            %tr
-              %th 
-                商品ID
-              %th
-                コード
-              %th
-                商品名
-              %th
-                単価
-          %tbody
+        %div.rowc
+          %table.table-bordered.row.hover#tableAddDaicho
+            %thead
+              %tr
+                %th 
+                  商品ID
+                %th
+                  コード
+                %th
+                  商品名
+                %th
+                  単価
+            %tbody
+        %br
+        %p
+          曜日ごとの宅配本数を入力してください。
+        %div.row
+          %div.form-group.form-inline
+            %div.input-group
+              %span.input-group-addon
+                月
+              %input.form-control.input-sm(type="text" style="width:50px" maxlength="2" oninput="fncNumOnly();")
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            %div.input-group
+              %span.input-group-addon
+                火
+              %input.form-control.input-sm(type="text" style="width:50px")
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            %div.input-group
+              %span.input-group-addon
+                水
+              %input.form-control.input-sm(type="text" style="width:50px")
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            %div.input-group
+              %span.input-group-addon
+                木
+              %input.form-control.input-sm(type="text" style="width:50px")
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            %div.input-group
+              %span.input-group-addon
+                金
+              %input.form-control.input-sm(type="text" style="width:50px")
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            %div.input-group
+              %span.input-group-addon
+                土
+              %input.form-control.input-sm(type="text" style="width:50px")
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            %div.input-group
+              %span.input-group-addon
+                日
+              %input.form-control.input-sm(type="text" style="width:50px")
       %div.modal-footer
         %button.btn.btn-default(type="button" data-dismiss="modal")
           閉じる
         %button.btn.btn-primary(type="button")
-          ボタン
+          決定
           
 {% endblock %}
 

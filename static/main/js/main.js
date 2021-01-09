@@ -30,10 +30,21 @@ $(document).ready(function() {
       $(event.target.parentNode).addClass('row_selected');
       
   });
+
  
+  $("#tableAddDaicho tbody").on('click',function(event) {
+      $("#tableAddDaicho").removeClass('row_selected');        
+      $("#tableAddDaicho tbody tr").removeClass('row_selected');        
+      $("#tableAddDaicho tbody td").removeClass('row_selected');        
+      $(event.target.parentNode).addClass('row_selected');
+      
+  });
+
+
   $('#tableCustomer tbody').on( 'click', 'tr', function () {
     //顧客テーブルから指定したレコード
     var rowData =   $('#tableCustomer').DataTable().row( this ).data();
+    $('#subAtitle')[0].innerText = rowData.id + "," + rowData.name1 + " " + "へ追加する商品を選択してください。";
     createDaichoTables_Main(rowData.id);
   } );
 
@@ -66,12 +77,12 @@ $("#chkMuko").change(function(){
 
 
 /*
-|| メイン左の顧客テーブルを作成
+|| 台帳追加サブ画面のテーブル作成
 */
 function createItemTables_DaichoSub(){
     
   $('#tableAddDaicho').DataTable({
-      bInfo: true,
+      bInfo: false,
       bSort: true,
       destroy: true,
       "processing": true,
@@ -90,30 +101,39 @@ function createItemTables_DaichoSub(){
           { data: 'id'     ,width: '15%'},
           { data: 'code'   ,width: '15%'},
           { data: 'name1'  ,width: '50%'},
-          { data: 'tanka'  ,width: '20%' ,className: 'dt-body-right'}
+          { data: 'tanka'  ,width: '20%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} }
       ],
+      columnDefs: [ {
+          targets: [ 1 ],
+          orderData: [ 1, 3 ]
+      } ],
       language: {
          url: "../static/main/js/japanese.json"
       },
       "scrollY":"400px",
       "pageLength": 1000,
-      paging: true,
+      paging: false,
       "order": [ 1, "asc" ],
       "lengthMenu": [100, 300, 500, 1000],
-      dom:"<'row'<'col-sm-12'tr>>" +
-          "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+      dom:"<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+          "<'row'<'col-sm-12'tr>>" +
           "<'row'<'col-sm-5'i><'col-sm-7'p>>"
   }).columns.adjust().draw();
 }
 
 
 
-
+/*
+|| 台帳サブ画面起動[直後]イベント
+*/
 $('#modalAddDaicho').on("shown.bs.modal", function (e) {
     createItemTables_DaichoSub();
 });
 
 
+/*
+|| 台帳サブ画面起動[直前]イベント
+*/
 $('#modalAddDaicho').on("show.bs.modal", function (e) {
     var a = $('#tableAddDaicho').dataTable({
        destroy: true
@@ -146,7 +166,7 @@ function createDaichoTables_Main(customerId){
         columns: [
             { data: 'item_id'     ,width: '12%'},
             { data: 'iname1'      ,width: '41%'},
-            { data: 'tanka'       ,width: '12%'   ,className: 'dt-body-right'},
+            { data: 'tanka'       ,width: '12%'   ,className: 'dt-body-right'  ,render: function (data, type, row) { return (data*1).toLocaleString();} },
             { data: 'getu'        ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
             { data: 'ka'          ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
             { data: 'sui'         ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
@@ -171,6 +191,20 @@ function createDaichoTables_Main(customerId){
     });
 }
 
+function fncNumOnly(){
+    var inp = $(event.srcElement).val();
+    inp = inp.replace("０","0");
+    inp = inp.replace("１","1");
+    inp = inp.replace("２","2");
+    inp = inp.replace("３","3");
+    inp = inp.replace("４","4");
+    inp = inp.replace("５","5");
+    inp = inp.replace("６","6");
+    inp = inp.replace("７","7");
+    inp = inp.replace("８","8");
+    inp = inp.replace("９","9");
+    $(event.srcElement).val(inp.replace(/[^0-9]+/i,''));
+}
 
 /*
 || メイン左の顧客テーブルを作成
