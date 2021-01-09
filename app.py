@@ -11,6 +11,7 @@ from api.database import db, ma
 from models.item import Item, ItemSchema
 from models.customer import Customer, CustomerSchema
 from models.mstsetting import MstSetting, MstSettingSchema
+from models.daicho import Daicho, DaichoSchema, VDaichoA, VDaichoASchema
 
 class FlaskWithHamlish(Flask):
     jinja_options = ImmutableDict(
@@ -61,13 +62,6 @@ ma.init_app(app)
 def favicon():
     return app.send_static_file("favicon.ico")
     
-#@app.route('/')
-#@login_required
-#def hello_world():
-#    entries = Item.query.all() #変更
-#    # return render_template('login.haml', entries=entries)
-#    return render_template('index.haml', entries=entries)
-
 @app.route('/json')
 def show_entries_json():
         # entries = Item.query.order_by(Item.id.desc()).all()
@@ -101,6 +95,11 @@ def resJson_getCustomer_Main(group_kb, yuko_muko):
       return jsonify({'data': customers_schema.dumps(customers, ensure_ascii=False)})
 
 
+@app.route('/getVDaichoA_ByCusotmerId/<customerid>')
+def resJson_getVDaichoA_ByCusotmerId(customerid):
+      daicho = VDaichoA.query.filter(VDaichoA.customer_id==customerid).all()
+      daicho_schema = VDaichoASchema(many=True)
+      return jsonify({'data': daicho_schema.dumps(daicho, ensure_ascii=False)})
 
 @app.route('/getMstSetting_Main')
 def resJson_getMstSetting_Main():

@@ -12,35 +12,31 @@
           %br
     %div.container-fluid
       %div.row
-        
-      %br
-      %div.row
-        %div.col-md-3
-        
+        %div.col-md-2
           %div.input-group
             %span.input-group-addon
               グループ
             %div.form-group
                 %select.form-control.input-sm#selGroupKb
-          %br
-          
+        %div.col-md-6
           %div.row
-            %div.col-md-3
+            %div.col-md-1
               %div.form-group
                 %input#chkYuko(type="checkbox" value="checkboxA" checked)
                 &nbsp;
                 %label(for="chkYuko")
                   有効
-            %div.col-md-3
+            %div.col-md-1
               %div.form-group
                 %input#chkMuko(type="checkbox" value="checkboxB")
                 &nbsp;
                 %label(for="chkMuko")
                   無効
-            
-          %br
           
-          %table.table-bordered.row#footable
+        
+      %div.row
+        %div.col-md-3
+          %table.table-bordered.row#tableCustomer
             %thead
               %tr
                 %th 
@@ -50,6 +46,34 @@
                 %th
                   氏名
             %tbody
+            
+        %div.col-md-5
+          %table.table-bordered.row#tableDaicho
+            %thead
+              %tr
+                %th 
+                  商品ID
+                %th
+                  商品名
+                %th
+                  単価
+                %th
+                  月
+                %th
+                  火
+                %th
+                  水
+                %th
+                  木
+                %th
+                  金
+                %th
+                  土
+                %th
+                  日
+            %tbody
+        %div.col-md-3
+          aaa
 
 {% endblock %}
 
