@@ -36,7 +36,7 @@
         
       %div.row
         %div.col-md-3
-          %table.table-bordered.row#tableCustomer
+          %table.table-bordered.row.hover#tableCustomer
             %thead
               %tr
                 %th 
@@ -48,7 +48,9 @@
             %tbody
             
         %div.col-md-5
-          %table.table-bordered.row#tableDaicho
+          %button.btn.btn-primary.btn-sm(type="button" data-toggle="modal" data-target="#modalAddDaicho")
+             新しい配達商品を追加
+          %table.table-bordered.row.hover#tableDaicho
             %thead
               %tr
                 %th 
@@ -72,9 +74,36 @@
                 %th
                   日
             %tbody
-        %div.col-md-3
+        %div.col-md-4
           aaa
 
+<!-- 台帳への商品追加モーダル -->
+%div.modal.fade#modalAddDaicho(tabindex="-1")
+  %div.modal-dialog
+    %div.modal-content
+      %div.modal-header
+        %button.close(type="button" data-dismiss="modal")
+          %span
+            ×
+        %h4.modal-title
+          タイトル
+      %div.modal-body
+        %table.table-bordered.row.hover#tableAddDaicho
+          %thead
+            %tr
+              %th 
+                商品ID
+              %th
+                コード
+              %th
+                商品名
+          %tbody
+      %div.modal-footer
+        %button.btn.btn-default(type="button" data-dismiss="modal")
+          閉じる
+        %button.btn.btn-primary(type="button")
+          ボタン
+          
 {% endblock %}
 
 {% block scripts %}

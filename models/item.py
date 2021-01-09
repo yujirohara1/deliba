@@ -5,6 +5,7 @@ class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True) 
     code = db.Column(db.String(), nullable=False) 
     name1 = db.Column(db.String(), nullable=False) 
+    tanka = db.Column(db.Integer, nullable=True) 
 
 class ItemSchema(ma.SQLAlchemyAutoSchema):
       class Meta:

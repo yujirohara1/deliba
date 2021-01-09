@@ -23,11 +23,18 @@ $(document).ready(function() {
       
   });
  
+  $("#tableDaicho tbody").on('click',function(event) {
+      $("#tableDaicho").removeClass('row_selected');        
+      $("#tableDaicho tbody tr").removeClass('row_selected');        
+      $("#tableDaicho tbody td").removeClass('row_selected');        
+      $(event.target.parentNode).addClass('row_selected');
+      
+  });
+ 
   $('#tableCustomer tbody').on( 'click', 'tr', function () {
     //顧客テーブルから指定したレコード
     var rowData =   $('#tableCustomer').DataTable().row( this ).data();
     createDaichoTables_Main(rowData.id);
-    
   } );
 
   
@@ -58,6 +65,60 @@ $("#chkMuko").change(function(){
 });
 
 
+/*
+|| メイン左の顧客テーブルを作成
+*/
+function createItemTables_DaichoSub(){
+    
+  $('#tableAddDaicho').DataTable({
+      bInfo: true,
+      bSort: true,
+      destroy: true,
+      "processing": true,
+      ajax: {
+          url: "/getItem_Daicho",
+          dataType: "json",
+          dataSrc: function ( json ) {
+              return JSON.parse(json.data);
+          },
+          contentType:"application/json; charset=utf-8",
+          complete: function () {
+              return; 
+          }
+      },
+      columns: [
+          { data: 'id'     ,width: '25%'},
+          { data: 'code'   ,width: '25%'},
+          { data: 'name1'  ,width: '50%'}
+      ],
+        columnDefs: [
+            { orderable: false, targets: [ 0, 1, 2 ] } //This part was wrong
+        ],
+      language: {
+         url: "../static/main/js/japanese.json"
+      },
+      "scrollY":"200px",
+      "pageLength": 1000,
+      paging: true,
+      "order": [ 1, "asc" ],
+      "lengthMenu": [100, 300, 500, 1000],
+      dom:"<'row'<'col-sm-12'tr>>" +
+          "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+          "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+  }).columns.adjust().draw();
+}
+
+
+
+
+$('#modalAddDaicho').on("shown.bs.modal", function (e) {
+    createItemTables_DaichoSub();
+});
+
+
+/*
+|| メイン中央の台帳テーブルを作成
+*/
 function createDaichoTables_Main(customerId){
     //台帳データテーブルを作成
     $("#tableDaicho").DataTable({
@@ -79,27 +140,15 @@ function createDaichoTables_Main(customerId){
         columns: [
             { data: 'item_id'     ,width: '12%'},
             { data: 'iname1'      ,width: '41%'},
-            { data: 'tanka'       ,width: '12%'},
-            { data: 'getu'        ,width: '5%'},
-            { data: 'ka'          ,width: '5%'},
-            { data: 'sui'         ,width: '5%'},
-            { data: 'moku'        ,width: '5%'},
-            { data: 'kin'         ,width: '5%'},
-            { data: 'dou'         ,width: '5%'},
-            { data: 'niti'        ,width: '5%'}
+            { data: 'tanka'       ,width: '12%'   ,className: 'dt-body-right'},
+            { data: 'getu'        ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'ka'          ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'sui'         ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'moku'        ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'kin'         ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'dou'         ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'niti'        ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} }
         ],
-        columnDefs: [
-          {
-              targets: 2, className: 'dt-body-right',
-              targets: 3, className: 'dt-body-center',
-              targets: 4, className: 'dt-body-center',
-              targets: 5, className: 'dt-body-center',
-              targets: 6, className: 'dt-body-center',
-              targets: 7, className: 'dt-body-center',
-              targets: 8, className: 'dt-body-center',
-              targets: 9, className: 'dt-body-center'
-          }
-       ],
         language: {
            url: "../static/main/js/japanese.json"
         },
@@ -108,7 +157,7 @@ function createDaichoTables_Main(customerId){
         searching: false,
         info: false,
         paging: false,
-        "order": [ 1, "asc" ],
+        "order": [ 0, "asc" ],
         "lengthMenu": [100, 300, 500, 1000],
         dom:"<'row'<'col-sm-12'tr>>" +
             "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
@@ -117,7 +166,9 @@ function createDaichoTables_Main(customerId){
 }
 
 
-
+/*
+|| メイン左の顧客テーブルを作成
+*/
 function createCustomerTables_Main(){
     
   var groupkb = $("#selGroupKb").val();
@@ -155,15 +206,9 @@ function createCustomerTables_Main(){
       },
       columns: [
           { data: 'id'     ,width: '25%'},
-          { data: 'list'   ,width: '25%'},
+          { data: 'list'   ,width: '25%' ,  className: 'dt-body-center'},
           { data: 'name1'  ,width: '50%'}
       ],
-      columnDefs: [
-        {
-            targets: 1,
-            className: 'dt-body-center'
-        }
-     ],
       language: {
          url: "../static/main/js/japanese.json"
       },

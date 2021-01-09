@@ -95,6 +95,12 @@ def resJson_getCustomer_Main(group_kb, yuko_muko):
       return jsonify({'data': customers_schema.dumps(customers, ensure_ascii=False)})
 
 
+@app.route('/getItem_Daicho/')
+def resJson_getItem_Daicho():
+     items = Item.query.all()
+     items_schema = ItemSchema(many=True)
+     return jsonify({'data': items_schema.dumps(items, ensure_ascii=False)})
+
 @app.route('/getVDaichoA_ByCusotmerId/<customerid>')
 def resJson_getVDaichoA_ByCusotmerId(customerid):
       daicho = VDaichoA.query.filter(VDaichoA.customer_id==customerid).all()
