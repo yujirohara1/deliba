@@ -53,8 +53,6 @@ def load_user(user_id):
 db_uri = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# db = SQLAlchemy(app) 
-# ma = Marshmallow(app)
 
 db.init_app(app)
 ma.init_app(app)
@@ -63,26 +61,6 @@ ma.init_app(app)
 def favicon():
     return app.send_static_file("favicon.ico")
     
-#@app.route('/json')
-#def show_entries_json():
-#        # entries = Item.query.order_by(Item.id.desc()).all()
-#        entries = Item.query.all() #変更
-#        entries_schema = ItemSchema(many=True)
-#        return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
-#        # return jsonify({'entries': entries_schema.dumps(entries, ensure_ascii=False)})
-
-
-#@app.route('/api')
-#def show_json_api():
-#        # entries = Item.query.order_by(Item.id.desc()).all()
-#        entries = Item.query.all() #変更
-#        entries_schema = ItemSchema(many=True)
-#        # return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
-#        return jsonify({'data': entries_schema.dumps(entries, ensure_ascii=False)})
-
-#@app.route('/hello/<name>')
-#def hello(name=None):
-
 @app.route('/getCustomer_Main/<group_kb>/<yuko_muko>')
 def resJson_getCustomer_Main(group_kb, yuko_muko):
       if yuko_muko == "2":
@@ -93,9 +71,7 @@ def resJson_getCustomer_Main(group_kb, yuko_muko):
         customers = Customer.query.filter(Customer.group_id==group_kb, Customer.list==None).all()
         
       customers_schema = CustomerSchema(many=True)
-      # return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
       return jsonify({'data': customers_schema.dumps(customers, ensure_ascii=False)})
-
 
 @app.route('/getItem_Daicho/')
 def resJson_getItem_Daicho():

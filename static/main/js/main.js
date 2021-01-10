@@ -11,7 +11,7 @@ $(document).ready(function() {
   
   createCustomerTables_Main();
   createDaichoTables_Main(0);
-  createSeikyuTables_Main(362,202011);
+  createSeikyuTables_Main(0,0);
   
   //var domTableCustomer = $('#tableCustomer').DataTable();
 
@@ -435,7 +435,7 @@ $('#tableCustomer tbody').on( 'click', 'tr', function () {
   var rowData =   $('#tableCustomer').DataTable().row( this ).data();
   $('#subAtitle')[0].innerText = rowData.id + "," + rowData.name1 + " " + "へ追加する商品を選択してください。";
   createDaichoTables_Main(rowData.id);
-  createSeikyuTables_Main(362,202011);
+  createSeikyuTables_Main(rowData.id,202012);
 } );
 
 
