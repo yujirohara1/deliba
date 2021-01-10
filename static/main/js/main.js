@@ -11,6 +11,7 @@ $(document).ready(function() {
   
   createCustomerTables_Main();
   createDaichoTables_Main(0);
+  createSeikyuTables_Main(362,202011);
   
   //var domTableCustomer = $('#tableCustomer').DataTable();
 
@@ -42,6 +43,124 @@ $('#btnDaichoAdd').on('click', function() {
   createDaichoTables_Main(customerid);
   createItemTables_DaichoSub();
 });
+
+
+
+
+function getAllYoubiByNentuki(nen, tuki){
+    var ret=[];
+    var dayOfWeekStr = [ "日", "月", "火", "水", "木", "金", "土" ];
+    
+    for(i=1; i<=31; i++){
+        var d = new Date(nen + '/' + tuki + '/' +  ('00'+i).slice(-2));
+        ret.push(dayOfWeekStr[d.getDay()]);
+    }
+    
+    return ret;
+}
+
+
+
+
+/*
+|| メイン下部の請求テーブルを作成
+*/
+function createSeikyuTables_Main(customerId, nentuki){
+    var youbiWa = getAllYoubiByNentuki((nentuki+"").substr(0,4), (nentuki+"").substr(4,2));
+    
+    //台帳データテーブルを作成
+    $("#tableSeikyu").DataTable({
+        bInfo: false,
+        bSort: false,
+        destroy: true,
+        "processing": true,
+        ajax: {
+            url: "/getVSeikyuA_ByCusotmerIdAndTuki/" + customerId + "/" + nentuki + "",
+            dataType: "json",
+            dataSrc: function ( json ) {
+                return JSON.parse(json.data);
+            },
+            contentType:"application/json; charset=utf-8",
+            complete: function () {
+                return; 
+            }
+        },
+        columns: [
+            { data: 'item_id'     ,width: '7%'},
+            { data: 'item_name1'  ,width: '34%'},
+            { data: 'price'          ,width: '7%'   ,className: 'dt-body-right'  ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+            { data: 'quantity_d01', title: youbiWa[0]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d02', title: youbiWa[1]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d03', title: youbiWa[2]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d04', title: youbiWa[3]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d05', title: youbiWa[4]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d06', title: youbiWa[5]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d07', title: youbiWa[6]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d08', title: youbiWa[7]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d09', title: youbiWa[8]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d10', title: youbiWa[9]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d11', title: youbiWa[10]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d12', title: youbiWa[11]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d13', title: youbiWa[12]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d14', title: youbiWa[13]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d15', title: youbiWa[14]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d16', title: youbiWa[15]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d17', title: youbiWa[16]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d18', title: youbiWa[17]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d19', title: youbiWa[18]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d20', title: youbiWa[19]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d21', title: youbiWa[20]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d22', title: youbiWa[21]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d23', title: youbiWa[22]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d24', title: youbiWa[23]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d25', title: youbiWa[24]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d26', title: youbiWa[25]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d27', title: youbiWa[26]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d28', title: youbiWa[27]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d29', title: youbiWa[28]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d30', title: youbiWa[29]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'quantity_d31', title: youbiWa[30]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} }
+        ],
+        language: {
+           url: "../static/main/js/japanese.json"
+        },
+        "scrollY":        "150px",
+        "pageLength": 1000,
+        searching: false,
+        info: false,
+        paging: false,
+        "order": [ 0, "asc" ],
+        "lengthMenu": [100, 300, 500, 1000],
+        dom:"<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+    });
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -120,7 +239,7 @@ function createItemTables_DaichoSub(){
       language: {
          url: "../static/main/js/japanese.json"
       },
-      "scrollY":"400px",
+      "scrollY":$(window).height() * 30 / 100,
       order: [[ 4, "desc" ],[ 1, "asc" ],[ 3, "asc" ]],
       "pageLength": 1000,
       paging: false,
@@ -248,7 +367,7 @@ function createCustomerTables_Main(){
   
   
   $('#tableCustomer').DataTable({
-      bInfo: true,
+      bInfo: false,
       bSort: true,
       destroy: true,
       "processing": true,
@@ -265,14 +384,15 @@ function createCustomerTables_Main(){
       },
       columns: [
           { data: 'id'     ,width: '25%'},
-          { data: 'list'   ,width: '25%' ,  className: 'dt-body-center'},
-          { data: 'name1'  ,width: '50%'}
+          { data: 'list'   ,width: '30%' ,  className: 'dt-body-center'},
+          { data: 'name1'  ,width: '45%'}
       ],
       language: {
          url: "../static/main/js/japanese.json"
       },
-      "scrollY":        "500px",
+      "scrollY":        $(window).height() * 35 / 100,
       "pageLength": 1000,
+      paging:false,
       "order": [ 1, "asc" ],
       "lengthMenu": [100, 300, 500, 1000],
       dom:"<'row'<'col-sm-12'tr>>" +
@@ -315,6 +435,7 @@ $('#tableCustomer tbody').on( 'click', 'tr', function () {
   var rowData =   $('#tableCustomer').DataTable().row( this ).data();
   $('#subAtitle')[0].innerText = rowData.id + "," + rowData.name1 + " " + "へ追加する商品を選択してください。";
   createDaichoTables_Main(rowData.id);
+  createSeikyuTables_Main(362,202011);
 } );
 
 

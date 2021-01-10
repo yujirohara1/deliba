@@ -12,6 +12,7 @@ from models.item import Item, ItemSchema
 from models.customer import Customer, CustomerSchema
 from models.mstsetting import MstSetting, MstSettingSchema
 from models.daicho import Daicho, DaichoSchema, VDaichoA, VDaichoASchema
+from models.seikyu import Seikyu, SeikyuSchema, VSeikyuA, VSeikyuASchema
 
 class FlaskWithHamlish(Flask):
     jinja_options = ImmutableDict(
@@ -107,6 +108,18 @@ def resJson_getVDaichoA_ByCusotmerId(customerid):
       daicho = VDaichoA.query.filter(VDaichoA.customer_id==customerid).all()
       daicho_schema = VDaichoASchema(many=True)
       return jsonify({'data': daicho_schema.dumps(daicho, ensure_ascii=False)})
+
+@app.route('/getVSeikyuA_ByCusotmerIdAndTuki/<customerid>/<nentuki>')
+def resJson_getVSeikyuA_ByCusotmerId(customerid, nentuki):
+      seikyu = VSeikyuA.query.filter(VSeikyuA.customer_id==customerid, VSeikyuA.nen==nentuki[0:4], VSeikyuA.tuki==nentuki[4:6]).all()
+      seikyu_schema = VSeikyuASchema(many=True)
+      return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
+
+
+
+
+
+
 
 @app.route('/getMstSetting_Main')
 def resJson_getMstSetting_Main():
