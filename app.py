@@ -62,21 +62,22 @@ ma.init_app(app)
 def favicon():
     return app.send_static_file("favicon.ico")
     
-@app.route('/json')
-def show_entries_json():
-        # entries = Item.query.order_by(Item.id.desc()).all()
-        entries = Item.query.all() #変更
-        entries_schema = ItemSchema(many=True)
-        return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
-        # return jsonify({'entries': entries_schema.dumps(entries, ensure_ascii=False)})
-        
-@app.route('/api')
-def show_json_api():
-        # entries = Item.query.order_by(Item.id.desc()).all()
-        entries = Item.query.all() #変更
-        entries_schema = ItemSchema(many=True)
-        # return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
-        return jsonify({'data': entries_schema.dumps(entries, ensure_ascii=False)})
+#@app.route('/json')
+#def show_entries_json():
+#        # entries = Item.query.order_by(Item.id.desc()).all()
+#        entries = Item.query.all() #変更
+#        entries_schema = ItemSchema(many=True)
+#        return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
+#        # return jsonify({'entries': entries_schema.dumps(entries, ensure_ascii=False)})
+
+
+#@app.route('/api')
+#def show_json_api():
+#        # entries = Item.query.order_by(Item.id.desc()).all()
+#        entries = Item.query.all() #変更
+#        entries_schema = ItemSchema(many=True)
+#        # return render_template('json.haml', entries=entries_schema.dumps(entries, ensure_ascii=False))
+#        return jsonify({'data': entries_schema.dumps(entries, ensure_ascii=False)})
 
 #@app.route('/hello/<name>')
 #def hello(name=None):
@@ -109,9 +110,27 @@ def resJson_getVDaichoA_ByCusotmerId(customerid):
 
 @app.route('/getMstSetting_Main')
 def resJson_getMstSetting_Main():
-        setting = MstSetting.query.filter(MstSetting.param_id=="GROUP_KB").all() #変更
-        setting_schema = MstSettingSchema(many=True)
-        return jsonify({'data': setting_schema.dumps(setting, ensure_ascii=False)})
+  setting = MstSetting.query.filter(MstSetting.param_id=="GROUP_KB").all() #変更
+  setting_schema = MstSettingSchema(many=True)
+  return jsonify({'data': setting_schema.dumps(setting, ensure_ascii=False)})
+
+
+@app.route('/updAddDaicho/<param>')
+def dbUpdate_updAddDaicho(param):
+  vals = param.split(",")
+  print(vals)
+  for youbi in range(2, 8):
+    if vals[youbi].isdecimal():
+      Daicho.query.filter(Daicho.customer_id==vals[0], Daicho.item_id==vals[1], Daicho.youbi==(youbi-1)).delete()
+      
+      daicho = Daicho()
+      daicho.customer_id = vals[0]
+      daicho.item_id = vals[1]
+      daicho.youbi = (youbi-1)
+      daicho.quantity = vals[youbi]
+      db.session.add(daicho)
+      db.session.commit()
+  return param
 
 
         

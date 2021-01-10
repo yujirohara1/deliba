@@ -15,42 +15,48 @@ $(document).ready(function() {
   //var domTableCustomer = $('#tableCustomer').DataTable();
 
 
-  $("#tableCustomer tbody").on('click',function(event) {
-      $("#tableCustomer").removeClass('row_selected');        
-      $("#tableCustomer tbody tr").removeClass('row_selected');        
-      $("#tableCustomer tbody td").removeClass('row_selected');        
-      $(event.target.parentNode).addClass('row_selected');
-      
-  });
- 
-  $("#tableDaicho tbody").on('click',function(event) {
-      $("#tableDaicho").removeClass('row_selected');        
-      $("#tableDaicho tbody tr").removeClass('row_selected');        
-      $("#tableDaicho tbody td").removeClass('row_selected');        
-      $(event.target.parentNode).addClass('row_selected');
-      
-  });
-
- 
-  $("#tableAddDaicho tbody").on('click',function(event) {
-      $("#tableAddDaicho").removeClass('row_selected');        
-      $("#tableAddDaicho tbody tr").removeClass('row_selected');        
-      $("#tableAddDaicho tbody td").removeClass('row_selected');        
-      $(event.target.parentNode).addClass('row_selected');
-      
-  });
-
-
   $('#tableCustomer tbody').on( 'click', 'tr', function () {
     //顧客テーブルから指定したレコード
     var rowData =   $('#tableCustomer').DataTable().row( this ).data();
     $('#subAtitle')[0].innerText = rowData.id + "," + rowData.name1 + " " + "へ追加する商品を選択してください。";
     createDaichoTables_Main(rowData.id);
   } );
-
-  
 });
-  
+
+
+
+
+
+
+
+
+
+
+$('#btnDaichoAdd').on('click', function() {
+  var sendParam = $(".row_selected.customer").find("td:eq(0)").text() + "," +
+                  $(".row_selected.addDaicho").find("td:eq(0)").text() + "," +
+                  $("#inpDaichoAddMon").val() + "," +
+                  $("#inpDaichoAddTue").val() + "," +
+                  $("#inpDaichoAddWed").val() + "," +
+                  $("#inpDaichoAddThu").val() + "," +
+                  $("#inpDaichoAddFri").val() + "," +
+                  $("#inpDaichoAddSat").val() + "," +
+                  $("#inpDaichoAddSun").val() ;
+  $.ajax({
+      type: "GET",
+      url: "/updAddDaicho/" + sendParam + "",
+      success: function(data) {
+          $("#modalAddDaichoMessageArea").append("更新しました。");
+          setTimeout('$("#modalAddDaichoMessageArea")[0].innerText="";', 3000);
+      },
+      error: function(data){
+          alert("エラー：" + data.statusText);
+      }
+  })
+});
+
+
+
 $("#selGroupKb").change(function(){
     createCustomerTables_Main();
 });
@@ -98,26 +104,51 @@ function createItemTables_DaichoSub(){
           }
       },
       columns: [
-          { data: 'id'     ,width: '15%'},
-          { data: 'code'   ,width: '15%'},
-          { data: 'name1'  ,width: '50%'},
-          { data: 'tanka'  ,width: '20%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} }
+          { data: 'id'     ,width: '10%'},
+          { data: 'code'   ,width: '10%'},
+          { data: 'name1'  ,width: '45%'},
+          { data: 'tanka'  ,width: '10%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+          { data: null     ,width: '25%' ,render: 
+              function (data, type, row) { 
+                  //row.id が $('#tableDaicho').DataTable().rows().data() に含まれるかどうか検査
+                  var rows = $('#tableDaicho').DataTable().rows().data();
+                  for(var i=0; i<rows.length; i++){
+                      if(rows[i].item_id == row.id){
+                          var ret = ""
+                          if(rows[i].getu != 0){ ret = ret + "月" + rows[i].getu + "　" ;}
+                          if(rows[i].ka   != 0){ ret = ret + "火" + rows[i].ka   + "　" ;}
+                          if(rows[i].sui  != 0){ ret = ret + "水" + rows[i].sui  + "　" ;}
+                          if(rows[i].moku != 0){ ret = ret + "木" + rows[i].moku + "　" ;}
+                          if(rows[i].kin  != 0){ ret = ret + "金" + rows[i].kin  + "　" ;}
+                          if(rows[i].dou  != 0){ ret = ret + "土" + rows[i].dou  + "　" ;}
+                          if(rows[i].niti != 0){ ret = ret + "日" + rows[i].niti + "　" ;}
+                          return ret;
+                      }
+                  }
+                  return "";
+              }
+          }
       ],
-      columnDefs: [ {
-          targets: [ 1 ],
-          orderData: [ 1, 3 ]
-      } ],
       language: {
          url: "../static/main/js/japanese.json"
       },
       "scrollY":"400px",
+      order: [[ 4, "desc" ],[ 1, "asc" ],[ 3, "asc" ]],
       "pageLength": 1000,
       paging: false,
-      "order": [ 1, "asc" ],
       "lengthMenu": [100, 300, 500, 1000],
       dom:"<'row'<'col-sm-6'l><'col-sm-6'f>>"+
           "<'row'<'col-sm-12'tr>>" +
-          "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+          "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+      "fnRowCallback": function( nRow, row, iDisplayIndex, iDisplayIndexFull ) {
+          var rows = $('#tableDaicho').DataTable().rows().data();
+          for(var i=0; i<rows.length; i++){
+              if(rows[i].item_id == row.id){
+                  //$('td:eq(2)', nRow).html( '<b>1</b>' );
+                  nRow.style.backgroundColor = "#ffefe0";
+              }
+          }
+      }
   }).columns.adjust().draw();
 }
 
@@ -263,4 +294,29 @@ function createCustomerTables_Main(){
 }
 
 
+
+$("#tableCustomer tbody").on('click',function(event) {
+    $("#tableCustomer").removeClass('row_selected customer');        
+    $("#tableCustomer tbody tr").removeClass('row_selected customer');        
+    $("#tableCustomer tbody td").removeClass('row_selected customer');        
+    $(event.target.parentNode).addClass('row_selected customer');
+    
+});
+
+$("#tableDaicho tbody").on('click',function(event) {
+    $("#tableDaicho").removeClass('row_selected daicho');        
+    $("#tableDaicho tbody tr").removeClass('row_selected daicho');        
+    $("#tableDaicho tbody td").removeClass('row_selected daicho');        
+    $(event.target.parentNode).addClass('row_selected daicho');
+    
+});
+
+
+$("#tableAddDaicho tbody").on('click',function(event) {
+    $("#tableAddDaicho").removeClass('row_selected addDaicho');        
+    $("#tableAddDaicho tbody tr").removeClass('row_selected addDaicho');        
+    $("#tableAddDaicho tbody td").removeClass('row_selected addDaicho');        
+    $(event.target.parentNode).addClass('row_selected addDaicho');
+    
+});
 
