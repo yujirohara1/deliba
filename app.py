@@ -105,7 +105,7 @@ def resJson_getVSeikyuA_ByCusotmerId(customerid, nentuki):
 @app.route('/printSeikyu/<customerid>/<nentuki>/<randnum>')
 def resPdf_printSeikyu(customerid, nentuki, randnum):
     timestamp = datetime.datetime.now()
-    timestampStr = timestamp.strftime('%Y%m%d%H%M%S')
+    timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
     make("file" + timestampStr)
     response = make_response()
     response.data = open("output/" + "file" + timestampStr + ".pdf", "rb").read()
