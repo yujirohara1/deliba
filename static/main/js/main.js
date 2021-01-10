@@ -15,25 +15,11 @@ $(document).ready(function() {
   //var domTableCustomer = $('#tableCustomer').DataTable();
 
 
-  $('#tableCustomer tbody').on( 'click', 'tr', function () {
-    //顧客テーブルから指定したレコード
-    var rowData =   $('#tableCustomer').DataTable().row( this ).data();
-    $('#subAtitle')[0].innerText = rowData.id + "," + rowData.name1 + " " + "へ追加する商品を選択してください。";
-    createDaichoTables_Main(rowData.id);
-  } );
 });
 
-
-
-
-
-
-
-
-
-
 $('#btnDaichoAdd').on('click', function() {
-  var sendParam = $(".row_selected.customer").find("td:eq(0)").text() + "," +
+  var customerid = $(".row_selected.customer").find("td:eq(0)").text();
+  var sendParam = customerid + "," +
                   $(".row_selected.addDaicho").find("td:eq(0)").text() + "," +
                   $("#inpDaichoAddMon").val() + "," +
                   $("#inpDaichoAddTue").val() + "," +
@@ -46,13 +32,15 @@ $('#btnDaichoAdd').on('click', function() {
       type: "GET",
       url: "/updAddDaicho/" + sendParam + "",
       success: function(data) {
-          $("#modalAddDaichoMessageArea").append("更新しました。");
+          $("#modalAddDaichoMessageArea").append("<p style='color:red'>更新しました。</p>");
           setTimeout('$("#modalAddDaichoMessageArea")[0].innerText="";', 3000);
       },
       error: function(data){
           alert("エラー：" + data.statusText);
       }
-  })
+  });
+  createDaichoTables_Main(customerid);
+  createItemTables_DaichoSub();
 });
 
 
@@ -106,9 +94,9 @@ function createItemTables_DaichoSub(){
       columns: [
           { data: 'id'     ,width: '10%'},
           { data: 'code'   ,width: '10%'},
-          { data: 'name1'  ,width: '45%'},
+          { data: 'name1'  ,width: '40%'},
           { data: 'tanka'  ,width: '10%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
-          { data: null     ,width: '25%' ,render: 
+          { data: null     ,width: '30%' ,render: 
               function (data, type, row) { 
                   //row.id が $('#tableDaicho').DataTable().rows().data() に含まれるかどうか検査
                   var rows = $('#tableDaicho').DataTable().rows().data();
@@ -209,7 +197,7 @@ function createDaichoTables_Main(customerId){
         language: {
            url: "../static/main/js/japanese.json"
         },
-        "scrollY":        "100px",
+        "scrollY":        "150px",
         "pageLength": 1000,
         searching: false,
         info: false,
@@ -292,6 +280,45 @@ function createCustomerTables_Main(){
           "<'row'<'col-sm-5'i><'col-sm-7'p>>"
   });
 }
+
+
+$('#tableAddDaicho tbody').on( 'click', 'tr', function () {
+   
+   $("#inpDaichoAddMon").val("");
+   $("#inpDaichoAddTue").val("");
+   $("#inpDaichoAddWed").val("");
+   $("#inpDaichoAddThu").val("");
+   $("#inpDaichoAddFri").val("");
+   $("#inpDaichoAddSat").val("");
+   $("#inpDaichoAddSun").val("");
+   
+   var row =   $('#tableAddDaicho').DataTable().row( this ).data(); // 選択データ
+   var rows = $('#tableDaicho').DataTable().rows().data(); // 台帳データ
+   for(var i=0; i<rows.length; i++){
+       if(rows[i].item_id == row.id){
+           if(rows[i].getu != 0){ $("#inpDaichoAddMon").val(rows[i].getu);}
+           if(rows[i].ka   != 0){ $("#inpDaichoAddTue").val(rows[i].ka  );}
+           if(rows[i].sui  != 0){ $("#inpDaichoAddWed").val(rows[i].sui );}
+           if(rows[i].moku != 0){ $("#inpDaichoAddThu").val(rows[i].moku);}
+           if(rows[i].kin  != 0){ $("#inpDaichoAddFri").val(rows[i].kin );}
+           if(rows[i].dou  != 0){ $("#inpDaichoAddSat").val(rows[i].dou );}
+           if(rows[i].niti != 0){ $("#inpDaichoAddSun").val(rows[i].niti);}
+       }
+   }
+  
+} );
+
+
+
+$('#tableCustomer tbody').on( 'click', 'tr', function () {
+  //顧客テーブルから指定したレコード
+  var rowData =   $('#tableCustomer').DataTable().row( this ).data();
+  $('#subAtitle')[0].innerText = rowData.id + "," + rowData.name1 + " " + "へ追加する商品を選択してください。";
+  createDaichoTables_Main(rowData.id);
+} );
+
+
+
 
 
 
