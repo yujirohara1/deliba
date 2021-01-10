@@ -18,6 +18,58 @@ $(document).ready(function() {
 
 });
 
+
+
+
+
+
+/*
+|| 請求書印刷
+*/
+$('#btnSeikyuPrint').on('click', function() {
+  var randnum = Math.floor(Math.random()*10101010101)
+  var customerid = 362;
+  var nentuki = 202012;
+  $.ajax({
+      type: "GET",
+      url: "/printSeikyu/" + customerid + "/" + nentuki + "/" + randnum + "",
+      success: function(data) {
+          var blob=new Blob([data], {type: "application/pdf"});//
+          var link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          link.download = "" + Math.random().toString(32).substring(2) + ".pdf";
+          link.click();
+      },
+      error: function(data){
+          alert("エラー：" + data.statusText);
+      }
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+|| 台帳情報更新
+*/
 $('#btnDaichoAdd').on('click', function() {
   var customerid = $(".row_selected.customer").find("td:eq(0)").text();
   var sendParam = customerid + "," +
