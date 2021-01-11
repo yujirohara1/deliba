@@ -43,7 +43,7 @@ def print_string(pdf_canvas):
     #pdf_canvas.drawString(0, 10, 'aaaa履 aaaaa 歴ba書') # 書き出す(横位置, 縦位置, 文字)を指定
     
     print_string_ue(pdf_canvas, 45, 45)
-    print_string_ue(pdf_canvas, 45, 345)
+    print_string_ue(pdf_canvas, 45, 342)
     
     ## def_font_size = 9
     ## def_font_type = 'HeiseiKakuGo-W5'

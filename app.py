@@ -22,6 +22,7 @@ from models.mstsetting import MstSetting, MstSettingSchema
 from models.daicho import Daicho, DaichoSchema, VDaichoA, VDaichoASchema
 from models.seikyu import Seikyu, SeikyuSchema, VSeikyuA, VSeikyuASchema
 from print.seikyu import *
+from sqlalchemy.sql import text
 
 class FlaskWithHamlish(Flask):
     jinja_options = ImmutableDict(
@@ -101,6 +102,79 @@ def resJson_getVSeikyuA_ByCusotmerId(customerid, nentuki):
       return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
 
 
+@app.route('/createSeikyu/<customerid>/<nentuki>')
+def dbUpdate_insSeikyu(customerid, nentuki):
+  y = int(nentuki[0:4])
+  m = int(nentuki[4:6])
+  
+  sql = " "
+  sql = sql + " delete from seikyu "
+  sql = sql + " where "
+  sql = sql + "     customer_id = " + customerid + " and "
+  sql = sql + "     cast(to_char(deliver_ymd,'yyyy') as integer) = " + str(y) + " and "
+  sql = sql + "     cast(to_char(deliver_ymd,'mm') as integer) = " + str(m) + "  "
+  db.session.execute(text(sql))
+  
+  for d in range(1,32):
+    if isDate(y, m, d):
+      deliverymdstr="%04d/%02d/%02d"%(y,m,d)
+      deliverymd=datetime.datetime.strptime(deliverymdstr,"%Y/%m/%d")
+      
+      sql = " "
+      sql = sql + " SELECT "
+      sql = sql + "     d.customer_id, "
+      sql = sql + "     to_date('" + deliverymdstr + "','yyyy/mm/dd') deliver_ymd, "
+      sql = sql + "     d.item_id, "
+      sql = sql + "     i.tanka, "
+      sql = sql + "     null price_sub, "
+      sql = sql + "     d.quantity "
+      sql = sql + " from "
+      sql = sql + "    daicho d "
+      sql = sql + " inner join "
+      sql = sql + "    customer c "
+      sql = sql + " on "
+      sql = sql + "     d.customer_id =  c.id "
+      sql = sql + " inner join "
+      sql = sql + "    item i "
+      sql = sql + " on "
+      sql = sql + "     d.item_id =  i.id "
+      sql = sql + " where "
+      sql = sql + "     d.customer_id = " + customerid + " and "
+      sql = sql + "     d.youbi = " + str(deliverymd.weekday()+1) + " "
+      # print(sql)
+      
+      # print(db.session.execute(text(sql)).fetchone())
+      
+      if db.session.execute(text(sql)).fetchone() is not None:
+        # print(db.session.execute(text(sql)).fetchone())
+        
+        data_list = db.session.execute(text(sql))
+        seikyus = [{'customer_id':d[0], 'deliver_ymd': d[1], 'item_id': d[2],
+                  'price': d[3], 'price_sub': d[4], 'quantity': d[5]} for d in data_list]
+                  
+        db.session.execute(Seikyu.__table__.insert(), seikyus)
+        db.session.commit()
+  
+      # for r in db.session.execute(text(sql)):
+      #   print(r["customer_id"])
+      #   print(r["item_id"])
+      #   print(r["deliver_ymd"])
+      #   print(deliverymd)
+  
+      # print(data_list)
+  
+  # seikyu = VSeikyuA.query.filter(VSeikyuA.customer_id==customerid, VSeikyuA.nen==nentuki[0:4], VSeikyuA.tuki==nentuki[4:6]).all()
+  # seikyu_schema = VSeikyuASchema(many=True)
+  
+  return "1"
+  
+def isDate(year,month,day):
+    try:
+        newDataStr="%04d/%02d/%02d"%(year,month,day)
+        newDate=datetime.datetime.strptime(newDataStr,"%Y/%m/%d")
+        return True
+    except ValueError:
+        return False
 
 @app.route('/printSeikyu/<customerid>/<nentuki>/<randnum>')
 def resPdf_printSeikyu(customerid, nentuki, randnum):
@@ -127,7 +201,7 @@ def resJson_getMstSetting_Main():
 @app.route('/updAddDaicho/<param>')
 def dbUpdate_updAddDaicho(param):
   vals = param.split(",")
-  print(vals)
+  # print(vals)
   for youbi in range(2, 9):
     if vals[youbi].isdecimal():
       Daicho.query.filter(Daicho.customer_id==vals[0], Daicho.item_id==vals[1], Daicho.youbi==(youbi-1)).delete()

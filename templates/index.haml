@@ -5,7 +5,7 @@
 {% block content %}
     %div.container-fluid
       %div.row
-        %div.col-md-12
+        %div.col-md-6
           %img.img-responsive(src="../static/image/logo_small.png" align="left" style="position:absolute; top:-5px")
           %h5(style="position:absolute; left:100px; top10px")
             牛乳宅配管理サービス&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;© Yujiro Hara, 2020
@@ -14,6 +14,12 @@
           %br
           %h1(style="font-size:45px; color:transparent" )
              &nbsp;
+        %div.col-md-6
+          %br
+          %div.input-group.pull-right
+            %button.btn.btn-primary.btn-sm#btnSeikyuCreate(type="button")
+              請求データ作成
+              
     %div.container-fluid
       %div.row
         %div.col-md-2

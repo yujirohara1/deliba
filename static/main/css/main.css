@@ -10,3 +10,11 @@ table.dataTable thead tr {
   background-color: #696969;
   color:white;
 }
+.pull-right {
+  float: right !important;
+}
+.vmiddle {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}

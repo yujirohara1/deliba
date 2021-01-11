@@ -28,8 +28,8 @@ $(document).ready(function() {
 */
 $('#btnSeikyuPrint').on('click', function() {
   var randnum = Math.floor(Math.random()*10101010101)
-  var customerid = 362;
-  var nentuki = 202012;
+  var customerid = $(".row_selected.customer").find("td:eq(0)").text();
+  var nentuki = 202101;
   $.ajax({
       type: "GET",
       url: "/printSeikyu/" + customerid + "/" + nentuki + "/" + randnum + "",
@@ -49,21 +49,24 @@ $('#btnSeikyuPrint').on('click', function() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
+|| 請求書印刷
+*/
+$('#btnSeikyuCreate').on('click', function() {
+  var customerid = $(".row_selected.customer").find("td:eq(0)").text();
+  var nentuki = 202101;
+  $.ajax({
+      type: "GET",
+      url: "/createSeikyu/" + customerid + "/" + nentuki + "",
+      success: function(data) {
+          //alert(data);
+          createSeikyuTables_Main(customerid,nentuki);
+      },
+      error: function(data){
+          alert("エラー：" + data.statusText);
+      }
+  });
+});
 
 
 
@@ -487,7 +490,7 @@ $('#tableCustomer tbody').on( 'click', 'tr', function () {
   var rowData =   $('#tableCustomer').DataTable().row( this ).data();
   $('#subAtitle')[0].innerText = rowData.id + "," + rowData.name1 + " " + "へ追加する商品を選択してください。";
   createDaichoTables_Main(rowData.id);
-  createSeikyuTables_Main(rowData.id,202012);
+  createSeikyuTables_Main(rowData.id,202101);
 } );
 
 
