@@ -290,8 +290,10 @@ function createSeikyuTables_Main(customerId, nentuki){
 
 $("#selNentuki").change(function(){
   var customerid = $(".row_selected.customer").find("td:eq(0)").text();
-  createDaichoTables_Main(customerid);
-  createSeikyuTables_Main(customerid,$('#selNentuki').val());
+  if(customerid!=0){
+    createDaichoTables_Main(customerid);
+    createSeikyuTables_Main(customerid,$('#selNentuki').val());
+  }
 });
 
 
