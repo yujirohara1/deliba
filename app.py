@@ -202,6 +202,7 @@ def resJson_getMstSetting_Main(param_id):
 def dbUpdate_updAddDaicho(param):
   vals = param.split(",")
   # print(vals)
+  Daicho.query.filter(Daicho.quantity==0).delete()
   for youbi in range(2, 9):
     Daicho.query.filter(Daicho.customer_id==vals[0], Daicho.item_id==vals[1], Daicho.youbi==(youbi-1)).delete()
     if vals[youbi].isdecimal():
