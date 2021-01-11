@@ -97,7 +97,7 @@ $('#btnSeikyuCreate').on('click', function() {
 || 台帳情報更新
 */
 $('#btnDaichoAdd').on('click', function() {
-  var customerid = $(".row_selected.customer").find("td:eq(0)").text();
+  var customerid = toNumber($(".row_selected.customer").find("td:eq(0)").text());
   var sendParam = customerid + "," +
                   $(".row_selected.addDaicho").find("td:eq(0)").text() + "," +
                   $("#inpDaichoAddMon").val() + "," +
@@ -107,6 +107,36 @@ $('#btnDaichoAdd').on('click', function() {
                   $("#inpDaichoAddFri").val() + "," +
                   $("#inpDaichoAddSat").val() + "," +
                   $("#inpDaichoAddSun").val() ;
+                  
+  var tmpTotal = 
+    toNumber($("#inpDaichoAddMon").val())+
+    toNumber($("#inpDaichoAddTue").val())+
+    toNumber($("#inpDaichoAddWed").val())+
+    toNumber($("#inpDaichoAddThu").val())+
+    toNumber($("#inpDaichoAddFri").val())+
+    toNumber($("#inpDaichoAddSat").val())+
+    toNumber($("#inpDaichoAddSun").val());
+  
+  var itemid = toNumber($(".row_selected.addDaicho").find("td:eq(0)").text());
+  
+  if(tmpTotal==0){
+    $("#modalAddDaichoMessageArea").append("<p style='color:red'>本数を入力してください。</p>");
+    setTimeout('$("#modalAddDaichoMessageArea")[0].innerText="";', 3000);
+    return;
+  }
+  
+  if(itemid==0){
+    $("#modalAddDaichoMessageArea").append("<p style='color:red'>商品が選択されていません。</p>");
+    setTimeout('$("#modalAddDaichoMessageArea")[0].innerText="";', 3000);
+    return;
+  }
+  
+  if(customerid==0){
+    $("#modalAddDaichoMessageArea").append("<p style='color:red'>顧客情報が選択されていません。</p>");
+    setTimeout('$("#modalAddDaichoMessageArea")[0].innerText="";', 3000);
+    return;
+  }
+  
   $.ajax({
       type: "GET",
       url: "/updAddDaicho/" + sendParam + "",
@@ -122,6 +152,21 @@ $('#btnDaichoAdd').on('click', function() {
   createItemTables_DaichoSub();
 });
 
+
+
+function toNumber(val){
+  if(isNaN(parseInt(val))){
+      return 0;
+  }
+  
+  var ret = 0;
+  try{
+    ret = val * 1;
+  }catch(e){
+    ret = 0;
+  }
+  return ret;
+}
 
 
 

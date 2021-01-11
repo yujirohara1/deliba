@@ -23,7 +23,11 @@
                   操作年月
                 %div.form-group
                     %select.form-control.input-sm#selNentuki
-            %div.col-md-9
+            %div.col-md-1
+              %div.input-group
+                  %button.btn.btn-primary.btn-sm#btnSeikyuPrint(type="button")
+                    請求書
+            %div.col-md-8
               %div.input-group.pull-right
                 %button.btn.btn-primary.btn-sm#btnSeikyuCreate(type="button")
                   請求データ作成
@@ -93,9 +97,6 @@
                   日
             %tbody
         %div.col-md-4
-        %div.input-group
-            %button.btn.btn-primary.btn-sm#btnSeikyuPrint(type="button")
-              請求書
             
     %div.container-fluid
       %div.row
