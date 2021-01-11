@@ -100,13 +100,13 @@ $('#btnDaichoAdd').on('click', function() {
   var customerid = toNumber($(".row_selected.customer").find("td:eq(0)").text());
   var sendParam = customerid + "," +
                   $(".row_selected.addDaicho").find("td:eq(0)").text() + "," +
-                  $("#inpDaichoAddMon").val() + "," +
-                  $("#inpDaichoAddTue").val() + "," +
-                  $("#inpDaichoAddWed").val() + "," +
-                  $("#inpDaichoAddThu").val() + "," +
-                  $("#inpDaichoAddFri").val() + "," +
-                  $("#inpDaichoAddSat").val() + "," +
-                  $("#inpDaichoAddSun").val() ;
+                  toNumber($("#inpDaichoAddMon").val()) + "," +
+                  toNumber($("#inpDaichoAddTue").val()) + "," +
+                  toNumber($("#inpDaichoAddWed").val()) + "," +
+                  toNumber($("#inpDaichoAddThu").val()) + "," +
+                  toNumber($("#inpDaichoAddFri").val()) + "," +
+                  toNumber($("#inpDaichoAddSat").val()) + "," +
+                  toNumber($("#inpDaichoAddSun").val()) ;
                   
   var tmpTotal = 
     toNumber($("#inpDaichoAddMon").val())+
@@ -118,8 +118,9 @@ $('#btnDaichoAdd').on('click', function() {
     toNumber($("#inpDaichoAddSun").val());
   
   var itemid = toNumber($(".row_selected.addDaicho").find("td:eq(0)").text());
+  $("#modalAddDaichoMessageArea")[0].innerText="";
   
-  if(tmpTotal==0){
+  if(tmpTotal==0 && $(".row_selected.addDaicho").find("td:eq(4)").text()==""){
     $("#modalAddDaichoMessageArea").append("<p style='color:red'>本数を入力してください。</p>");
     setTimeout('$("#modalAddDaichoMessageArea")[0].innerText="";', 3000);
     return;
@@ -406,7 +407,14 @@ $('#modalAddDaicho').on("shown.bs.modal", function (e) {
 || 台帳サブ画面起動[直前]イベント
 */
 $('#modalAddDaicho').on("show.bs.modal", function (e) {
-    var a = $('#tableAddDaicho').dataTable({
+   var customerid = toNumber($(".row_selected.customer").find("td:eq(0)").text());
+   if(customerid==0){
+     $("#mainAddDaichoMessageArea")[0].innerText="";
+     $("#mainAddDaichoMessageArea").append("<p style='color:red'>左のリストから顧客を選択してください。</p>");
+     setTimeout('$("#mainAddDaichoMessageArea")[0].innerText="";', 3000);
+     return false;
+   }
+   var a = $('#tableAddDaicho').dataTable({
        destroy: true
    });
    a.fnClearTable();

@@ -70,8 +70,13 @@
             %tbody
             
         %div.col-md-5
-          %button.btn.btn-primary.btn-sm(type="button" data-toggle="modal" data-target="#modalAddDaicho")
-             新しい配達商品を追加
+          %div.row
+            %div.col-md-3
+              %button.btn.btn-primary.btn-sm(type="button" data-toggle="modal" data-target="#modalAddDaicho")
+                新しい配達商品を追加
+            %div.col-md-9
+              %div.col-md-10.text-left#mainAddDaichoMessageArea
+                
           %table.table-bordered.row.hover#tableDaicho
             %thead
               %tr

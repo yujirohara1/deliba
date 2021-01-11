@@ -203,16 +203,16 @@ def dbUpdate_updAddDaicho(param):
   vals = param.split(",")
   # print(vals)
   for youbi in range(2, 9):
+    Daicho.query.filter(Daicho.customer_id==vals[0], Daicho.item_id==vals[1], Daicho.youbi==(youbi-1)).delete()
     if vals[youbi].isdecimal():
-      Daicho.query.filter(Daicho.customer_id==vals[0], Daicho.item_id==vals[1], Daicho.youbi==(youbi-1)).delete()
-      
-      daicho = Daicho()
-      daicho.customer_id = vals[0]
-      daicho.item_id = vals[1]
-      daicho.youbi = (youbi-1)
-      daicho.quantity = vals[youbi]
-      db.session.add(daicho)
-      db.session.commit()
+      if vals[youbi]!=0:
+        daicho = Daicho()
+        daicho.customer_id = vals[0]
+        daicho.item_id = vals[1]
+        daicho.youbi = (youbi-1)
+        daicho.quantity = vals[youbi]
+        db.session.add(daicho)
+        db.session.commit()
   return param
 
 
