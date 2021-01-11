@@ -117,12 +117,69 @@
               %div.panel-body
                 %div.tab-content
                   %div.tab-pane.fade.in.active#tab1primary
-                    Primary 1
+                    %div.row
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              氏名
+                            %input.form-control#txtCustomerName(type="text")
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              カナ
+                            %input.form-control#txtCustomerKana(type="text")
+                    %div.row
+                      %div.col-md-12
+                        %div.input-group
+                            %span.input-group-addon
+                              住所
+                            %input.form-control#txtAddress1(type="text")
                     %br
-                    Primary 1
+                    %div.row
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              電話
+                            %input.form-control#txtTel1(type="text")
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              支払
+                            %select.form-control.input-sm#selHaraiKb
+                            
+                    %div.row
+                      %div.col-md-6
+                        %div.input-group
+                          %span.input-group-addon
+                            経路
+                          %input.form-control(type="text")
+                          %span.input-group-btn
+                            %button.btn.btn-default(type="button")
+                              変更
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              消税
+                            %select.form-control.input-sm#selCustomerZeiKb
                     %br
-                    Primary 1
-                    Primary 1
+                    %div.row
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              担当
+                            %input.form-control#txtCustomerName(type="text")
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              分類
+                            %select.form-control.input-sm#selCustomerGroupKb
+                    %br
+                    %div.row.pull-right
+                      %div.col-md-12
+                        %div.input-group
+                          %button.btn.btn-primary.btn-sm#btnSeikyuPrint(type="button")
+                            更新
+                      
                   %div.tab-pane.fade#tab2primary
                     Primary 2
                   %div.tab-pane.fade#tab3primary

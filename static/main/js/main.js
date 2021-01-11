@@ -8,6 +8,15 @@ $(document).ready(function() {
     });
   });
   
+  $.getJSON("/getMstSetting_Main/GROUP_KB", function(json) {
+    list = JSON.parse(json.data);
+    $.each(list, function(i, item) {
+        var option = $('<option>').text(item.param_val1).val(item.param_no);
+        $('#selCustomerGroupKb').append(option);
+    });
+  });
+  
+  
   $.getJSON("/getMstSetting_Main/START_YM", function(json) {
     list = JSON.parse(json.data);
     if(list.length == 1){
@@ -36,9 +45,31 @@ $(document).ready(function() {
     }
   });
   
+  
+  $.getJSON("/getMstSetting_Main/SIHARAI_KB", function(json) {
+    list = JSON.parse(json.data);
+    $.each(list, function(i, item) {
+        var option = $('<option>').text(item.param_val1).val(item.param_no);
+        $('#selHaraiKb').append(option);
+    });
+  });
+  
+  $.getJSON("/getMstSetting_Main/CUSTOMER_ZEI_KB", function(json) {
+    list = JSON.parse(json.data);
+    $.each(list, function(i, item) {
+        var option = $('<option>').text(item.param_val1).val(item.param_no);
+        $('#selCustomerZeiKb').append(option);
+    });
+  });
+  
+  
+  
+   
+  
   createCustomerTables_Main();
   createDaichoTables_Main(0);
-  createSeikyuTables_Main(0,0);
+  createSeikyuTables_Main(0,$('#selNentuki').val());
+  
   
   //var domTableCustomer = $('#tableCustomer').DataTable();
 
@@ -579,6 +610,13 @@ $('#tableCustomer tbody').on( 'click', 'tr', function () {
   $('#subAtitle')[0].innerText = rowData.id + "," + rowData.name1 + " " + "へ追加する商品を選択してください。";
   createDaichoTables_Main(rowData.id);
   createSeikyuTables_Main(rowData.id,$('#selNentuki').val());
+  $('#txtCustomerName').val(rowData.name1);
+  $('#txtCustomerKana').val(rowData.name2);
+  $('#txtAddress1').val(rowData.address1);
+  $('#txtTel1').val(rowData.tel1);
+  $('#selHaraiKb').val(rowData.harai_kb);
+  $('#selCustomerGroupKb').val(rowData.group_id);
+  $('#selCustomerZeiKb').val(rowData.biko2);
 } );
 
 
