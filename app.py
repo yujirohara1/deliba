@@ -191,9 +191,9 @@ def resPdf_printSeikyu(customerid, nentuki, randnum):
 
 
 
-@app.route('/getMstSetting_Main')
-def resJson_getMstSetting_Main():
-  setting = MstSetting.query.filter(MstSetting.param_id=="GROUP_KB").all() #変更
+@app.route('/getMstSetting_Main/<param_id>')
+def resJson_getMstSetting_Main(param_id):
+  setting = MstSetting.query.filter(MstSetting.param_id==param_id).all() #変更
   setting_schema = MstSettingSchema(many=True)
   return jsonify({'data': setting_schema.dumps(setting, ensure_ascii=False)})
 

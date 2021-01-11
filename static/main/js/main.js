@@ -1,12 +1,39 @@
 $(document).ready(function() {
 
-  var select = $('#selGroupKb');
-  $.getJSON("/getMstSetting_Main", function(json) {
+  $.getJSON("/getMstSetting_Main/GROUP_KB", function(json) {
     list = JSON.parse(json.data);
     $.each(list, function(i, item) {
         var option = $('<option>').text(item.param_val1).val(item.param_no);
-        select.append(option);
+        $('#selGroupKb').append(option);
     });
+  });
+  
+  $.getJSON("/getMstSetting_Main/START_YM", function(json) {
+    list = JSON.parse(json.data);
+    if(list.length == 1){
+      var y = list[0].param_val1.substring(0,4)*1;
+      var m = list[0].param_val1.substring(4,6)*1-1;
+      var dt = new Date(y, m, 15);
+      var today = new Date(); 
+      today.setMonth(today.getMonth() + 2);
+      
+      var ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
+      var ymTo =  today.getFullYear() + "" + ("0"+today.getMonth()).slice(-2);
+      ymFrom = ymFrom * 1;
+      ymTo = ymTo * 1;
+      
+      while (ymFrom <= ymTo) {
+          var option = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
+          $('#selNentuki').append(option);
+          
+          dt.setMonth(dt.getMonth() + 1);
+          ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
+          ymFrom = ymFrom * 1;
+      }
+      
+    }else{
+      alert("エラー：START_YMがありません");
+    }
   });
   
   createCustomerTables_Main();
@@ -19,17 +46,13 @@ $(document).ready(function() {
 });
 
 
-
-
-
-
 /*
 || 請求書印刷
 */
 $('#btnSeikyuPrint').on('click', function() {
   var randnum = Math.floor(Math.random()*10101010101)
   var customerid = $(".row_selected.customer").find("td:eq(0)").text();
-  var nentuki = 202101;
+  var nentuki = $('#selNentuki').val();
   $.ajax({
       type: "GET",
       url: "/printSeikyu/" + customerid + "/" + nentuki + "/" + randnum + "",
@@ -50,11 +73,11 @@ $('#btnSeikyuPrint').on('click', function() {
 
 
 /*
-|| 請求書印刷
+|| 請求データ作成
 */
 $('#btnSeikyuCreate').on('click', function() {
   var customerid = $(".row_selected.customer").find("td:eq(0)").text();
-  var nentuki = 202101;
+  var nentuki = $('#selNentuki').val();
   $.ajax({
       type: "GET",
       url: "/createSeikyu/" + customerid + "/" + nentuki + "",
@@ -214,6 +237,16 @@ function createSeikyuTables_Main(customerId, nentuki){
 
 
 
+
+
+
+
+
+$("#selNentuki").change(function(){
+  var customerid = $(".row_selected.customer").find("td:eq(0)").text();
+  createDaichoTables_Main(customerid);
+  createSeikyuTables_Main(customerid,$('#selNentuki').val());
+});
 
 
 
@@ -490,7 +523,7 @@ $('#tableCustomer tbody').on( 'click', 'tr', function () {
   var rowData =   $('#tableCustomer').DataTable().row( this ).data();
   $('#subAtitle')[0].innerText = rowData.id + "," + rowData.name1 + " " + "へ追加する商品を選択してください。";
   createDaichoTables_Main(rowData.id);
-  createSeikyuTables_Main(rowData.id,202101);
+  createSeikyuTables_Main(rowData.id,$('#selNentuki').val());
 } );
 
 
