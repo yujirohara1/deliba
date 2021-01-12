@@ -1,3 +1,5 @@
+var DELIMIT = "@|@|@";
+
 $(document).ready(function() {
 
   $.getJSON("/getMstSetting_Main/GROUP_KB", function(json) {
@@ -121,6 +123,42 @@ $('#btnSeikyuCreate').on('click', function() {
       }
   });
 });
+
+
+
+
+
+/*
+|| 顧客情報更新
+*/
+$('#btnUpdateCustomer').on('click', function() {
+  var customerid = $(".row_selected.customer").find("td:eq(0)").text();
+  var param = $('#txtCustomerName').val() + DELIMIT + 
+              $('#txtCustomerKana').val() + DELIMIT + 
+              $('#txtAddress1').val() + DELIMIT + 
+              $('#txtTel1').val() + DELIMIT + 
+              $('#selHaraiKb').val() + DELIMIT + 
+              $('#selCustomerGroupKb').val() + DELIMIT + 
+              $('#selCustomerZeiKb').val() + DELIMIT + 
+              $('#txtTantoName').val() + DELIMIT + 
+              $('#txtList').val();
+  //alert(param);
+  
+  $.ajax({
+      type: "GET",
+      url: "/updateCustomer/" + customerid + "/" + param + "",
+      success: function(data) {
+          alert(data);
+          //createSeikyuTables_Main(customerid,nentuki);
+      },
+      error: function(data){
+          alert("エラー：" + data.statusText);
+      }
+  });
+});
+
+
+
 
 
 
@@ -617,6 +655,8 @@ $('#tableCustomer tbody').on( 'click', 'tr', function () {
   $('#selHaraiKb').val(rowData.harai_kb);
   $('#selCustomerGroupKb').val(rowData.group_id);
   $('#selCustomerZeiKb').val(rowData.biko2);
+  $('#txtTantoName').val(rowData.biko3);
+  $('#txtList').val(rowData.list);
 } );
 
 

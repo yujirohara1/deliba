@@ -24,6 +24,9 @@ from models.seikyu import Seikyu, SeikyuSchema, VSeikyuA, VSeikyuASchema
 from print.seikyu import *
 from sqlalchemy.sql import text
 
+DELIMIT = "@|@|@";
+
+
 class FlaskWithHamlish(Flask):
     jinja_options = ImmutableDict(
         extensions=[HamlishExtension]
@@ -214,6 +217,38 @@ def dbUpdate_updAddDaicho(param):
         daicho.quantity = vals[youbi]
         db.session.add(daicho)
         db.session.commit()
+  return param
+
+
+        
+@app.route('/updateCustomer/<customerid>/<param>')
+def dbUpdate_updCustomer(customerid, param):
+  vals = param.split(DELIMIT)
+                                         #txtCustomerName      vals[0]   
+                                         #txtCustomerKana      vals[1]   
+                                         #txtAddress1          vals[2]   
+                                         #txtTel1              vals[3]   
+                                         #selHaraiKb           vals[4]   
+                                         #selCustomerGroupKb   vals[5]   
+                                         #selCustomerZeiKb     vals[6]   
+                                         #txtTantoName         vals[7]   
+                                         #txtList              vals[8]
+  
+  # id==2 のデータを更新
+  customer = Customer.query.filter(Customer.id==customerid).first()
+  customer.name1 = vals[0]
+  customer.name2 = vals[1]
+  customer.address1 = vals[2]
+  customer.tel1 = vals[3]
+  customer.harai_kb = vals[4]
+  customer.group_id = vals[5]
+  customer.biko2 = vals[6]
+  customer.biko3 = vals[7]
+  customer.list = vals[8]
+
+  # データを確定
+  db.session.commit()
+  
   return param
 
 

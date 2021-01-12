@@ -152,7 +152,7 @@
                         %div.input-group
                           %span.input-group-addon
                             経路
-                          %input.form-control(type="text")
+                          %input.form-control#txtList(type="text" disabled)
                           %span.input-group-btn
                             %button.btn.btn-default(type="button")
                               変更
@@ -167,7 +167,7 @@
                         %div.input-group
                             %span.input-group-addon
                               担当
-                            %input.form-control#txtCustomerName(type="text")
+                            %input.form-control#txtTantoName(type="text")
                       %div.col-md-6
                         %div.input-group
                             %span.input-group-addon
@@ -177,7 +177,7 @@
                     %div.row.pull-right
                       %div.col-md-12
                         %div.input-group
-                          %button.btn.btn-primary.btn-sm#btnSeikyuPrint(type="button")
+                          %button.btn.btn-primary.btn-sm#btnUpdateCustomer(type="button")
                             更新
                       
                   %div.tab-pane.fade#tab2primary
