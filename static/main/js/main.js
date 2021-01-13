@@ -75,6 +75,22 @@ $(document).ready(function() {
   
   //var domTableCustomer = $('#tableCustomer').DataTable();
 
+  var table = $('#example').DataTable( {
+    rowReorder: true
+} );
+
+table.on( 'row-reorder', function ( e, diff, edit ) {
+    var result = 'Reorder started on row: '+edit.triggerRow.data()[1]+'<br>';
+
+    for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
+        var rowData = table.row( diff[i].node ).data();
+
+        result += rowData[1]+' updated to be in position '+
+            diff[i].newData+' (was '+diff[i].oldData+')<br>';
+    }
+
+    $('#result').html( 'Event result:<br>'+result );
+} );
 
 });
 
@@ -148,8 +164,9 @@ $('#btnUpdateCustomer').on('click', function() {
       type: "GET",
       url: "/updateCustomer/" + customerid + "/" + param + "",
       success: function(data) {
-          alert(data);
-          //createSeikyuTables_Main(customerid,nentuki);
+        $("#mainUpdCustomerMessageArea").append("<p style='color:red'>更新しました。</p>");
+        setTimeout('$("#mainUpdCustomerMessageArea")[0].innerText="";', 3000);
+          createCustomerTables_Main();
       },
       error: function(data){
           alert("エラー：" + data.statusText);
@@ -157,7 +174,9 @@ $('#btnUpdateCustomer').on('click', function() {
   });
 });
 
-
+$('#btnListHenko').on('click', function() {
+	$('#modalUpdList').modal();
+});
 
 
 
@@ -559,6 +578,7 @@ function fncNumOnly(){
 /*
 || メイン左の顧客テーブルを作成
 */
+var pageScrollPos = 0;
 function createCustomerTables_Main(){
     
   var groupkb = $("#selGroupKb").val();
@@ -577,6 +597,7 @@ function createCustomerTables_Main(){
     yukomuko = 0;
   }
   
+  pageScrollPos = $('#tableCustomer')[0].parentElement.scrollTop;
   
   $('#tableCustomer').DataTable({
       bInfo: false,
@@ -609,7 +630,14 @@ function createCustomerTables_Main(){
       "lengthMenu": [100, 300, 500, 1000],
       dom:"<'row'<'col-sm-12'tr>>" +
           "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
-          "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+          "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    "preDrawCallback": function (settings) {
+      return;
+    },
+    "drawCallback": function (settings) {
+        //$('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+        $('#tableCustomer')[0].parentElement.scrollTop = pageScrollPos;
+    }
   });
 }
 
