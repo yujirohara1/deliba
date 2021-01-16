@@ -176,32 +176,19 @@ $('#btnListHenko').on('click', function() {
 });
 
 
-$('#modalUpdList').on("shown.bs.modal", function (e) {
+function createListHenkoTables_Main(){
     $('#divUpdateListReserveArea').html("&nbsp;");
     var groupkb = $("#selGroupKb").val();
     if(groupkb == undefined) {
       groupkb = 100;
     }
     
-    var yukomuko;
-    var Yuko = $("#chkYuko").prop('checked');
-    var Muko = $("#chkMuko").prop('checked');
-    if(Yuko && Muko){
-      yukomuko = 2;
-    } else if (Yuko){
-      yukomuko = 1;
-    } else if (Muko){
-      yukomuko = 0;
-    }
-    
-    table = null;
-    
     var table = $('#tableCustomerListHenko').DataTable( {
             bInfo: false,
             bSort: true,
             destroy: true,
             ajax: {
-                url: "/getCustomer_Main/" + groupkb + "/" + yukomuko + "",
+                url: "/getCustomer_Main/" + groupkb + "/" + 1 + "",
                 dataType: "json",
                 dataSrc: function ( json ) {
                     return JSON.parse(json.data);
@@ -212,10 +199,10 @@ $('#modalUpdList').on("shown.bs.modal", function (e) {
                 }
             },
             columns: [
-                { data: 'list'      ,width: '20%' ,  className: 'dt-body-center'},
-                { data: 'id'        ,width: '10%'},
+                { data: 'list'      ,width: '30%' ,  className: 'dt-body-center'},
+                { data: 'id'        ,width: '5%'},
                 { data: 'name1'     ,width: '30%'},
-                { data: 'address1'  ,width: '40%'}
+                { data: 'address1'  ,width: '35%'}
             ],
             rowReorder: {
                 dataSrc: 'list',
@@ -244,52 +231,162 @@ $('#modalUpdList').on("shown.bs.modal", function (e) {
                     }
             }
     } );
-        
 
     $('#tableCustomerListHenko').show();
-    //$('#tableCustomerListHenko')[0].style.display = "";
+}
+
+
+function createListMukoTables_Main(){
+    $('#divUpdateListReserveArea').html("&nbsp;");
+    var groupkb = $("#selGroupKb").val();
+    if(groupkb == undefined) {
+      groupkb = 100;
+    }
     
-    $('#tableCustomerListHenko').on( 'row-reorder', function ( e, diff, edit ) {
-        var result = 'Reorder started on row: '+edit.triggerRow.data()[1]+'<br>';
-    
-        for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
-            var rowData = table.row( diff[i].node ).data();
-    
-            result += rowData[1]+' updated to be in position '+
-                diff[i].newData+' (was '+diff[i].oldData+')<br>';
-        }
-    
-        $('#result').html( 'Event result:<br>'+result );
+    var table = $('#tableCustomerListMuko').DataTable( {
+            bInfo: false,
+            bSort: true,
+            destroy: true,
+            ajax: {
+                url: "/getCustomer_Main/" + groupkb + "/" + 0 + "",
+                dataType: "json",
+                dataSrc: function ( json ) {
+                    return JSON.parse(json.data);
+                },
+                contentType:"application/json; charset=utf-8",
+                complete: function () {
+                    return; 
+                }
+            },
+            columns: [
+                { data: 'id'        ,width: '20%'},
+                { data: 'name1'     ,width: '50%'},
+                { data: 'address3'  ,width: '30%'}
+            ],
+            "processing": true,
+            language: {
+               url: "../static/main/js/japanese.json"
+            },
+            "scrollY":        "300",
+            "pageLength": 1000,
+            searching: true,
+            paging: false,
+            "order": [[ 2, "desc" ],[ 0, "desc" ]],
+        dom:"<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>"
     } );
+
+    $('#tableCustomerListMuko').show();
+}
+
+$('#modalUpdList').on("shown.bs.modal", function (e) {
+  $('#guideListHenko').html("①配達順を変更したいデータの「氏名」をダブルクリック<br>②移動させたい位置でシングルクリック");
+  createListHenkoTables_Main();
+  createListMukoTables_Main();
 });
 
 var listChangeTarget = null;
+
 $('#tableCustomerListHenko tbody').on('dblclick', 'tr', function () {
     if (IsNull_ChangeListTarget()==false){
         return;
     }
-    listChangeTarget = null;
-    var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
-    var table = $('#tableCustomerListHenko').DataTable();
-    var row = table.row(this)
-    var data = table.row(this).data();
-    var idx = table.row( this ).index();
-    table.row(idx).remove().draw();
-    var customerName = data.list + " - " + data.id + " - " + data.name1 + " "
-    listChangeTarget = JSON.stringify(data);
-    var cancelTag = customerName + "<a href='#' onclick='fncCancel_ListPickUp(" + listChangeTarget + ");'><span class='badge'>戻す</span></a>";
-    $('#divUpdateListReserveArea').html(cancelTag);
-    $('#tableCustomerListHenko')[0].parentElement.scrollTop = scrpos;
+    ReserveHenkoCustomer(this, "#tableCustomerListHenko");
+    
 } );
 
-function fncCancel_ListPickUp(rowData){
-    var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
-    var table = $('#tableCustomerListHenko').DataTable();
-    table.row.add(rowData).draw();
-    $('#divUpdateListReserveArea').html("&nbsp;");
-    $('#tableCustomerListHenko')[0].parentElement.scrollTop = scrpos;
+$('#tableCustomerListMuko tbody').on('dblclick', 'tr', function () {
+    if (IsNull_ChangeListTarget()==false){
+        return;
+    }
+    ReserveHenkoCustomer(this, "#tableCustomerListMuko");
+    
+} );
+
+
+/*
+|| 左右の表のダブルクリック時にリザーブエリアに一時移動。
+*/
+function ReserveHenkoCustomer(eventObj, tableId){
+    listChangeTarget = null;
+    var scrpos = $(tableId)[0].parentElement.scrollTop;
+    var table = $(tableId).DataTable();
+    var row = table.row(eventObj)
+    var data = table.row(eventObj).data();
+    var idx = table.row( eventObj ).index();
+    table.row(idx).remove().draw();
+    var customerName;
+    if(data.list != null){
+        customerName = data.list + " - " + data.id + " - " + data.name1 + " "
+    }else{
+        customerName = data.id + " - " + data.name1 + " "
+    }
+    listChangeTarget = JSON.stringify(data);
+    
+    var cancelTag;
+    if(data.list ==null){
+        cancelTag = customerName + "<a href='#' onclick='fncCancel_ListPickUp(" + listChangeTarget + ");'><span class='badge larger-badge'>戻す</span></a>";
+    } else {
+        cancelTag = customerName + "<a href='#' onclick='fncCancel_ListPickUp(" + listChangeTarget + ");'><span class='badge larger-badge'>戻す</span></a>&nbsp;&nbsp;<a href='#' onclick='fncToMuko_ListPickUp(" + listChangeTarget + ");'><span class='badge larger-badge'>宅配停止</span></a>";
+    }
+    
+    $('#divUpdateListReserveArea').html(cancelTag);
+    $(tableId)[0].parentElement.scrollTop = scrpos;
 }
 
+
+/*
+|| リザーブエリアに持ってきた顧客情報を「宅配停止」バッジで右の表に移動
+*/
+function fncToMuko_ListPickUp(rowData){
+    var tableMuko = $("#tableCustomerListMuko").DataTable();
+    rowData.list = null;
+    tableMuko.row.add(rowData).draw();
+    $('#divUpdateListReserveArea').html("&nbsp;");
+    
+    
+    var table = $('#tableCustomerListHenko').DataTable();
+    var newData = [];
+    var targetNum = JSON.parse(listChangeTarget).list;
+    
+    $.each(table.rows().data(), function(i, row){
+    
+        if(row.list > targetNum ){
+            row.list--;
+        }
+        newData.push(row);
+    });
+    
+    table.clear().draw();
+    
+    $.each(newData, function(i, row){
+        table.row.add(row);
+    });
+    table.draw();
+    
+}
+
+
+/*
+|| リザーブエリアに持ってきた顧客情報を「戻す」バッジで元の位置に戻す
+*/
+function fncCancel_ListPickUp(rowData){
+    var tableId = "#tableCustomerListHenko";
+    if(rowData.list == null || toNumber(rowData.list) == 0){
+        tableId = "#tableCustomerListMuko";
+    }
+    
+    var scrpos = $(tableId)[0].parentElement.scrollTop;
+    var table = $(tableId).DataTable();
+    table.row.add(rowData).draw();
+    $('#divUpdateListReserveArea').html("&nbsp;");
+    $(tableId)[0].parentElement.scrollTop = scrpos;
+}
+
+/*
+|| リザーブエリアが空白かどうかを検査
+*/
 function IsNull_ChangeListTarget(){
   var str = $('#divUpdateListReserveArea')[0].innerText.trim();
   if(str == " "){
@@ -310,27 +407,40 @@ $('#tableCustomerListHenko tbody').on('click', 'tr', function () {
     var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
     var table = $('#tableCustomerListHenko').DataTable();
     var selectNum = table.row(this).data().list;
-    var ReturnMyPost = false;
     var ikubekiBasho = 0;
     
     var newData = [];
     var targetNum = JSON.parse(listChangeTarget).list;
+    
     $.each(table.rows().data(), function(i, row){
-       if(selectNum > targetNum){ //上にいるデータを下に持っていく場合
-          ikubekiBasho = selectNum;
-          if(selectNum >= row.list && row.list > targetNum ){
-              row.list--;
-          }
-       } else if(selectNum+1 == targetNum){ //元の位置に戻す場合
-          ikubekiBasho = selectNum+1;
-       } else if(selectNum < targetNum){ //下にいるデータを上に持っていく場合
-          ikubekiBasho = selectNum+1;
-          if(selectNum < row.list && row.list < targetNum ){
-              row.list++;
-          }
-       }
+    
+        if(targetNum != null){ //アクティブユーザの移動
+           if(selectNum > targetNum){ //上にいるデータを下に持っていく場合
+              ikubekiBasho = selectNum;
+              if(selectNum >= row.list && row.list > targetNum ){
+                  row.list--;
+              }
+           } else if(selectNum+1 == targetNum){ //元の位置に戻す場合
+              ikubekiBasho = selectNum+1;
+           } else if(selectNum < targetNum){ //下にいるデータを上に持っていく場合
+              ikubekiBasho = selectNum+1;
+              if(selectNum < row.list && row.list < targetNum ){
+                  row.list++;
+              }
+           }
+        } else { //パッシブユーザの移動（無効データの有効化）
+            if(selectNum < row.list){
+                row.list++;
+            }
+        }
         newData.push(row);
     });
+    
+    //パッシブユーザの移動では、現在順がnullのためselectNum+1を入れる
+    if(targetNum == null){
+        ikubekiBasho = selectNum+1;
+    }
+    
     table.clear().draw();
     
     $.each(newData, function(i, row){
@@ -888,3 +998,13 @@ $("#tableAddDaicho tbody").on('click',function(event) {
     
 });
 
+
+
+
+$("#tableCustomerListMuko tbody").on('click',function(event) {
+    $("#tableCustomerListMuko").removeClass('row_selected listMuko');        
+    $("#tableCustomerListMuko tbody tr").removeClass('row_selected listMuko');        
+    $("#tableCustomerListMuko tbody td").removeClass('row_selected listMuko');        
+    $(event.target.parentNode).addClass('row_selected listMuko');
+    
+});

@@ -337,22 +337,44 @@
           配達順を変更します。
       %div.modal-body
         %div.row
-        %div#divUpdateListReserveArea
-          &nbsp;
-
-        %table.table-bordered.row.hover#tableCustomerListHenko
-            %thead
-                %tr
-                    %th
-                      配達順
-                    %th
-                      顧客ID
-                    %th
-                      氏名
-                    %th
-                      住所
-            %tbody
-    
+          %div.col-md-4
+            %h4#divUpdateListReserveArea
+              &nbsp;
+          %div.col-md-8.text-left#guideListHenko
+              
+        %div.row
+          %div.col-md-7
+            %div.row
+              %div.col-md-12
+                %table.table-bordered.row.hover#tableCustomerListHenko
+                  %thead
+                      %tr
+                          %th
+                            配達順
+                          %th
+                            ID
+                          %th
+                            氏名
+                          %th
+                            住所
+                  %tbody
+            %div.row
+              %div.col-md-12
+                「配達順」でドラッグ＆ドロップが可能。
+          %div.col-md-1
+            &nbsp;
+            
+          %div.col-md-4
+            %table.table-bordered.row.hover#tableCustomerListMuko
+              %thead
+                  %tr
+                      %th
+                        ID
+                      %th
+                        氏名
+                      %th
+                        配達順
+              %tbody
         %br
       %div.modal-footer
         %div.row

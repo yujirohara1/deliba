@@ -28,6 +28,13 @@ table.dataTable thead tr {
 .panel.with-nav-tabs .nav-justified{
     margin-bottom: -1px;
 }
+
+.larger-badge {
+    font-size: 0.8em;
+}
+
+
+
 /********************************************************************/
 /*** PANEL DEFAULT ***/
 .with-nav-tabs.panel-default .nav-tabs > li > a,
