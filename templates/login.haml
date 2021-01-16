@@ -16,7 +16,7 @@
         %h1(style="font-size:45px; color:transparent" )
            &nbsp;
         %br
-        %form(action="" method="POST")
+        %form(action="/" method="POST")
           %div.input-group
             %span.input-group-addon
               ユーザー名
@@ -27,7 +27,11 @@
             %input.form-control(type="password" name="password")
           %br
           %input.btn.btn-primary(type="submit" value="サインイン")
-
+          
+          
+          {% if result == 401 %}
+            <p class="text-danger">ユーザー名またはパスワードが違います。</p>
+          {% endif %}　
 {% endblock %}
 
 {% block scripts %}

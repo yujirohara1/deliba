@@ -76,6 +76,7 @@ def favicon():
     return app.send_static_file("favicon.ico")
     
 @app.route('/getCustomer_Main/<group_kb>/<yuko_muko>')
+@login_required
 def resJson_getCustomer_Main(group_kb, yuko_muko):
       if yuko_muko == "2":
         customers = Customer.query.filter(Customer.group_id==group_kb).all()
@@ -88,18 +89,21 @@ def resJson_getCustomer_Main(group_kb, yuko_muko):
       return jsonify({'data': customers_schema.dumps(customers, ensure_ascii=False)})
 
 @app.route('/getItem_Daicho/')
+@login_required
 def resJson_getItem_Daicho():
      items = Item.query.all()
      items_schema = ItemSchema(many=True)
      return jsonify({'data': items_schema.dumps(items, ensure_ascii=False)})
 
 @app.route('/getVDaichoA_ByCusotmerId/<customerid>')
+@login_required
 def resJson_getVDaichoA_ByCusotmerId(customerid):
       daicho = VDaichoA.query.filter(VDaichoA.customer_id==customerid).all()
       daicho_schema = VDaichoASchema(many=True)
       return jsonify({'data': daicho_schema.dumps(daicho, ensure_ascii=False)})
 
 @app.route('/getVSeikyuA_ByCusotmerIdAndTuki/<customerid>/<nentuki>')
+@login_required
 def resJson_getVSeikyuA_ByCusotmerId(customerid, nentuki):
       seikyu = VSeikyuA.query.filter(VSeikyuA.customer_id==customerid, VSeikyuA.nen==nentuki[0:4], VSeikyuA.tuki==nentuki[4:6]).all()
       seikyu_schema = VSeikyuASchema(many=True)
@@ -107,6 +111,7 @@ def resJson_getVSeikyuA_ByCusotmerId(customerid, nentuki):
 
 
 @app.route('/createSeikyu/<customerid>/<nentuki>')
+@login_required
 def dbUpdate_insSeikyu(customerid, nentuki):
   y = int(nentuki[0:4])
   m = int(nentuki[4:6])
@@ -159,17 +164,6 @@ def dbUpdate_insSeikyu(customerid, nentuki):
         db.session.execute(Seikyu.__table__.insert(), seikyus)
         db.session.commit()
   
-      # for r in db.session.execute(text(sql)):
-      #   print(r["customer_id"])
-      #   print(r["item_id"])
-      #   print(r["deliver_ymd"])
-      #   print(deliverymd)
-  
-      # print(data_list)
-  
-  # seikyu = VSeikyuA.query.filter(VSeikyuA.customer_id==customerid, VSeikyuA.nen==nentuki[0:4], VSeikyuA.tuki==nentuki[4:6]).all()
-  # seikyu_schema = VSeikyuASchema(many=True)
-  
   return "1"
   
 def isDate(year,month,day):
@@ -181,6 +175,7 @@ def isDate(year,month,day):
         return False
 
 @app.route('/printSeikyu/<customerid>/<nentuki>/<randnum>')
+@login_required
 def resPdf_printSeikyu(customerid, nentuki, randnum):
     timestamp = datetime.datetime.now()
     timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
@@ -196,6 +191,7 @@ def resPdf_printSeikyu(customerid, nentuki, randnum):
 
 
 @app.route('/getMstSetting_Main/<param_id>')
+@login_required
 def resJson_getMstSetting_Main(param_id):
   setting = MstSetting.query.filter(MstSetting.param_id==param_id).all() #変更
   setting_schema = MstSettingSchema(many=True)
@@ -203,6 +199,7 @@ def resJson_getMstSetting_Main(param_id):
 
 
 @app.route('/updAddDaicho/<param>')
+@login_required
 def dbUpdate_updAddDaicho(param):
   vals = param.split(",")
   # print(vals)
@@ -210,7 +207,7 @@ def dbUpdate_updAddDaicho(param):
   for youbi in range(2, 9):
     Daicho.query.filter(Daicho.customer_id==vals[0], Daicho.item_id==vals[1], Daicho.youbi==(youbi-1)).delete()
     if vals[youbi].isdecimal():
-      if vals[youbi]!=0:
+      if int(vals[youbi]) != 0 :
         daicho = Daicho()
         daicho.customer_id = vals[0]
         daicho.item_id = vals[1]
@@ -221,6 +218,7 @@ def dbUpdate_updAddDaicho(param):
   return param
 
 @app.route('/updTakuhaijun',methods=["GET", "POST"])
+@login_required
 def dbUpdate_updTakuhaijun():
   vals = request.json["data"]
   for id_list in vals:
@@ -232,65 +230,41 @@ def dbUpdate_updTakuhaijun():
       customer.address3 = str(id_list[1])
   db.session.commit()
   return "1"
-
-  # vals = list.split(",")
-
-  # Daicho.query.filter(Daicho.quantity==0).delete()
-  # for youbi in range(2, 9):
-  #   Daicho.query.filter(Daicho.customer_id==vals[0], Daicho.item_id==vals[1], Daicho.youbi==(youbi-1)).delete()
-  #   if vals[youbi].isdecimal():
-  #     if vals[youbi]!=0:
-  #       daicho = Daicho()
-  #       daicho.customer_id = vals[0]
-  #       daicho.item_id = vals[1]
-  #       daicho.youbi = (youbi-1)
-  #       daicho.quantity = vals[youbi]
-  #       db.session.add(daicho)
-  #       db.session.commit()
-  return list
-
-
         
 @app.route('/updateCustomer/<customerid>/<param>')
+@login_required
 def dbUpdate_updCustomer(customerid, param):
   vals = param.split(DELIMIT)
-                                         #txtCustomerName      vals[0]   
-                                         #txtCustomerKana      vals[1]   
-                                         #txtAddress1          vals[2]   
-                                         #txtTel1              vals[3]   
-                                         #selHaraiKb           vals[4]   
-                                         #selCustomerGroupKb   vals[5]   
-                                         #selCustomerZeiKb     vals[6]   
-                                         #txtTantoName         vals[7]   
-                                         #txtList              vals[8]
   
-  # id==2 のデータを更新
-  customer = Customer.query.filter(Customer.id==customerid).first()
-  customer.name1 = vals[0]
-  customer.name2 = vals[1]
-  customer.address1 = vals[2]
-  customer.tel1 = vals[3]
-  customer.harai_kb = vals[4]
-  customer.group_id = vals[5]
-  customer.biko2 = vals[6]
-  customer.biko3 = vals[7]
-  customer.list = vals[8]
+  if int(customerid) == 0 :
+    customer = Customer()
+    customer.name1 = vals[0]
+    customer.name2 = vals[1]
+    customer.address1 = vals[2]
+    customer.tel1 = vals[3]
+    customer.harai_kb = vals[4]
+    customer.group_id = vals[5]
+    customer.biko2 = vals[6]
+    customer.biko3 = vals[7]
+    customer.list = None
+    customer.del_flg = 0
+    db.session.add(customer)
+
+  else :
+    customer = Customer.query.filter(Customer.id==customerid).first()
+    customer.name1 = vals[0]
+    customer.name2 = vals[1]
+    customer.address1 = vals[2]
+    customer.tel1 = vals[3]
+    customer.harai_kb = vals[4]
+    customer.group_id = vals[5]
+    customer.biko2 = vals[6]
+    customer.biko3 = vals[7]
+    customer.list = vals[8]
 
   # データを確定
   db.session.commit()
-  
   return param
-
-
-        
-# @app.route('/post', methods=['POST'])
-# def add_entry():
-#     entry = Item()
-#     entry.code = request.form['code']
-#     entry.name1 = request.form['name1']
-#     db.session.add(entry)
-#     db.session.commit()
-#     return redirect(url_for('hello_world'))
 
 # ログインしないと表示されないパス
 @app.route('/protected/')
@@ -303,9 +277,10 @@ def protected():
 
 # ログインパス
 @app.route('/', methods=["GET", "POST"])
+@app.route('/login/', methods=["GET", "POST"])
 def login():
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(minutes=1)
+    app.permanent_session_lifetime = timedelta(minutes=30)
     if(request.method == "POST"):
         # ユーザーチェック
         if(request.form["username"] in user_check and request.form["password"] == user_check[request.form["username"]]["password"]):
@@ -314,23 +289,18 @@ def login():
             entries = Item.query.all() #変更
             return render_template('index.haml', entries=entries)
         else:
-            return abort(401)
+            # return "401"
+            return render_template("login.haml", result=401)
+            # return abort(401)
     else:
         return render_template("login.haml")
 
 # ログアウトパス
 @app.route('/logout/')
-@login_required
 def logout():
     logout_user()
-    return Response('''
-    logout success!<br />
-    <a href="/login/">login</a>
-    ''')
+    return render_template("login.haml")
 
 
-
-#
-## おまじない
 if __name__ == "__main__":
     app.run(debug=True)

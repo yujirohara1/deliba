@@ -2,3 +2,24 @@ C:\Users\yujir>psql -U postgres deliba_db
 ユーザ postgres のパスワード:yjrhr1102
 
 Heroku CLI heroku pg:psql postgresql-cylindrical-36948 --app deliba
+
+
+
+
+deliba_db=# select setval('customer_id_seq',(select max(id) from customer));
+ setval
+--------
+   1070
+(1 行)
+
+
+deliba_db=# select setval('item_id_seq',(select max(id) from item));
+ setval
+--------
+    412
+(1 行)
+
+
+
+
+住所３にlistを入れる

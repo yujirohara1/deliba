@@ -2,7 +2,7 @@ from api.database import db, ma
 
 class Customer(db.Model): 
     __tablename__ = "customer" 
-    id          = db.Column(db.Integer, primary_key=True) 
+    id          = db.Column(db.Integer, primary_key=True, autoincrement=True) 
     name1       = db.Column(db.String(), nullable=False) 
     name2       = db.Column(db.String(), nullable=True) 
     address1    = db.Column(db.String(), nullable=True) 

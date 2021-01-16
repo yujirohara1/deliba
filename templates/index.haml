@@ -27,10 +27,19 @@
               %div.input-group
                   %button.btn.btn-primary.btn-sm#btnSeikyuPrint(type="button")
                     請求書
-            %div.col-md-8
-              %div.input-group.pull-right
+            %div.col-md-2
+              %div.input-group
                 %button.btn.btn-primary.btn-sm#btnSeikyuCreate(type="button")
                   請求データ作成
+            %div.col-md-2
+              %div.input-group
+                %button.btn.btn-primary.btn-sm#btnNewCustomerToroku(type="button")
+                  新規顧客登録
+            %div.col-md-4
+              %div.input-group.pull-right
+                %a.btn.btn-warning(href="/logout/" role="button")
+                  サインアウト
+                  
               
     %div.container-fluid
       %div.row

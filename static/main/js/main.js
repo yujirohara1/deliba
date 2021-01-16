@@ -139,12 +139,46 @@ $('#btnSeikyuCreate').on('click', function() {
 
 
 
+  /*
+  || 顧客情報　新規登録
+  */
+$('#btnNewCustomerToroku').on('click', function() {
+    //行選択を解除
+    $("#mainUpdCustomerMessageArea").append("<p style='color:red'>上の各項目を入力して、更新ボタンで登録してください。</p>");
+    setTimeout('$("#mainUpdCustomerMessageArea")[0].innerText="";', 3000);
+
+    $("#tableCustomer").removeClass('row_selected customer');
+    $("#tableCustomer tbody tr").removeClass('row_selected customer');
+    $("#tableCustomer tbody td").removeClass('row_selected customer');
+
+    $("#txtCustomerName").css("background-color","#ffeff7");
+    setTimeout('$("#txtCustomerName").css("background-color","");', 2000);
+
+    $('#txtCustomerName').attr("placeholder","必須入力")
+    $('#txtCustomerName').val("");
+    $('#txtCustomerKana').val("");
+    $('#txtAddress1').val("");
+    $('#txtTel1').val("");
+    $('#selHaraiKb').val();
+    $('#selCustomerGroupKb').val();
+    $('#selCustomerZeiKb').val();
+    $('#txtTantoName').val("");
+    $('#txtList').val("");
+
+    $('#txtCustomerName').focus();
+
+});
 
 /*
 || 顧客情報更新
 */
 $('#btnUpdateCustomer').on('click', function() {
-  var customerid = $(".row_selected.customer").find("td:eq(0)").text();
+  var customerid = toNumber($(".row_selected.customer").find("td:eq(0)").text());
+  if($('#txtCustomerName').val().trim()==""){
+      $("#mainUpdCustomerMessageArea").append("<p style='color:red'>氏名を入力してください。</p>");
+      setTimeout('$("#mainUpdCustomerMessageArea")[0].innerText="";', 3000);
+      return;
+  }
   var param = $('#txtCustomerName').val() + DELIMIT + 
               $('#txtCustomerKana').val() + DELIMIT + 
               $('#txtAddress1').val() + DELIMIT + 
@@ -536,16 +570,6 @@ $('#btnUpdList').on('click', function() {
   //$('#loading').addClass("spinner-lg");
   //JSON.stringify({"text":$("#input-text").val()});
 //    $.ajax({
-//     url:'header.html'
-//     type: 'GET',
-//     cache: false,
-//     dataType: 'html'
-//   }).done(function(html) {
-//     $('#container').append(html);
-//   }).fail(function() {
-//     alert('エラーが起きました');
-//   }).always(function() {
-//     console.log('complete');
 //   });
 
    $.ajax({
@@ -565,9 +589,7 @@ $('#btnUpdList').on('click', function() {
     alert("エラー：" + data.statusText);
    }).always(function(data) {
     $('#btnUpdList').removeAttr("disabled");
-  //$('#loading').removeClass("spinner-lg");
-    //alert("エaラー：" + data);
-});
+   });
 
 // $.ajax({
 //     type: "POST",
@@ -607,6 +629,30 @@ $('#btnUpdList').on('click', function() {
  //     }
  // });
 });
+
+
+
+$('#btnSignOut').on('click', function() {
+    $.ajax({
+        type: "GET",
+        url: "/logout/"
+       }).done(function(data) {
+           var a = data;
+       }).fail(function(data) {
+           var a = data;
+           //alert("エラー：" + data.statusText);
+       }).always(function(data) {
+           var a = data;
+           //$('#btnUpdList').removeAttr("disabled");
+      //$('#loading').removeClass("spinner-lg");
+        //alert("エaラー：" + data);
+    });
+});
+
+
+
+
+
 
 /*
 || 台帳情報更新
@@ -653,19 +699,22 @@ $('#btnDaichoAdd').on('click', function() {
     return;
   }
   
+  $('#btnDaichoAdd').attr("disabled","disabled");
+  
   $.ajax({
       type: "GET",
-      url: "/updAddDaicho/" + sendParam + "",
-      success: function(data) {
-          $("#modalAddDaichoMessageArea").append("<p style='color:red'>更新しました。</p>");
-          setTimeout('$("#modalAddDaichoMessageArea")[0].innerText="";', 3000);
-      },
-      error: function(data){
+      url: "/updAddDaicho/" + sendParam + ""
+    }).done(function(data) {
+        $("#modalAddDaichoMessageArea").append("<p style='color:red'>更新しました。</p>");
+        setTimeout('$("#modalAddDaichoMessageArea")[0].innerText="";', 3000);
+        createDaichoTables_Main(customerid);
+        createItemTables_DaichoSub();
+        $('#btnDaichoAdd').removeAttr("disabled");
+    }).fail(function(data) {
           alert("エラー：" + data.statusText);
-      }
-  });
-  createDaichoTables_Main(customerid);
-  createItemTables_DaichoSub();
+    }).always(function(data) {
+        $('#btnDaichoAdd').removeAttr("disabled");
+    });
 });
 
 
@@ -916,6 +965,15 @@ function createItemTables_DaichoSub(){
 || 台帳サブ画面起動[直後]イベント
 */
 $('#modalAddDaicho').on("shown.bs.modal", function (e) {
+    
+   $("#inpDaichoAddMon").val("");
+   $("#inpDaichoAddTue").val("");
+   $("#inpDaichoAddWed").val("");
+   $("#inpDaichoAddThu").val("");
+   $("#inpDaichoAddFri").val("");
+   $("#inpDaichoAddSat").val("");
+   $("#inpDaichoAddSun").val("");
+
     createItemTables_DaichoSub();
 });
 
