@@ -23,6 +23,7 @@ from models.daicho import Daicho, DaichoSchema, VDaichoA, VDaichoASchema
 from models.seikyu import Seikyu, SeikyuSchema, VSeikyuA, VSeikyuASchema
 from print.seikyu import *
 from sqlalchemy.sql import text
+import json
 
 DELIMIT = "@|@|@";
 
@@ -218,6 +219,32 @@ def dbUpdate_updAddDaicho(param):
         db.session.add(daicho)
         db.session.commit()
   return param
+
+@app.route('/updTakuhaijun/<list>')
+def dbUpdate_updTakuhaijun(list):
+  vals = json.loads(list)
+  for id_list in vals:
+    customer = Customer.query.filter(Customer.id==id_list[0]).first()
+    customer.list = id_list[1]
+    customer.address3 = str(id_list[1])
+  db.session.commit()
+  return "1"
+
+  # vals = list.split(",")
+
+  # Daicho.query.filter(Daicho.quantity==0).delete()
+  # for youbi in range(2, 9):
+  #   Daicho.query.filter(Daicho.customer_id==vals[0], Daicho.item_id==vals[1], Daicho.youbi==(youbi-1)).delete()
+  #   if vals[youbi].isdecimal():
+  #     if vals[youbi]!=0:
+  #       daicho = Daicho()
+  #       daicho.customer_id = vals[0]
+  #       daicho.item_id = vals[1]
+  #       daicho.youbi = (youbi-1)
+  #       daicho.quantity = vals[youbi]
+  #       db.session.add(daicho)
+  #       db.session.commit()
+  return list
 
 
         

@@ -182,6 +182,8 @@ function createListHenkoTables_Main(){
     if(groupkb == undefined) {
       groupkb = 100;
     }
+
+    //pageScrollPos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
     
     var table = $('#tableCustomerListHenko').DataTable( {
             bInfo: false,
@@ -229,12 +231,21 @@ function createListHenkoTables_Main(){
                     }else{
                         nRow.style.backgroundColor = "";
                     }
+            },
+            "drawCallback": function (settings) {
+                //$('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+                //$('#tableCustomerListHenko')[0].parentElement.scrollTop = scrpos;
             }
     } );
 
     $('#tableCustomerListHenko').show();
 }
 
+
+//$('#tableCustomerListHenko')[0].parentElement.onscroll = function(){
+//    // windowがスクロールされた時に実行する処理
+//    alert(1);
+//}
 
 function createListMukoTables_Main(){
     $('#divUpdateListReserveArea').html("&nbsp;");
@@ -459,7 +470,35 @@ $('#tableCustomerListHenko tbody').on('click', 'tr', function () {
 
 
 $('#btnUpdList').on('click', function() {
-    alert(1);
+
+  var sendData = [];
+  var table = $('#tableCustomerListHenko').DataTable();
+  $.each(table.rows().data(), function(i, row){
+    if(toNumber(row.list) != toNumber(row.address3)){
+      sendData.push([row.id, row.list]);
+    }
+  });
+
+  if(sendData.length==0){
+    $("#modalUpdListMessageArea").append("<p style='color:red'>更新対象のデータがありません。</p>");
+    setTimeout('$("#modalUpdListMessageArea")[0].innerText="";', 3000);
+      return;
+  }
+
+  $.ajax({
+      type: "GET",
+      url: "/updTakuhaijun/" + JSON.stringify(sendData) + "",
+      success: function(data) {
+          $("#modalUpdListMessageArea").append("<p style='color:red'>更新しました。</p>");
+          setTimeout('$("#modalUpdListMessageArea")[0].innerText="";', 3000);
+          //var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
+          createListHenkoTables_Main();
+          createListMukoTables_Main();
+      },
+      error: function(data){
+          alert("エラー：" + data.statusText);
+      }
+  });
 });
 
 /*
