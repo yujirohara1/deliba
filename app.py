@@ -220,9 +220,9 @@ def dbUpdate_updAddDaicho(param):
         db.session.commit()
   return param
 
-@app.route('/updTakuhaijun/<list>')
-def dbUpdate_updTakuhaijun(list):
-  vals = json.loads(list)
+@app.route('/updTakuhaijun',methods=["GET", "POST"])
+def dbUpdate_updTakuhaijun():
+  vals = request.json["data"]
   for id_list in vals:
     customer = Customer.query.filter(Customer.id==id_list[0]).first()
     customer.list = id_list[1]

@@ -532,24 +532,44 @@ $('#btnUpdList').on('click', function() {
     setTimeout('$("#modalUpdListMessageArea")[0].innerText="";', 3000);
       return;
   }
+  //JSON.stringify({"text":$("#input-text").val()});
+   $.ajax({
+       type: "POST",
+       data: JSON.stringify({"data":sendData}),
+       url: "/updTakuhaijun",
+       contentType:'application/json',
+       success: function(data) {
+           $("#modalUpdListMessageArea").append("<p style='color:red'>更新しました。</p>");
+           setTimeout('$("#modalUpdListMessageArea")[0].innerText="";', 3000);
+           //var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
+           createListHenkoTables_Main();
+           createListMukoTables_Main();
+           createCustomerTables_Main();
+           createDaichoTables_Main(0);
+           createSeikyuTables_Main(0,$('#selNentuki').val());
+       },
+       error: function(data){
+           alert("エラー：" + data.statusText);
+       }
+   });
 
-  $.ajax({
-      type: "GET",
-      url: "/updTakuhaijun/" + JSON.stringify(sendData) + "",
-      success: function(data) {
-          $("#modalUpdListMessageArea").append("<p style='color:red'>更新しました。</p>");
-          setTimeout('$("#modalUpdListMessageArea")[0].innerText="";', 3000);
-          //var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
-          createListHenkoTables_Main();
-          createListMukoTables_Main();
-          createCustomerTables_Main();
-          createDaichoTables_Main(0);
-          createSeikyuTables_Main(0,$('#selNentuki').val());
-      },
-      error: function(data){
-          alert("エラー：" + data.statusText);
-      }
-  });
+ // $.ajax({
+ //     type: "GET",
+ //     url: "/updTakuhaijun/" + JSON.stringify(sendData) + "",
+ //     success: function(data) {
+ //         $("#modalUpdListMessageArea").append("<p style='color:red'>更新しました。</p>");
+ //         setTimeout('$("#modalUpdListMessageArea")[0].innerText="";', 3000);
+ //         //var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
+ //         createListHenkoTables_Main();
+ //         createListMukoTables_Main();
+ //         createCustomerTables_Main();
+ //         createDaichoTables_Main(0);
+ //         createSeikyuTables_Main(0,$('#selNentuki').val());
+ //     },
+ //     error: function(data){
+ //         alert("エラー：" + data.statusText);
+ //     }
+ // });
 });
 
 /*
