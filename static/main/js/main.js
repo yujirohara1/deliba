@@ -511,7 +511,6 @@ $('#tableCustomerListHenko tbody').on('click', 'tr', function () {
 
 $('#btnUpdList').on('click', function() {
     //fncReSortLeftAndRight();
-
   var sendData = [];
   var table = $('#tableCustomerListHenko').DataTable();
   $.each(table.rows().data(), function(i, row){
@@ -532,26 +531,63 @@ $('#btnUpdList').on('click', function() {
     setTimeout('$("#modalUpdListMessageArea")[0].innerText="";', 3000);
       return;
   }
+
+  $('#btnUpdList').attr("disabled","disabled");
+  //$('#loading').addClass("spinner-lg");
   //JSON.stringify({"text":$("#input-text").val()});
+//    $.ajax({
+//     url:'header.html'
+//     type: 'GET',
+//     cache: false,
+//     dataType: 'html'
+//   }).done(function(html) {
+//     $('#container').append(html);
+//   }).fail(function() {
+//     alert('エラーが起きました');
+//   }).always(function() {
+//     console.log('complete');
+//   });
+
    $.ajax({
-       type: "POST",
-       data: JSON.stringify({"data":sendData}),
-       url: "/updTakuhaijun",
-       contentType:'application/json',
-       success: function(data) {
-           $("#modalUpdListMessageArea").append("<p style='color:red'>更新しました。</p>");
-           setTimeout('$("#modalUpdListMessageArea")[0].innerText="";', 3000);
-           //var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
-           createListHenkoTables_Main();
-           createListMukoTables_Main();
-           createCustomerTables_Main();
-           createDaichoTables_Main(0);
-           createSeikyuTables_Main(0,$('#selNentuki').val());
-       },
-       error: function(data){
-           alert("エラー：" + data.statusText);
-       }
-   });
+    type: "POST",
+    data: JSON.stringify({"data":sendData}),
+    url: "/updTakuhaijun",
+    contentType:'application/json'
+   }).done(function(data) {
+    $("#modalUpdListMessageArea").append("<p style='color:red'>更新しました。</p>");
+    setTimeout('$("#modalUpdListMessageArea")[0].innerText="";', 3000);
+    createListHenkoTables_Main();
+    createListMukoTables_Main();
+    createCustomerTables_Main();
+    createDaichoTables_Main(0);
+    createSeikyuTables_Main(0,$('#selNentuki').val());
+   }).fail(function(data) {
+    alert("エラー：" + data.statusText);
+   }).always(function(data) {
+    $('#btnUpdList').removeAttr("disabled");
+  //$('#loading').removeClass("spinner-lg");
+    //alert("エaラー：" + data);
+});
+
+// $.ajax({
+//     type: "POST",
+//     data: JSON.stringify({"data":sendData}),
+//     url: "/updTakuhaijun",
+//     contentType:'application/json',
+//     success: function(data) {
+//         $("#modalUpdListMessageArea").append("<p style='color:red'>更新しました。</p>");
+//         setTimeout('$("#modalUpdListMessageArea")[0].innerText="";', 3000);
+//         //var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
+//         createListHenkoTables_Main();
+//         createListMukoTables_Main();
+//         createCustomerTables_Main();
+//         createDaichoTables_Main(0);
+//         createSeikyuTables_Main(0,$('#selNentuki').val());
+//     },
+//     error: function(data){
+//         alert("エラー：" + data.statusText);
+//     }
+// });
 
  // $.ajax({
  //     type: "GET",
