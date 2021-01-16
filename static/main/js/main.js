@@ -75,24 +75,20 @@ $(document).ready(function() {
   
   //var domTableCustomer = $('#tableCustomer').DataTable();
 
-  var table = $('#example').DataTable( {
-    rowReorder: true
-} );
-
-table.on( 'row-reorder', function ( e, diff, edit ) {
-    var result = 'Reorder started on row: '+edit.triggerRow.data()[1]+'<br>';
-
-    for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
-        var rowData = table.row( diff[i].node ).data();
-
-        result += rowData[1]+' updated to be in position '+
-            diff[i].newData+' (was '+diff[i].oldData+')<br>';
-    }
-
-    $('#result').html( 'Event result:<br>'+result );
-} );
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*
@@ -175,11 +171,182 @@ $('#btnUpdateCustomer').on('click', function() {
 });
 
 $('#btnListHenko').on('click', function() {
-	$('#modalUpdList').modal();
+    $('#tableCustomerListHenko').hide();
+    $('#modalUpdList').modal();
 });
 
 
+$('#modalUpdList').on("shown.bs.modal", function (e) {
+    $('#divUpdateListReserveArea').html("&nbsp;");
+    var groupkb = $("#selGroupKb").val();
+    if(groupkb == undefined) {
+      groupkb = 100;
+    }
+    
+    var yukomuko;
+    var Yuko = $("#chkYuko").prop('checked');
+    var Muko = $("#chkMuko").prop('checked');
+    if(Yuko && Muko){
+      yukomuko = 2;
+    } else if (Yuko){
+      yukomuko = 1;
+    } else if (Muko){
+      yukomuko = 0;
+    }
+    
+    table = null;
+    
+    var table = $('#tableCustomerListHenko').DataTable( {
+            bInfo: true,
+            bSort: true,
+            destroy: true,
+            ajax: {
+                url: "/getCustomer_Main/" + groupkb + "/" + yukomuko + "",
+                dataType: "json",
+                dataSrc: function ( json ) {
+                    return JSON.parse(json.data);
+                },
+                contentType:"application/json; charset=utf-8",
+                complete: function () {
+                    return; 
+                }
+            },
+            columns: [
+                { data: 'list'   ,width: '25%' ,  className: 'dt-body-center'},
+                { data: 'id'     ,width: '15%'},
+                { data: 'name1'  ,width: '35%'}
+            ],
+            rowReorder: {
+                dataSrc: 'list',
+            },
+            "aoColumnDefs": [
+                { 'bSortable': false, 'aTargets': [ 0 ] },
+                { 'bSortable': false, 'aTargets': [ 1 ] },
+                { 'bSortable': false, 'aTargets': [ 2 ] }
+             ],
+            "processing": true,
+            language: {
+               url: "../static/main/js/japanese.json"
+            },
+            "scrollY":        "250",
+            "pageLength": 1000,
+            searching: true,
+            paging: false,
+            "order": [ 0, "asc" ],
+            "fnRowCallback": function( nRow, row, iDisplayIndex, iDisplayIndexFull ) {
+                    if(toNumber(row.list) != toNumber(row.address3)){
+                        $('td:eq(0)', nRow).html( row.list + "（変更前：" + toNumber(row.address3) + "）" );
+                        nRow.style.backgroundColor = "#ffefe0";
+                    }
+            }
+    } );
+        
 
+    $('#tableCustomerListHenko').show();
+    //$('#tableCustomerListHenko')[0].style.display = "";
+    
+    $('#tableCustomerListHenko').on( 'row-reorder', function ( e, diff, edit ) {
+        var result = 'Reorder started on row: '+edit.triggerRow.data()[1]+'<br>';
+    
+        for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
+            var rowData = table.row( diff[i].node ).data();
+    
+            result += rowData[1]+' updated to be in position '+
+                diff[i].newData+' (was '+diff[i].oldData+')<br>';
+        }
+    
+        $('#result').html( 'Event result:<br>'+result );
+    } );
+});
+
+var listChangeTarget = null;
+$('#tableCustomerListHenko tbody').on('dblclick', 'tr', function () {
+    if (IsNull_ChangeListTarget()==false){
+        return;
+    }
+    listChangeTarget = null;
+    var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
+    var table = $('#tableCustomerListHenko').DataTable();
+    var row = table.row(this)
+    var data = table.row(this).data();
+    var idx = table.row( this ).index();
+    table.row(idx).remove().draw();
+    var customerName = data.list + " - " + data.id + " - " + data.name1 + " "
+    listChangeTarget = JSON.stringify(data);
+    var cancelTag = customerName + "<a href='#' onclick='fncCancel_ListPickUp(" + listChangeTarget + ");'><span class='badge'>戻す</span></a>";
+    $('#divUpdateListReserveArea').html(cancelTag);
+    $('#tableCustomerListHenko')[0].parentElement.scrollTop = scrpos;
+} );
+
+function fncCancel_ListPickUp(rowData){
+    var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
+    var table = $('#tableCustomerListHenko').DataTable();
+    table.row.add(rowData).draw();
+    $('#divUpdateListReserveArea').html("&nbsp;");
+    $('#tableCustomerListHenko')[0].parentElement.scrollTop = scrpos;
+}
+
+function IsNull_ChangeListTarget(){
+  var str = $('#divUpdateListReserveArea')[0].innerText.trim();
+  if(str == " "){
+      return true;
+  }else if(str == ""){
+      return true;
+  }else if(str == "&nbsp;"){
+      return true;
+  }else{
+      return false;
+  }
+}
+
+$('#tableCustomerListHenko tbody').on('click', 'tr', function () {
+    if (IsNull_ChangeListTarget()){
+        return;
+    }
+    var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
+    var table = $('#tableCustomerListHenko').DataTable();
+    var selectNum = table.row(this).data().list;
+    var ReturnMyPost = false;
+    var ikubekiBasho = 0;
+    
+    var newData = [];
+    var targetNum = JSON.parse(listChangeTarget).list;
+    $.each(table.rows().data(), function(i, row){
+       if(selectNum > targetNum){ //上にいるデータを下に持っていく場合
+          ikubekiBasho = selectNum;
+          if(selectNum >= row.list && row.list > targetNum ){
+              row.list--;
+          }
+       } else if(selectNum+1 == targetNum){ //元の位置に戻す場合
+          ikubekiBasho = selectNum+1;
+       } else if(selectNum < targetNum){ //下にいるデータを上に持っていく場合
+          ikubekiBasho = selectNum+1;
+          if(selectNum < row.list && row.list < targetNum ){
+              row.list++;
+          }
+       }
+        newData.push(row);
+    });
+    table.clear().draw();
+    
+    $.each(newData, function(i, row){
+        table.row.add(row);
+    });
+    
+    d = JSON.parse(listChangeTarget);
+    d.list = ikubekiBasho;
+    table.row.add(d).draw();
+    
+    $('#tableCustomerListHenko')[0].parentElement.scrollTop = scrpos;
+    $('#divUpdateListReserveArea').html("&nbsp;");
+} );
+
+
+
+
+$('#btnUpdList').on('click', function() {
+    alert(1);
+});
 
 /*
 || 台帳情報更新
