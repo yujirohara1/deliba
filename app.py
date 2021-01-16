@@ -226,7 +226,10 @@ def dbUpdate_updTakuhaijun(list):
   for id_list in vals:
     customer = Customer.query.filter(Customer.id==id_list[0]).first()
     customer.list = id_list[1]
-    customer.address3 = str(id_list[1])
+    if str(id_list[1]) == "None":
+      customer.address3 = None
+    else:
+      customer.address3 = str(id_list[1])
   db.session.commit()
   return "1"
 

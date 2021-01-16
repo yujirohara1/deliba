@@ -375,7 +375,47 @@ function fncToMuko_ListPickUp(rowData){
         table.row.add(row);
     });
     table.draw();
+}
+
+
+/*
+|| 並び順変更のユーティリティ　
+|| 左表：再度連番を振る　　右表：すべてnullとする。
+*/
+function fncReSortLeftAndRight(){
+    var i;
+    var tableYuko = $('#tableCustomerListHenko').DataTable();
+    var tableMuko = $("#tableCustomerListMuko").DataTable();
+    var yukoData = [];
+    var mukoData = [];
+
+    //有効テーブルのlistを振りなおす
+    i = 1;
+    $.each(tableYuko.rows().data(), function(i, row){
+        row.list = i;
+        yukoData.push(row);
+        i++
+    });
+    //tableYuko.clear();
     
+    $.each(yukoData, function(i, row){
+        tableYuko.row.add(row);
+    });
+    //tableYuko.draw();
+
+    //無効テーブルのlistをすべてnull更新
+    i = 1;
+    $.each(tableMuko.rows().data(), function(i, row){
+        row.list = null;
+        mukoData.push(row);
+        i++
+    });
+    //tableMuko.clear().draw();
+    
+    $.each(mukoData, function(i, row){
+        tableMuko.row.add(row);
+    });
+    //tableMuko.draw();
 }
 
 
@@ -470,12 +510,20 @@ $('#tableCustomerListHenko tbody').on('click', 'tr', function () {
 
 
 $('#btnUpdList').on('click', function() {
+    //fncReSortLeftAndRight();
 
   var sendData = [];
   var table = $('#tableCustomerListHenko').DataTable();
   $.each(table.rows().data(), function(i, row){
     if(toNumber(row.list) != toNumber(row.address3)){
       sendData.push([row.id, row.list]);
+    }
+  });
+
+  var tableMuko = $('#tableCustomerListMuko').DataTable();
+  $.each(tableMuko.rows().data(), function(i, row){
+    if(toNumber(row.list) != toNumber(row.address3)){
+      sendData.push([row.id, null]);
     }
   });
 
@@ -494,6 +542,9 @@ $('#btnUpdList').on('click', function() {
           //var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
           createListHenkoTables_Main();
           createListMukoTables_Main();
+          createCustomerTables_Main();
+          createDaichoTables_Main(0);
+          createSeikyuTables_Main(0,$('#selNentuki').val());
       },
       error: function(data){
           alert("エラー：" + data.statusText);
