@@ -197,7 +197,7 @@ $('#modalUpdList').on("shown.bs.modal", function (e) {
     table = null;
     
     var table = $('#tableCustomerListHenko').DataTable( {
-            bInfo: true,
+            bInfo: false,
             bSort: true,
             destroy: true,
             ajax: {
@@ -212,9 +212,10 @@ $('#modalUpdList').on("shown.bs.modal", function (e) {
                 }
             },
             columns: [
-                { data: 'list'   ,width: '25%' ,  className: 'dt-body-center'},
-                { data: 'id'     ,width: '15%'},
-                { data: 'name1'  ,width: '35%'}
+                { data: 'list'      ,width: '20%' ,  className: 'dt-body-center'},
+                { data: 'id'        ,width: '10%'},
+                { data: 'name1'     ,width: '30%'},
+                { data: 'address1'  ,width: '40%'}
             ],
             rowReorder: {
                 dataSrc: 'list',
@@ -222,21 +223,24 @@ $('#modalUpdList').on("shown.bs.modal", function (e) {
             "aoColumnDefs": [
                 { 'bSortable': false, 'aTargets': [ 0 ] },
                 { 'bSortable': false, 'aTargets': [ 1 ] },
-                { 'bSortable': false, 'aTargets': [ 2 ] }
+                { 'bSortable': false, 'aTargets': [ 2 ] },
+                { 'bSortable': false, 'aTargets': [ 3 ] }
              ],
             "processing": true,
             language: {
                url: "../static/main/js/japanese.json"
             },
-            "scrollY":        "250",
+            "scrollY":        "300",
             "pageLength": 1000,
-            searching: true,
+            searching: false,
             paging: false,
             "order": [ 0, "asc" ],
             "fnRowCallback": function( nRow, row, iDisplayIndex, iDisplayIndexFull ) {
                     if(toNumber(row.list) != toNumber(row.address3)){
                         $('td:eq(0)', nRow).html( row.list + "（変更前：" + toNumber(row.address3) + "）" );
                         nRow.style.backgroundColor = "#ffefe0";
+                    }else{
+                        nRow.style.backgroundColor = "";
                     }
             }
     } );
