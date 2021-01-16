@@ -210,6 +210,18 @@ $('#btnListHenko').on('click', function() {
 });
 
 
+$('#btnMap').on('click', function() {
+    //$('#tableCustomerListHenko').hide();
+    var jusho = $('#txtAddress1').val().trim();
+    if(jusho ==""){
+        jusho = "日本";
+    }
+    $('#ifrMap').attr('src', "https://www.google.com/maps/embed/v1/place?key=AIzaSyD9DDk6NPmQjOlhOMTuP9vYLf5ryu7vk4w&q=" + jusho); 
+    //src="https://www.google.com/maps/embed/v1/place?key=AIzaSyD9DDk6NPmQjOlhOMTuP9vYLf5ryu7vk4w&q=新潟市西区内野西2-21-2-3"
+    $('#modalMap').modal();
+});
+
+
 function createListHenkoTables_Main(){
     $('#divUpdateListReserveArea').html("&nbsp;");
     var groupkb = $("#selGroupKb").val();
@@ -911,11 +923,11 @@ function createItemTables_DaichoSub(){
           }
       },
       columns: [
-          { data: 'id'     ,width: '10%'},
-          { data: 'code'   ,width: '10%'},
-          { data: 'name1'  ,width: '40%'},
+          { data: 'id'     ,width: '8%'},
+          { data: 'code'   ,width: '12%'},
+          { data: 'name1'  ,width: '33%'},
           { data: 'tanka'  ,width: '10%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
-          { data: null     ,width: '30%' ,render: 
+          { data: null     ,width: '37%' ,render: 
               function (data, type, row) { 
                   //row.id が $('#tableDaicho').DataTable().rows().data() に含まれるかどうか検査
                   var rows = $('#tableDaicho').DataTable().rows().data();
@@ -956,7 +968,7 @@ function createItemTables_DaichoSub(){
               }
           }
       }
-  }).columns.adjust().draw();
+  });
 }
 
 

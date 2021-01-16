@@ -23,3 +23,75 @@ deliba_db=# select setval('item_id_seq',(select max(id) from item));
 
 
 住所３にlistを入れる
+
+
+
+ drop view v_daicho_a;
+ create view v_daicho_a as
+ SELECT customer.group_id,
+    customer.list,
+    daicho.customer_id,
+    '1' AS tenpo,
+    customer.name1 AS cname1,
+    customer.name2 AS cname2,
+    customer.address1,
+    customer.address2,
+    customer.address3,
+    customer.harai_kb,
+    customer.del_flg AS cdelflg,
+    daicho.item_id,
+    item.code AS icode,
+    item.name1 AS iname1,
+    item.name2 AS iname2,
+    item.tanka,
+    item.del_flg AS idelflg,
+    sum(
+        CASE
+            WHEN daicho.youbi = 1 THEN daicho.quantity
+            ELSE 0
+        END) AS getu,
+    sum(
+        CASE
+            WHEN daicho.youbi = 2 THEN daicho.quantity
+            ELSE 0
+        END) AS ka,
+    sum(
+        CASE
+            WHEN daicho.youbi = 3 THEN daicho.quantity
+            ELSE 0
+        END) AS sui,
+    sum(
+        CASE
+            WHEN daicho.youbi = 4 THEN daicho.quantity
+            ELSE 0
+        END) AS moku,
+    sum(
+        CASE
+            WHEN daicho.youbi = 5 THEN daicho.quantity
+            ELSE 0
+        END) AS kin,
+    sum(
+        CASE
+            WHEN daicho.youbi = 6 THEN daicho.quantity
+            ELSE 0
+        END) AS dou,
+    sum(
+        CASE
+            WHEN daicho.youbi = 7 THEN daicho.quantity
+            ELSE 0
+        END) AS niti,
+    sum(daicho.quantity) AS total
+   FROM daicho
+     LEFT JOIN customer ON daicho.customer_id = customer.id
+     LEFT JOIN item ON daicho.item_id = item.id
+  WHERE customer.list IS NOT NULL AND customer.del_flg = 0
+  GROUP BY customer.group_id, customer.list, daicho.customer_id, customer.name1, customer.name2, customer.address1, customer.address2, customer.address3, customer.harai_kb, customer.del_flg, daicho.item_id, item.code, item.name1, item.name2, item.tanka, item.del_flg
+  ORDER BY customer.group_id, customer.list, item.code;
+  
+
+select * from v_daicho_a where customer_id = 1071;
+
+
+
+
+

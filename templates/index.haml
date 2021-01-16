@@ -143,6 +143,9 @@
                             %span.input-group-addon
                               住所
                             %input.form-control#txtAddress1(type="text")
+                            %span.input-group-btn
+                              %button#btnMap.btn.btn-default(type="button")
+                                map
                     %br
                     %div.row
                       %div.col-md-6
@@ -410,23 +413,27 @@
           タイトル
       %div.modal-body
         %div.row
-          %table.table-bordered.row.hover#tableAddDaicho
-            %thead
-              %tr
-                %th 
-                  商品ID
-                %th
-                  コード
-                %th
-                  商品名
-                %th
-                  単価
-                %th
-                  登録状況
-            %tbody
-        %br
-        %h4
-          曜日ごとの宅配本数を入力してください。
+          %div.col-md-8
+            %table.table-bordered.row.hover#tableAddDaicho
+              %thead
+                %tr
+                  %th 
+                    ID
+                  %th
+                    コード
+                  %th
+                   商品名
+                  %th
+                    単価
+                  %th
+                    登録状況
+              %tbody
+          %div.col-md-4
+            %br
+        %div.row
+          %div.col-md-12
+            %h4
+              曜日ごとの宅配本数を入力してください。
         %div.row
           %div.col-md-12
             %div.form-group.form-inline
@@ -473,6 +480,30 @@
           %div.col-md-1
             %button#btnDaichoAdd.btn.btn-primary(type="button")
               決定
+
+
+
+
+
+<!-- マップモーダル -->
+%div.modal.fade#modalMap(tabindex="-1")
+  %div.modal-dialog.modal-md
+    %div.modal-content
+      %div.modal-header
+        %button.close(type="button" data-dismiss="modal")
+          %span
+            ×
+        %h4.modal-title#subCtitle
+          マップを表示します。
+      %div.modal-body
+        %div.row
+          %div.col-md-12
+          <iframe id="ifrMap" width="95%" height="400px" frameborder="0" style="border:0" allowfullscreen></iframe>
+        %br
+      %div.modal-footer
+        %div.row
+            %button.btn.btn-default(type="button" data-dismiss="modal")
+              閉じる
 
 
 {% endblock %}
