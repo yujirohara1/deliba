@@ -127,9 +127,9 @@ def resJson_getSeikyuNengetuCustomer_Main(nen, tuki):
 
 
 
-@app.route('/createSeikyu/<customerid>/<nentuki>')
+@app.route('/createSeikyu/<customerid>/<nentuki>/<sakujonomi>')
 @login_required
-def dbUpdate_insSeikyu(customerid, nentuki):
+def dbUpdate_insSeikyu(customerid, nentuki, sakujonomi):
   y = int(nentuki[0:4])
   m = int(nentuki[4:6])
   
@@ -141,6 +141,10 @@ def dbUpdate_insSeikyu(customerid, nentuki):
   sql = sql + "     cast(to_char(deliver_ymd,'yyyy') as integer) = " + str(y) + " and "
   sql = sql + "     cast(to_char(deliver_ymd,'mm') as integer) = " + str(m) + "  "
   db.session.execute(text(sql))
+  
+  if sakujonomi == 'true' :
+    db.session.commit()
+    return "1"
   
   for d in range(1,32):
     if isDate(y, m, d):

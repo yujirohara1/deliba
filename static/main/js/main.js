@@ -120,11 +120,11 @@ $('#btnSeikyuPrint').on('click', function() {
 /*
 || 請求データ作成
 */
-$('#btnSeikyuCreate').on('click', function() {
-  var customerid = $(".row_selected.customer").find("td:eq(0)").text();
-  var nentuki = $('#selNentuki').val();
-  CreateSeikyuData(customerid, nentuki);
-});
+// $('#btnSeikyuCreate').on('click', function() {
+//   var customerid = $(".row_selected.customer").find("td:eq(0)").text();
+//   var nentuki = $('#selNentuki').val();
+//   CreateSeikyuData(customerid, nentuki);
+// });
 
   /*
   || 顧客情報　新規登録
@@ -335,6 +335,7 @@ $('#modalUpdList').on("shown.bs.modal", function (e) {
 
 $('#modalSeikyuKanri').on("shown.bs.modal", function (e) {
     $('#btnSeikyuIkkatuCreate').remove();
+    $('#btnSeikyuIkkatuDelete').remove();
     createSeikyuKanriTable_Sub();
     createSeikyuKanriCsutomerTable_Sub(0, 0)
 });
@@ -346,6 +347,7 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
     var nen = rowData.nengetu.split(".")[0];
     var tuki = rowData.nengetu.split(".")[1];
     $('#btnSeikyuIkkatuCreate').remove();
+    $('#btnSeikyuIkkatuDelete').remove();
     if(rowData.getugaku==0 && rowData.ninzu==0){
         $('#divSeikyuMeisaiOrButton2').hide();
         var btnTag = "";
@@ -357,24 +359,45 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
         $('#divSeikyuMeisaiOrButton').append(btnTag);
     }else{
         $('#divSeikyuMeisaiOrButton2').show();
+        var btnTag = "";
+        btnTag = btnTag + '<a href="#" ';
+        btnTag = btnTag + ' id="btnSeikyuIkkatuDelete" ';
+        btnTag = btnTag + ' onclick="funcSeikyuIkkatuSakujo(-1,'+ nen + "," + tuki +')" ';
+        btnTag = btnTag + ' class="btn btn-danger btn-sm" ';
+        btnTag = btnTag + ' role="button">' + nen + '年' + tuki + '月分を全て削除' + '</a>';
+        $('#divSeikyuDeleteAll').append(btnTag);
     }
     createSeikyuKanriCsutomerTable_Sub(nen, tuki)
   } );
   
   function funcSeikyuIkkatuCreate(customerid,nen, tuki){
     $('#btnSeikyuIkkatuCreate').attr("disabled","disabled");
-    CreateSeikyuData(customerid, nen + "" + tuki)
+    CreateSeikyuData(customerid, nen + "" + tuki, false)
+    createSeikyuKanriCsutomerTable_Sub(nen, tuki)
   }
 
-function CreateSeikyuData(customerid, nentuki){
+  function funcSeikyuIkkatuSakujo(customerid,nen, tuki){
+        if (confirm("本当に削除してよろしいですか？")) {
+            $('#btnSeikyuIkkatuDelete').attr("disabled","disabled");
+            CreateSeikyuData(customerid, nen + "" + tuki, true)
+            createSeikyuKanriCsutomerTable_Sub(nen, tuki)
+        } else {
+        }
+  }
+
+function CreateSeikyuData(customerid, nentuki, sakujonomi){
 
     $.ajax({
         type: "GET",
-        url: "/createSeikyu/" + customerid + "/" + nentuki + ""
+        url: "/createSeikyu/" + customerid + "/" + nentuki + "/" + sakujonomi + ""
     }).done(function(data) {
-        if(customerid == -1){
+        if(customerid == -1 && sakujonomi == false){
             $('#btnSeikyuIkkatuCreate').text("作成しました！");
-            setTimeout('$("#btnSeikyuIkkatuCreate").hide();', 3000);
+            setTimeout('$("#btnSeikyuIkkatuCreate").remove();', 3000);
+            createSeikyuKanriTable_Sub();
+        }else if(customerid == -1 && sakujonomi == true){
+            $('#btnSeikyuIkkatuDelete').text("削除しました。");
+            setTimeout('$("#btnSeikyuIkkatuDelete").remove();', 3000);
             createSeikyuKanriTable_Sub();
         }else{
             createSeikyuTables_Main(customerid,nentuki);
