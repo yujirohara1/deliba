@@ -9,6 +9,8 @@ class Seikyu(db.Model):
     price       = db.Column(db.Integer, nullable=False,primary_key=True)
     price_sub   = db.Column(db.Integer, nullable=True) 
     quantity    = db.Column(db.Integer, nullable=False) 
+    user_id     = db.Column(db.String(), nullable=False,primary_key=False)
+    ymdt        = db.Column(db.DATETIME, nullable=False,primary_key=True)
 
 class SeikyuSchema(ma.SQLAlchemyAutoSchema):
       class Meta:

@@ -27,10 +27,14 @@
               %div.input-group
                   %button.btn.btn-primary.btn-sm#btnSeikyuPrint(type="button")
                     請求書
-            %div.col-md-2
+            %div.col-md-1
               %div.input-group
                 %button.btn.btn-primary.btn-sm#btnSeikyuCreate(type="button")
                   請求データ作成
+            %div.col-md-1
+              %div.input-group
+                %button.btn.btn-primary.btn-sm(type="button" data-toggle="modal" data-target="#modalSeikyuKanri")
+                  請求データ管理
             %div.col-md-2
               %div.input-group
                 %button.btn.btn-primary.btn-sm#btnNewCustomerToroku(type="button")
@@ -479,6 +483,47 @@
               閉じる
           %div.col-md-1
             %button#btnDaichoAdd.btn.btn-primary(type="button")
+              決定
+
+
+
+<!-- 請求データ管理モーダル -->
+%div.modal.fade#modalSeikyuKanri(tabindex="-1")
+  %div.modal-dialog.modal-lg
+    %div.modal-content
+      %div.modal-header
+        %button.close(type="button" data-dismiss="modal")
+          %span
+            ×
+        %h4.modal-title#subAtitle
+          タイトル
+      %div.modal-body
+        %div.row
+          %div.col-md-8
+            %table.table-bordered.row.hover#tableSeikyuKanri
+              %thead
+                %tr
+                  %th 
+                    ID
+                  %th
+                    コード
+                  %th
+                   商品名
+                  %th
+                    単価
+                  %th
+                    登録状況
+              %tbody
+          %div.col-md-4
+            %br
+      %div.modal-footer#modalSeikyuKanriFooter
+        %div.row
+          %div.col-md-10.text-right#modalSeikyuKanriMessageArea
+          %div.col-md-1
+            %button.btn.btn-default(type="button" data-dismiss="modal")
+              閉じる
+          %div.col-md-1
+            %button#btnSeikyuCreate.btn.btn-primary(type="button")
               決定
 
 

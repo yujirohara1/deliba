@@ -2,7 +2,7 @@ from flask import Flask, render_template, g, request, redirect, url_for, Respons
 from hamlish_jinja import HamlishExtension
 from werkzeug.datastructures import ImmutableDict
 import os
-from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
+from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
 from collections import defaultdict
 from datetime import timedelta
 import datetime
@@ -136,7 +136,9 @@ def dbUpdate_insSeikyu(customerid, nentuki):
       sql = sql + "     d.item_id, "
       sql = sql + "     i.tanka, "
       sql = sql + "     null price_sub, "
-      sql = sql + "     d.quantity "
+      sql = sql + "     d.quantity, "
+      sql = sql + "     'dummy' user_id, "
+      sql = sql + "     CURRENT_TIMESTAMP "
       sql = sql + " from "
       sql = sql + "    daicho d "
       sql = sql + " inner join "
@@ -159,7 +161,7 @@ def dbUpdate_insSeikyu(customerid, nentuki):
         
         data_list = db.session.execute(text(sql))
         seikyus = [{'customer_id':d[0], 'deliver_ymd': d[1], 'item_id': d[2],
-                  'price': d[3], 'price_sub': d[4], 'quantity': d[5]} for d in data_list]
+                  'price': d[3], 'price_sub': d[4], 'quantity': d[5], 'user_id': current_user.name, 'ymdt': d[7]} for d in data_list]
                   
         db.session.execute(Seikyu.__table__.insert(), seikyus)
         db.session.commit()

@@ -95,3 +95,254 @@ select * from v_daicho_a where customer_id = 1071;
 
 
 
+drop table seikyu;
+create table seikyu (
+  customer_id integer not null,
+  deliver_ymd date    not null,
+  item_id     integer not null,
+  price       integer not null,
+  price_sub   integer ,
+  quantity    integer not null,
+  user_id     varchar(20) not null,
+  ymdt        date not null
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+drop view v_seikyu_b;
+
+CREATE VIEW v_seikyu_b
+AS 
+SELECT
+    to_char(seikyu.deliver_ymd::timestamp with time zone, 'yyyy'::text) AS nen,
+    to_char(seikyu.deliver_ymd::timestamp with time zone, 'mm'::text) AS tuki,
+    seikyu.customer_id,
+    customer.biko2 zei_kb,
+    sum(seikyu.price * seikyu.quantity) ,
+    CASE
+      WHEN customer.biko2 = '2' THEN  sum(seikyu.price * seikyu.quantity) 
+      ELSE cast( sum(seikyu.price * seikyu.quantity) * 1.08 as int) 
+    END getugaku,
+    CASE
+      WHEN customer.biko2 = '2' THEN 0
+      ELSE cast( sum(seikyu.price * seikyu.quantity) * 0.08 as int) 
+    END zeigaku
+FROM
+    seikyu,
+    customer
+WHERE
+    seikyu.customer_id = customer.id
+    AND list IS NOT NULL
+group by
+    to_char(seikyu.deliver_ymd::timestamp with time zone, 'yyyy'::text) ,
+    to_char(seikyu.deliver_ymd::timestamp with time zone, 'mm'::text),
+    seikyu.customer_id,
+    customer.name1,
+    customer.name2,
+    customer.list,
+    customer.group_id,
+    customer.harai_kb,
+    customer.biko2 
+ORDER BY
+    to_char(seikyu.deliver_ymd::timestamp with time zone, 'yyyy'::text),
+    to_char(seikyu.deliver_ymd::timestamp with time zone, 'mm'::text) ,
+    customer.list,
+    seikyu.customer_id
+;
+
+
+select * from v_seikyu_b;
+
+
+
+
+
+
+
+
+
+
+
+drop view v_seikyu_a;
+
+CREATE VIEW v_seikyu_a
+AS 
+ SELECT sei.customer_id,
+    to_char(sei.deliver_ymd::timestamp with time zone, 'yyyy'::text) AS nen,
+    to_char(sei.deliver_ymd::timestamp with time zone, 'mm'::text) AS tuki,
+    sei.item_id,
+    item.name1 AS item_name1,
+    sei.price,
+    sei.price_sub,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '01'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d01,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '02'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d02,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '03'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d03,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '04'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d04,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '05'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d05,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '06'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d06,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '07'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d07,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '08'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d08,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '09'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d09,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '10'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d10,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '11'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d11,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '12'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d12,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '13'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d13,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '14'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d14,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '15'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d15,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '16'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d16,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '17'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d17,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '18'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d18,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '19'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d19,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '20'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d20,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '21'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d21,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '22'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d22,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '23'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d23,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '24'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d24,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '25'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d25,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '26'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d26,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '27'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d27,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '28'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d28,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '29'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d29,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '30'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d30,
+    sum(
+        CASE
+            WHEN to_char(sei.deliver_ymd::timestamp with time zone, 'dd'::text) = '31'::text THEN sei.quantity
+            ELSE NULL::integer
+        END) AS quantity_d31,
+    item.name1 AS item_name1_end
+   FROM seikyu sei,
+    item
+  WHERE sei.item_id = item.id
+  GROUP BY sei.customer_id, sei.item_id, sei.price, sei.price_sub, item.name1, (to_char(sei.deliver_ymd::timestamp with time zone, 'yyyy'::text)), (to_char(sei.deliver_ymd::timestamp with time zone, 'mm'::text));
