@@ -1,4 +1,6 @@
 from api.database import db, ma
+from datetime import datetime
+
 
 ## 実テーブル
 class Seikyu(db.Model): 
@@ -10,7 +12,10 @@ class Seikyu(db.Model):
     price_sub   = db.Column(db.Integer, nullable=True) 
     quantity    = db.Column(db.Integer, nullable=False) 
     user_id     = db.Column(db.String(), nullable=False,primary_key=False)
-    ymdt        = db.Column(db.DATETIME, nullable=False,primary_key=True)
+    ymdt        = db.Column(db.DATETIME, nullable=False,primary_key=False)
+    # ymdt        = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
+    # ymdt        = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow, nullable=False,primary_key=False)
+    
 
 class SeikyuSchema(ma.SQLAlchemyAutoSchema):
       class Meta:
@@ -119,3 +124,67 @@ class VSeikyuASchema(ma.SQLAlchemyAutoSchema):
 ##  quantity_d30   | bigint                |          |               |
 ##  quantity_d31   | bigint                |          |               |
 ##  item_name1_end | character varying(80) |          |               |
+
+
+
+# deliba_db=# \d v_seikyu_c
+#                  ビュー"public.v_seikyu_c"
+#     列    | タイプ  | 照合順序 | Null 値を許容 | デフォルト
+# ----------+---------+----------+---------------+------------
+#  nen      | text    |          |               |
+#  tuki     | text    |          |               |
+#  getugaku | numeric |          |               |
+#  zeigaku  | numeric |          |               |
+
+## v_seikyu_c
+
+class VSeikyuC(db.Model): 
+    __tablename__ = "v_seikyu_c" 
+    nengetu         = db.Column(db.String(),  nullable=False,primary_key=True)
+    getugaku        = db.Column(db.Integer,   nullable=True,primary_key=False)
+    zeigaku         = db.Column(db.Integer,   nullable=True,primary_key=False)
+    max_ymdt        = db.Column(db.String(),  nullable=True,primary_key=False)
+    ninzu           = db.Column(db.Integer,   nullable=True,primary_key=False)
+
+class VSeikyuCSchema(ma.SQLAlchemyAutoSchema):
+      class Meta:
+            model = VSeikyuC
+            load_instance = True
+
+
+
+class VSeikyuB(db.Model): 
+    __tablename__ = "v_seikyu_b" 
+    nen             = db.Column(db.String(),  nullable=False,primary_key=True)
+    tuki            = db.Column(db.String(),  nullable=False,primary_key=True)
+    customer_id     = db.Column(db.Integer,   nullable=True,primary_key=True)
+    group_id        = db.Column(db.Integer,   nullable=True,primary_key=False)
+    name1           = db.Column(db.String(),  nullable=True,primary_key=False)
+    zei_kb          = db.Column(db.String(),  nullable=True,primary_key=False)
+    getugaku        = db.Column(db.Integer,   nullable=True,primary_key=False)
+    zeigaku         = db.Column(db.Integer,   nullable=True,primary_key=False)
+    max_ymdt        = db.Column(db.String(),  nullable=True,primary_key=False)
+
+class VSeikyuBSchema(ma.SQLAlchemyAutoSchema):
+      class Meta:
+            model = VSeikyuB
+            load_instance = True
+
+
+
+
+# deliba_db-# \d v_seikyu_b
+#                           ビュー"public.v_seikyu_b"
+#      列      |        タイプ         | 照合順序 | Null 値を許容 | デフォルト
+# -------------+-----------------------+----------+---------------+------------
+#  nen         | text                  |          |               |
+#  tuki        | text                  |          |               |
+#  group_id    | integer               |          |               |
+#  list        | integer               |          |               |
+#  customer_id | integer               |          |               |
+#  name1       | character varying(80) |          |               |
+#  zei_kb      | character varying(40) |          |               |
+#  getugaku    | bigint                |          |               |
+#  zeigaku     | integer               |          |               |
+#  max_ymdt    | text                  |          |               |
+

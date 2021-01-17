@@ -20,7 +20,7 @@ from models.item import Item, ItemSchema
 from models.customer import Customer, CustomerSchema
 from models.mstsetting import MstSetting, MstSettingSchema
 from models.daicho import Daicho, DaichoSchema, VDaichoA, VDaichoASchema
-from models.seikyu import Seikyu, SeikyuSchema, VSeikyuA, VSeikyuASchema
+from models.seikyu import Seikyu, SeikyuSchema, VSeikyuA, VSeikyuASchema, VSeikyuB, VSeikyuBSchema, VSeikyuC, VSeikyuCSchema
 from print.seikyu import *
 from sqlalchemy.sql import text
 import json
@@ -110,6 +110,23 @@ def resJson_getVSeikyuA_ByCusotmerId(customerid, nentuki):
       return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
 
 
+@app.route('/getSeikyuNengetuShukei_Main')
+@login_required
+def resJson_getSeikyuNengetuShukei_Main():
+      seikyu = VSeikyuC.query.all()
+      seikyu_schema = VSeikyuCSchema(many=True)
+      return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
+
+
+@app.route('/getSeikyuNengetuCustomer_Main/<nen>/<tuki>')
+@login_required
+def resJson_getSeikyuNengetuCustomer_Main(nen, tuki):
+      seikyu = VSeikyuB.query.filter(VSeikyuB.nen==nen, VSeikyuB.tuki==tuki).all()
+      seikyu_schema = VSeikyuBSchema(many=True)
+      return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
+
+
+
 @app.route('/createSeikyu/<customerid>/<nentuki>')
 @login_required
 def dbUpdate_insSeikyu(customerid, nentuki):
@@ -119,7 +136,8 @@ def dbUpdate_insSeikyu(customerid, nentuki):
   sql = " "
   sql = sql + " delete from seikyu "
   sql = sql + " where "
-  sql = sql + "     customer_id = " + customerid + " and "
+  if customerid != '-1' :
+    sql = sql + "     customer_id = " + customerid + " and "
   sql = sql + "     cast(to_char(deliver_ymd,'yyyy') as integer) = " + str(y) + " and "
   sql = sql + "     cast(to_char(deliver_ymd,'mm') as integer) = " + str(m) + "  "
   db.session.execute(text(sql))
@@ -150,8 +168,11 @@ def dbUpdate_insSeikyu(customerid, nentuki):
       sql = sql + " on "
       sql = sql + "     d.item_id =  i.id "
       sql = sql + " where "
-      sql = sql + "     d.customer_id = " + customerid + " and "
-      sql = sql + "     d.youbi = " + str(deliverymd.weekday()+1) + " "
+      if customerid != '-1' :
+        sql = sql + "     d.customer_id = " + customerid + " and "
+      sql = sql + "     d.youbi = " + str(deliverymd.weekday()+1) + " and "
+      sql = sql + "     c.list is not null and "
+      sql = sql + "     c.list <> 0 "
       # print(sql)
       
       # print(db.session.execute(text(sql)).fetchone())

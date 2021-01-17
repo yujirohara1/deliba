@@ -27,11 +27,7 @@
               %div.input-group
                   %button.btn.btn-primary.btn-sm#btnSeikyuPrint(type="button")
                     請求書
-            %div.col-md-1
-              %div.input-group
-                %button.btn.btn-primary.btn-sm#btnSeikyuCreate(type="button")
-                  請求データ作成
-            %div.col-md-1
+            %div.col-md-2
               %div.input-group
                 %button.btn.btn-primary.btn-sm(type="button" data-toggle="modal" data-target="#modalSeikyuKanri")
                   請求データ管理
@@ -496,26 +492,41 @@
           %span
             ×
         %h4.modal-title#subAtitle
-          タイトル
+          請求データを作成する年月を、左の表から選択してください。
       %div.modal-body
         %div.row
-          %div.col-md-8
+          %div.col-md-5
             %table.table-bordered.row.hover#tableSeikyuKanri
               %thead
                 %tr
                   %th 
-                    ID
+                    年月
                   %th
-                    コード
+                    請求額計
                   %th
-                   商品名
+                    うち税
                   %th
-                    単価
+                    人数
                   %th
-                    登録状況
+                    最終更新
               %tbody
-          %div.col-md-4
-            %br
+          %div.col-md-7#divSeikyuMeisaiOrButton
+            %div.row
+            %div.col-md-12#divSeikyuMeisaiOrButton2
+              %table.table-bordered.row.hover#tableSeikyuKanriCustomer
+                %thead
+                  %tr
+                    %th 
+                      ID
+                    %th
+                      氏名
+                    %th
+                      請求額
+                    %th
+                      うち税
+                    %th
+                      最終更新
+                %tbody
       %div.modal-footer#modalSeikyuKanriFooter
         %div.row
           %div.col-md-10.text-right#modalSeikyuKanriMessageArea

@@ -104,12 +104,8 @@ create table seikyu (
   price_sub   integer ,
   quantity    integer not null,
   user_id     varchar(20) not null,
-  ymdt        date not null
+  ymdt        timestamp  not null
 );
-
-
-
-
 
 
 
@@ -128,9 +124,11 @@ AS
 SELECT
     to_char(seikyu.deliver_ymd::timestamp with time zone, 'yyyy'::text) AS nen,
     to_char(seikyu.deliver_ymd::timestamp with time zone, 'mm'::text) AS tuki,
+    customer.group_id,
+    customer.list,
     seikyu.customer_id,
+    customer.name1,
     customer.biko2 zei_kb,
-    sum(seikyu.price * seikyu.quantity) ,
     CASE
       WHEN customer.biko2 = '2' THEN  sum(seikyu.price * seikyu.quantity) 
       ELSE cast( sum(seikyu.price * seikyu.quantity) * 1.08 as int) 
@@ -138,7 +136,8 @@ SELECT
     CASE
       WHEN customer.biko2 = '2' THEN 0
       ELSE cast( sum(seikyu.price * seikyu.quantity) * 0.08 as int) 
-    END zeigaku
+    END zeigaku,
+    to_char(max(ymdt),'yyyy/mm/dd HH24:MI:SS') max_ymdt
 FROM
     seikyu,
     customer
@@ -165,6 +164,67 @@ ORDER BY
 
 select * from v_seikyu_b;
 
+
+
+
+
+drop view v_seikyu_c;
+
+CREATE VIEW v_seikyu_c
+AS 
+select
+    nen || '.' || tuki || '' nengetu,
+    sum(getugaku) getugaku,
+    sum(zeigaku) zeigaku,
+    max(max_ymdt) max_ymdt,
+    sum(ninzu) ninzu
+from
+    (SELECT
+        nen,
+        tuki,
+        sum(getugaku) getugaku,
+        sum(zeigaku) zeigaku,
+        max(max_ymdt) max_ymdt,
+        count(1) ninzu
+    FROM
+        v_seikyu_b
+    group by
+        nen,
+        tuki
+    union all
+    select
+        to_char((date_trunc('month', current_date) + interval '0 month'),'yyyy') nen,
+        to_char((date_trunc('month', current_date) + interval '0 month'),'mm') tuki,
+        0,
+        0,
+        null,
+        0
+    union all
+    select
+        to_char((date_trunc('month', current_date) + interval '1 month'),'yyyy') nen,
+        to_char((date_trunc('month', current_date) + interval '1 month'),'mm') tuki,
+        0,
+        0,
+        null,
+        0
+    union all
+    select
+        to_char((date_trunc('month', current_date) + interval '2 month'),'yyyy') nen,
+        to_char((date_trunc('month', current_date) + interval '2 month'),'mm') tuki,
+        0,
+        0,
+        null,
+        0
+    ) a
+group by
+    nen,
+    tuki
+ORDER BY
+    nen,
+    tuki
+;
+
+select * from v_seikyu_c;
 
 
 
@@ -346,3 +406,15 @@ AS
     item
   WHERE sei.item_id = item.id
   GROUP BY sei.customer_id, sei.item_id, sei.price, sei.price_sub, item.name1, (to_char(sei.deliver_ymd::timestamp with time zone, 'yyyy'::text)), (to_char(sei.deliver_ymd::timestamp with time zone, 'mm'::text));
+
+
+
+
+
+
+
+
+
+
+
+

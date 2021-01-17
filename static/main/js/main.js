@@ -123,21 +123,8 @@ $('#btnSeikyuPrint').on('click', function() {
 $('#btnSeikyuCreate').on('click', function() {
   var customerid = $(".row_selected.customer").find("td:eq(0)").text();
   var nentuki = $('#selNentuki').val();
-  $.ajax({
-      type: "GET",
-      url: "/createSeikyu/" + customerid + "/" + nentuki + "",
-      success: function(data) {
-          //alert(data);
-          createSeikyuTables_Main(customerid,nentuki);
-      },
-      error: function(data){
-          alert("エラー：" + data.statusText);
-      }
-  });
+  CreateSeikyuData(customerid, nentuki);
 });
-
-
-
 
   /*
   || 顧客情報　新規登録
@@ -337,12 +324,214 @@ function createListMukoTables_Main(){
     $('#tableCustomerListMuko').show();
 }
 
+
+
 $('#modalUpdList').on("shown.bs.modal", function (e) {
-  $('#guideListHenko').html("①配達順を変更したいデータの「氏名」をダブルクリック<br>②移動させたい位置でシングルクリック");
-  createListHenkoTables_Main();
-  createListMukoTables_Main();
+    $('#guideListHenko').html("①配達順を変更したいデータの「氏名」をダブルクリック<br>②移動させたい位置でシングルクリック");
+    createListHenkoTables_Main();
+    createListMukoTables_Main();
 });
 
+
+$('#modalSeikyuKanri').on("shown.bs.modal", function (e) {
+    $('#btnSeikyuIkkatuCreate').remove();
+    createSeikyuKanriTable_Sub();
+    createSeikyuKanriCsutomerTable_Sub(0, 0)
+});
+  
+
+$('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
+    //顧客テーブルから指定したレコード
+    var rowData =   $('#tableSeikyuKanri').DataTable().row( this ).data();
+    var nen = rowData.nengetu.split(".")[0];
+    var tuki = rowData.nengetu.split(".")[1];
+    $('#btnSeikyuIkkatuCreate').remove();
+    if(rowData.getugaku==0 && rowData.ninzu==0){
+        $('#divSeikyuMeisaiOrButton2').hide();
+        var btnTag = "";
+        btnTag = btnTag + '<a href="#" ';
+        btnTag = btnTag + ' id="btnSeikyuIkkatuCreate" ';
+        btnTag = btnTag + ' onclick="funcSeikyuIkkatuCreate(-1,'+ nen + "," + tuki +')" ';
+        btnTag = btnTag + ' class="btn btn-primary btn-lglg" ';
+        btnTag = btnTag + ' role="button">' + nen + '年' + tuki + '月の請求データを作成する。' + '</a>';
+        $('#divSeikyuMeisaiOrButton').append(btnTag);
+    }else{
+        $('#divSeikyuMeisaiOrButton2').show();
+    }
+    createSeikyuKanriCsutomerTable_Sub(nen, tuki)
+  } );
+  
+  function funcSeikyuIkkatuCreate(customerid,nen, tuki){
+    $('#btnSeikyuIkkatuCreate').attr("disabled","disabled");
+    CreateSeikyuData(customerid, nen + "" + tuki)
+  }
+
+function CreateSeikyuData(customerid, nentuki){
+
+    $.ajax({
+        type: "GET",
+        url: "/createSeikyu/" + customerid + "/" + nentuki + ""
+    }).done(function(data) {
+        if(customerid == -1){
+            $('#btnSeikyuIkkatuCreate').text("作成しました！");
+            setTimeout('$("#btnSeikyuIkkatuCreate").hide();', 3000);
+            createSeikyuKanriTable_Sub();
+        }else{
+            createSeikyuTables_Main(customerid,nentuki);
+        }
+    }).fail(function(data) {
+        alert("エラー：" + data.statusText);
+    }).always(function(data) {
+        //何もしない
+    });
+}
+
+/*
+|| 請求管理サブ画面 顧客ごとレコード表示 v_seikyu_b　
+*/
+function createSeikyuKanriCsutomerTable_Sub(nen, tuki){
+  
+    $('#tableSeikyuKanriCustomer').DataTable({
+        bInfo: false,
+        bSort: true,
+        destroy: true,
+        "processing": true,
+        ajax: {
+            url: "/getSeikyuNengetuCustomer_Main/" + nen + "/" + tuki + "",
+            dataType: "json",
+            dataSrc: function ( json ) {
+                return JSON.parse(json.data);
+            },
+            contentType:"application/json; charset=utf-8",
+            complete: function () {
+                return; 
+            }
+        },
+        columns: [
+              { data: 'customer_id'    ,width: '10%',  className: 'dt-body-left'},
+              { data: 'name1'          ,width: '25%',  className: 'dt-body-left'},
+              { data: 'getugaku'       ,width: '15%'   ,className: 'dt-body-right'  ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+              { data: 'zeigaku'        ,width: '15%'   ,className: 'dt-body-right'  ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+              { data: 'max_ymdt'       ,width: '35%',  className: 'dt-body-left',render: function (data, type, row) 
+                { 
+                  if(data==null){
+                      return "未作成";
+                  }else{
+                      return data;
+                  }
+                } 
+              }
+        ],
+        "aoColumnDefs": [
+            { 'bSortable': false, 'aTargets': [ 0 ] },
+            { 'bSortable': false, 'aTargets': [ 1 ] },
+            { 'bSortable': false, 'aTargets': [ 2 ] },
+            { 'bSortable': false, 'aTargets': [ 3 ] },
+            { 'bSortable': false, 'aTargets': [ 4 ] }
+         ],
+        language: {
+           url: "../static/main/js/japanese.json"
+        },
+        "scrollY":        "300",
+        searching: true,
+        "pageLength": 1000,
+        paging:false,
+        "order": [ 0, "desc" ],
+        "lengthMenu": [100, 300, 500, 1000],
+        dom:"<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+      "preDrawCallback": function (settings) {
+        return;
+      },
+      "drawCallback": function (settings) {
+          //$('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+          //$('#tableSeikyuKanri')[0].parentElement.scrollTop = pageScrollPos;
+      }
+    });
+  }
+  
+    
+    
+    
+  
+/*
+|| 請求管理サブ画面　年月グロス表 v_seikyu_c
+*/
+function createSeikyuKanriTable_Sub(){
+  
+  $('#tableSeikyuKanri').DataTable({
+      bInfo: false,
+      bSort: true,
+      destroy: true,
+      "processing": true,
+      ajax: {
+          url: "/getSeikyuNengetuShukei_Main",
+          dataType: "json",
+          dataSrc: function ( json ) {
+              return JSON.parse(json.data);
+          },
+          contentType:"application/json; charset=utf-8",
+          complete: function () {
+              return; 
+          }
+      },
+      columns: [
+          { data: 'nengetu'    ,width: '22%',  className: 'dt-body-left'},
+            { data: 'getugaku' ,width: '10%'   ,className: 'dt-body-right'  ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+            { data: 'zeigaku'  ,width: '10%'   ,className: 'dt-body-right'  ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+            { data: 'ninzu'    ,width: '13%'   ,className: 'dt-body-center'},
+            { data: 'max_ymdt'   ,width: '45%',  className: 'dt-body-left',render: function (data, type, row) 
+            { 
+                if(data==null){
+                    return "未作成";
+                }else{
+                    return data;
+                }
+            } 
+        }
+      ],
+      "aoColumnDefs": [
+          { 'bSortable': false, 'aTargets': [ 0 ] },
+          { 'bSortable': false, 'aTargets': [ 1 ] },
+          { 'bSortable': false, 'aTargets': [ 2 ] },
+          { 'bSortable': false, 'aTargets': [ 3 ] },
+          { 'bSortable': false, 'aTargets': [ 4 ] }
+       ],
+      language: {
+         url: "../static/main/js/japanese.json"
+      },
+      "scrollY":        "300",
+      searching: false,
+      "pageLength": 1000,
+      paging:false,
+      "order": [ 0, "desc" ],
+      "lengthMenu": [100, 300, 500, 1000],
+      dom:"<'row'<'col-sm-12'tr>>" +
+          "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+          "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    "preDrawCallback": function (settings) {
+      return;
+    },
+    "drawCallback": function (settings) {
+        //$('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+        $('#tableSeikyuKanri')[0].parentElement.scrollTop = pageScrollPos;
+    }
+  });
+}
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
 var listChangeTarget = null;
 
 $('#tableCustomerListHenko tbody').on('dblclick', 'tr', function () {
@@ -603,43 +792,6 @@ $('#btnUpdList').on('click', function() {
     $('#btnUpdList').removeAttr("disabled");
    });
 
-// $.ajax({
-//     type: "POST",
-//     data: JSON.stringify({"data":sendData}),
-//     url: "/updTakuhaijun",
-//     contentType:'application/json',
-//     success: function(data) {
-//         $("#modalUpdListMessageArea").append("<p style='color:red'>更新しました。</p>");
-//         setTimeout('$("#modalUpdListMessageArea")[0].innerText="";', 3000);
-//         //var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
-//         createListHenkoTables_Main();
-//         createListMukoTables_Main();
-//         createCustomerTables_Main();
-//         createDaichoTables_Main(0);
-//         createSeikyuTables_Main(0,$('#selNentuki').val());
-//     },
-//     error: function(data){
-//         alert("エラー：" + data.statusText);
-//     }
-// });
-
- // $.ajax({
- //     type: "GET",
- //     url: "/updTakuhaijun/" + JSON.stringify(sendData) + "",
- //     success: function(data) {
- //         $("#modalUpdListMessageArea").append("<p style='color:red'>更新しました。</p>");
- //         setTimeout('$("#modalUpdListMessageArea")[0].innerText="";', 3000);
- //         //var scrpos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
- //         createListHenkoTables_Main();
- //         createListMukoTables_Main();
- //         createCustomerTables_Main();
- //         createDaichoTables_Main(0);
- //         createSeikyuTables_Main(0,$('#selNentuki').val());
- //     },
- //     error: function(data){
- //         alert("エラー：" + data.statusText);
- //     }
- // });
 });
 
 
@@ -1222,5 +1374,24 @@ $("#tableCustomerListMuko tbody").on('click',function(event) {
     $("#tableCustomerListMuko tbody tr").removeClass('row_selected listMuko');        
     $("#tableCustomerListMuko tbody td").removeClass('row_selected listMuko');        
     $(event.target.parentNode).addClass('row_selected listMuko');
+    
+});
+
+
+
+$("#tableSeikyuKanri tbody").on('click',function(event) {
+    $("#tableSeikyuKanri").removeClass('row_selected seikyuKanri1');        
+    $("#tableSeikyuKanri tbody tr").removeClass('row_selected seikyuKanri1');        
+    $("#tableSeikyuKanri tbody td").removeClass('row_selected seikyuKanri1');        
+    $(event.target.parentNode).addClass('row_selected seikyuKanri1');
+    
+});
+
+
+$("#tableSeikyuKanriCustomer tbody").on('click',function(event) {
+    $("#tableSeikyuKanriCustomer").removeClass('row_selected seikyuKanri2');        
+    $("#tableSeikyuKanriCustomer tbody tr").removeClass('row_selected seikyuKanri2');        
+    $("#tableSeikyuKanriCustomer tbody td").removeClass('row_selected seikyuKanri2');        
+    $(event.target.parentNode).addClass('row_selected seikyuKanri2');
     
 });
