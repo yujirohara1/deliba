@@ -85,31 +85,45 @@
                 新しい配達商品を追加
             %div.col-md-9
               %div.col-md-10.text-left#mainAddDaichoMessageArea
-                
-          %table.table-bordered.row.hover#tableDaicho
-            %thead
-              %tr
-                %th 
-                  ID
-                %th
-                  商品名
-                %th
-                  単価
-                %th
-                  月
-                %th
-                  火
-                %th
-                  水
-                %th
-                  木
-                %th
-                  金
-                %th
-                  土
-                %th
-                  日
-            %tbody
+          %div.row
+            %div.col-md-12
+              %table.table-bordered.row.hover#tableDaicho
+                %thead
+                  %tr
+                    %th 
+                      ID
+                    %th
+                      商品名
+                    %th
+                      単価
+                    %th
+                      月
+                    %th
+                      火
+                    %th
+                      水
+                    %th
+                      木
+                    %th
+                      金
+                    %th
+                      土
+                    %th
+                      日
+                %tbody
+          %div.row
+            %div.col-md-2
+              %div.input-group
+                  %button.btn.btn-primary.btn-sm#btnSeikyuCreateKobetu(type="button")
+                    請求書作成
+            %div.col-md-4.text-left#mainSeikyuKobetuCreateMessageArea(style="font-size:12px; color:red")
+              &nbsp;
+            %div.col-md-2
+              %div.input-group
+                  %button.btn.btn-danger.btn-sm#btnSeikyuDeleteKobetu(type="button")
+                    請求書削除
+            %div.col-md-4.text-left#mainSeikyuKobetuDeleteMessageArea(style="font-size:12px; color:red")
+              &nbsp;
         %div.col-md-4
           %div.panel.with-nav-tabs.panel-primary
               %div.panel-heading
@@ -529,14 +543,11 @@
                 %tbody
       %div.modal-footer#modalSeikyuKanriFooter
         %div.row
-          %div.col-md-3.text-left#divSeikyuDeleteAll
+          %div.col-md-4.text-left#divSeikyuDeleteAll
           %div.col-md-7.text-right#modalSeikyuKanriMessageArea
           %div.col-md-1
             %button.btn.btn-default(type="button" data-dismiss="modal")
               閉じる
-          %div.col-md-1
-            %button#btnSeikyuCreate.btn.btn-primary(type="button")
-              決定
 
 
 

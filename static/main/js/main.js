@@ -41,6 +41,8 @@ $(document).ready(function() {
           ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
           ymFrom = ymFrom * 1;
       }
+      var seldate = new Date();
+      $('#selNentuki').val(seldate.getFullYear() + "" + ("0"+seldate.getMonth()+1).slice(-2));
       
     }else{
       alert("エラー：START_YMがありません");
@@ -118,13 +120,40 @@ $('#btnSeikyuPrint').on('click', function() {
 
 
 /*
-|| 請求データ作成
+|| 請求データ作成　個別
 */
-// $('#btnSeikyuCreate').on('click', function() {
-//   var customerid = $(".row_selected.customer").find("td:eq(0)").text();
-//   var nentuki = $('#selNentuki').val();
-//   CreateSeikyuData(customerid, nentuki);
-// });
+$('#btnSeikyuCreateKobetu').on('click', function() {
+    var customerid = toNumber($(".row_selected.customer").find("td:eq(0)").text());
+    if(customerid==0){
+        $("#mainSeikyuKobetuCreateMessageArea").html("顧客を選択してください。");
+        setTimeout('$("#mainSeikyuKobetuCreateMessageArea")[0].innerText="";', 3000);
+        return;
+    }
+    var customername = $(".row_selected.customer").find("td:eq(2)").text();
+    var nentuki = $('#selNentuki').val();
+    if (confirm(customername + "のみ、"+$('#selNentuki option:selected').text() + "分の請求データを作成します。よろしいですか？")) {
+        CreateSeikyuData(customerid, nentuki, false);
+    } else {
+    }
+ });
+
+/*
+|| 請求データ削除　個別
+*/
+$('#btnSeikyuDeleteKobetu').on('click', function() {
+    var customerid = toNumber($(".row_selected.customer").find("td:eq(0)").text());
+    if(customerid==0){
+        $("#mainSeikyuKobetuDeleteMessageArea").html("顧客を選択してください。");
+        setTimeout('$("#mainSeikyuKobetuDeleteMessageArea")[0].innerText="";', 3000);
+        return;
+    }
+    var customername = $(".row_selected.customer").find("td:eq(2)").text();
+    var nentuki = $('#selNentuki').val();
+    if (confirm(customername + "のみ、"+$('#selNentuki option:selected').text() + "分の請求データを削除します。よろしいですか？")) {
+        CreateSeikyuData(customerid, nentuki, true);
+    } else {
+    }
+ });
 
   /*
   || 顧客情報　新規登録
@@ -1219,7 +1248,7 @@ function createDaichoTables_Main(customerId){
         language: {
            url: "../static/main/js/japanese.json"
         },
-        "scrollY":        "150px",
+        "scrollY":        $(window).height() * 32 / 100,
         "pageLength": 1000,
         searching: false,
         info: false,
