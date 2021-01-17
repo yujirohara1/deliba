@@ -21,9 +21,19 @@ deliba_db=# select setval('item_id_seq',(select max(id) from item));
 (1 行)
 
 
+analyze seikyu;
+analyze customer;
+analyze item;
+analyze daicho;
+create index on daicho (customer_id);
+create index on daicho (item_id);
+create index on item (id);
+create index on customer (id);
+
 
 
 住所３にlistを入れる
+update customer set address3 = list;
 
 
 

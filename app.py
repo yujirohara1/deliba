@@ -189,7 +189,7 @@ def dbUpdate_insSeikyu(customerid, nentuki, sakujonomi):
                   'price': d[3], 'price_sub': d[4], 'quantity': d[5], 'user_id': current_user.name, 'ymdt': d[7]} for d in data_list]
                   
         db.session.execute(Seikyu.__table__.insert(), seikyus)
-        db.session.commit()
+  db.session.commit()
   
   return "1"
   
