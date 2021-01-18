@@ -430,3 +430,71 @@ AS
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+drop view v_seikyu_1;
+CREATE VIEW v_seikyu_1 
+AS 
+  SELECT to_char(seikyu.deliver_ymd,'yyyy')        nen, 
+         to_char(seikyu.deliver_ymd,'mm')        tuki, 
+         seikyu.customer_id, 
+         seikyu.deliver_ymd, 
+         seikyu.item_id, 
+         seikyu.price, 
+         seikyu.quantity, 
+         item.code                               item_code, 
+         item.name1                              item_name1, 
+         item.name2                              item_name2, 
+         customer.name1                          customer_name1, 
+         customer.name2                          customer_name2, 
+         customer.list, 
+         customer.group_id, 
+         to_char(seikyu.deliver_ymd,'yyyy') || to_char(seikyu.deliver_ymd,'mm') || lpad(seikyu.customer_id::text,6,0::text) SEIKYU_KEY, 
+         customer.harai_kb ,
+         customer.biko2 zei_kb
+  FROM   seikyu
+  inner join item
+  on
+      seikyu.item_id = item.id
+  inner join customer
+  on
+      seikyu.customer_id = customer.id
+  where
+       list IS NOT NULL and
+        to_char(seikyu.deliver_ymd,'yyyy') = '2019' and 
+        to_char(seikyu.deliver_ymd,'mm') = '12'
+  ORDER  BY to_char(seikyu.deliver_ymd,'yyyy'), 
+            to_char(seikyu.deliver_ymd,'mm'), 
+            customer.list, 
+            seikyu.customer_id, 
+            seikyu.item_id, 
+            seikyu.deliver_ymd;
+
+select count(1) from v_seikyu_1 where nen = '2019' and tuki = '12';
+
+
+
+
+
+
+
+  SELECT count(1)
+  FROM   (select * from seikyu where to_char(seikyu.deliver_ymd,'yyyy') = '2019' and to_char(seikyu.deliver_ymd,'mm') = '12') seikyu, 
+         item, 
+         customer 
+  WHERE  seikyu.item_id = item.id 
+         AND seikyu.customer_id = customer.id 
+         AND list IS NOT NULL 
+  ORDER  BY 1;
+  

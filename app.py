@@ -21,7 +21,7 @@ from models.customer import Customer, CustomerSchema
 from models.mstsetting import MstSetting, MstSettingSchema
 from models.daicho import Daicho, DaichoSchema, VDaichoA, VDaichoASchema
 from models.seikyu import Seikyu, SeikyuSchema, VSeikyuA, VSeikyuASchema, VSeikyuB, VSeikyuBSchema, VSeikyuC, VSeikyuCSchema
-from print.seikyu import *
+from print.print_seikyu import *
 from sqlalchemy.sql import text
 import json
 
