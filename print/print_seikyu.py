@@ -57,7 +57,7 @@ def make(filename="resume"): # ファイル名の設定
   sql = sql + "            seikyu.deliver_ymd;                                                                                                          " 
 
 
-  sql = " select * from v_seikyu_b where nen = '2019' and tuki = '12' "
+  sql = " select * from v_seikyu_b where nen = '2021' and tuki = '02' "
 
   if db.session.execute(text(sql)).fetchone() is not None:
     data_list = db.session.execute(text(sql))
