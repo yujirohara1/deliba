@@ -24,6 +24,10 @@ from models.seikyu import Seikyu, SeikyuSchema, VSeikyuA, VSeikyuASchema, VSeiky
 from print.print_seikyu import *
 from sqlalchemy.sql import text
 import json
+from rq import Queue
+from api.worker import conn
+# from bottle import route, run
+
 
 DELIMIT = "@|@|@";
 
@@ -201,20 +205,28 @@ def isDate(year,month,day):
     except ValueError:
         return False
 
+
+q = Queue(connection=conn)
+
 @app.route('/printSeikyu/<customerid>/<nentuki>/<randnum>')
 @login_required
 def resPdf_printSeikyu(customerid, nentuki, randnum):
+    result = q.enqueue(makeWrapper)
+    return "1"
+
+
+def makeWrapper():
     timestamp = datetime.datetime.now()
     timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+
     make("file" + timestampStr)
+
     response = make_response()
     response.data = open("output/" + "file" + timestampStr + ".pdf", "rb").read()
     response.headers['Content-Disposition'] = "attachment; filename=unicode.pdf"
     response.mimetype = 'application/pdf'
     # return response
     return send_file("output/" + "file" + timestampStr + ".pdf", as_attachment=True)
-
-
 
 
 @app.route('/getMstSetting_Main/<param_id>')
