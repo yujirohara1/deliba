@@ -212,6 +212,7 @@ q = Queue(connection=conn)
 @login_required
 def resPdf_printSeikyu(customerid, nentuki, randnum):
     result = q.enqueue(makeWrapper)
+    print(result)
     return "1"
 
 
