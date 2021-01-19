@@ -25,7 +25,7 @@ from print.print_seikyu import *
 from sqlalchemy.sql import text
 import json
 from rq import Queue
-from api.worker import conn
+from worker import conn
 # from bottle import route, run
 
 
