@@ -74,6 +74,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 ma.init_app(app)
+q = Queue(connection=conn)
         
 @app.route("/favicon.ico")
 def favicon():
@@ -206,7 +207,6 @@ def isDate(year,month,day):
         return False
 
 
-q = Queue(connection=conn)
 
 @app.route('/printSeikyu/<customerid>/<nentuki>/<randnum>')
 @login_required
@@ -257,11 +257,27 @@ def resPdf_printSeikyu(customerid, nentuki, randnum):
     # result = q.enqueue(makeWrapper, data_list) # 本番用
     # makeWrapper(data_list) #開発用
     # makeWrapper()
-    with app.app_context():
-      result = q.enqueue(makeWrapper) # 本番用
-      print(result)
+    # with app.app_context():
+    # result = q.enqueue(makeWrapper) # 本番用
+      # print(result)
 
-    return "1"
+    # return "1"
+
+    timestamp = datetime.datetime.now()
+    timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+
+
+  # make("file" + timestampStr, data_list)
+  # with app.app_context():
+    make("file" + timestampStr, data_list)
+
+    response = make_response()
+    response.data = open("output/" + "file" + timestampStr + ".pdf", "rb").read()
+    response.headers['Content-Disposition'] = "attachment; filename=unicode.pdf"
+    response.mimetype = 'application/pdf'
+  # return response
+    return send_file("output/" + "file" + timestampStr + ".pdf", as_attachment=True)
+
 
 
 # def makeWrapper(data_list):
@@ -272,8 +288,8 @@ def makeWrapper():
 
 
   # make("file" + timestampStr, data_list)
-  with app.app_context():
-    make("file" + timestampStr)
+  # with app.app_context():
+  make("file" + timestampStr)
 
   response = make_response()
   response.data = open("output/" + "file" + timestampStr + ".pdf", "rb").read()
