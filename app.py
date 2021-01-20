@@ -272,8 +272,8 @@ def makeWrapper():
 
 
   # make("file" + timestampStr, data_list)
-  # with app.app_context():
-  make("file" + timestampStr)
+  with app.app_context():
+    make("file" + timestampStr)
 
   response = make_response()
   response.data = open("output/" + "file" + timestampStr + ".pdf", "rb").read()
