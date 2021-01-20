@@ -254,19 +254,22 @@ def resPdf_printSeikyu(customerid, nentuki, randnum):
   if db.session.execute(text(sql)).fetchone() is not None:
     data_list = db.session.execute(text(sql))
 
-    result = q.enqueue(makeWrapper, data_list) # 本番用
-    # makeWrapper() #開発用
+    # result = q.enqueue(makeWrapper, data_list) # 本番用
+    # makeWrapper(data_list) #開発用
+    makeWrapper()
     # print(result)
     return "1"
 
 
-def makeWrapper(data_list):
+# def makeWrapper(data_list):
+def makeWrapper():
 
   timestamp = datetime.datetime.now()
   timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
 
 
-  make("file" + timestampStr, data_list)
+  # make("file" + timestampStr, data_list)
+   make("file" + timestampStr)
 
   response = make_response()
   response.data = open("output/" + "file" + timestampStr + ".pdf", "rb").read()

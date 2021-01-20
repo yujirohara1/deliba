@@ -15,17 +15,18 @@ from sqlalchemy.sql import text
 
 font_type = 'HeiseiKakuGo-W5'
 
-def make(filename="resume", seikyulist=None): # ファイル名の設定
+# def make(filename="resume", seikyulist=None): # ファイル名の設定
+  def make(filename="resume"): # ファイル名の設定
 
 
     pdf_canvas = set_info(filename) # キャンバス名の設定
     print_string(pdf_canvas)
     print_string(pdf_canvas)
 
-    for d in seikyulist:
+    # for d in seikyulist:
       # print(d["customer_id"])
-      pdf_canvas.showPage()                        # 1ページ目を確定
-      print_string(pdf_canvas)
+    pdf_canvas.showPage()                        # 1ページ目を確定
+    print_string(pdf_canvas)
 
     pdf_canvas.save() # pdfを保存
 
