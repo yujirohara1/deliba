@@ -259,7 +259,7 @@ def resPdf_printSeikyu(customerid, nentuki, randnum):
     # makeWrapper()
     result = q.enqueue(makeWrapper) # 本番用
     print(result)
-    
+
     return "1"
 
 
@@ -271,7 +271,7 @@ def makeWrapper():
 
 
   # make("file" + timestampStr, data_list)
-   make("file" + timestampStr)
+  make("file" + timestampStr)
 
   response = make_response()
   response.data = open("output/" + "file" + timestampStr + ".pdf", "rb").read()
