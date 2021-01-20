@@ -256,8 +256,10 @@ def resPdf_printSeikyu(customerid, nentuki, randnum):
 
     # result = q.enqueue(makeWrapper, data_list) # 本番用
     # makeWrapper(data_list) #開発用
-    makeWrapper()
-    # print(result)
+    # makeWrapper()
+    result = q.enqueue(makeWrapper) # 本番用
+    print(result)
+    
     return "1"
 
 

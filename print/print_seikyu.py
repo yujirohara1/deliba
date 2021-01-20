@@ -16,7 +16,7 @@ from sqlalchemy.sql import text
 font_type = 'HeiseiKakuGo-W5'
 
 # def make(filename="resume", seikyulist=None): # ファイル名の設定
-  def make(filename="resume"): # ファイル名の設定
+def make(filename="resume"): # ファイル名の設定
 
 
     pdf_canvas = set_info(filename) # キャンバス名の設定
@@ -29,7 +29,6 @@ font_type = 'HeiseiKakuGo-W5'
     print_string(pdf_canvas)
 
     pdf_canvas.save() # pdfを保存
-
 
 
 
