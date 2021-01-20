@@ -15,57 +15,14 @@ from sqlalchemy.sql import text
 
 font_type = 'HeiseiKakuGo-W5'
 
-def make(filename="resume", app=None): # ファイル名の設定
-
-  sql = ""
-  sql = sql + "  SELECT to_char(seikyu.deliver_ymd,'yyyy')        nen,                                                                                  " 
-  sql = sql + "         to_char(seikyu.deliver_ymd,'mm')         tuki,                                                                                   " 
-  sql = sql + "         seikyu.customer_id,                                                                                                             " 
-  sql = sql + "         seikyu.deliver_ymd,                                                                                                             " 
-  sql = sql + "         seikyu.item_id,                                                                                                                 " 
-  sql = sql + "         seikyu.price,                                                                                                                   " 
-  sql = sql + "         seikyu.quantity,                                                                                                                " 
-  sql = sql + "         item.code                               item_code,                                                                              " 
-  sql = sql + "         item.name1                              item_name1,                                                                             " 
-  sql = sql + "         item.name2                              item_name2,                                                                             " 
-  sql = sql + "         customer.name1                          customer_name1,                                                                         " 
-  sql = sql + "         customer.name2                          customer_name2,                                                                         " 
-  sql = sql + "         customer.list,                                                                                                                  " 
-  sql = sql + "         customer.group_id,                                                                                                              " 
-  sql = sql + "         to_char(seikyu.deliver_ymd,'yyyy') || to_char(seikyu.deliver_ymd,'mm') || lpad(seikyu.customer_id::text,6,0::text) SEIKYU_KEY,  " 
-  sql = sql + "         customer.harai_kb ,                                                                                                             " 
-  sql = sql + "         customer.biko2 zei_kb                                                                                                           " 
-  sql = sql + "  FROM   seikyu                                                                                                                          " 
-  sql = sql + "  inner join item                                                                                                                        " 
-  sql = sql + "  on                                                                                                                                     " 
-  sql = sql + "      seikyu.item_id = item.id                                                                                                           " 
-  sql = sql + "  inner join customer                                                                                                                    " 
-  sql = sql + "  on                                                                                                                                     " 
-  sql = sql + "      seikyu.customer_id = customer.id                                                                                                   " 
-  sql = sql + "  where                                                                                                                                  " 
-  sql = sql + "       list IS NOT NULL and                                                                                                              " 
-  sql = sql + "        to_char(seikyu.deliver_ymd,'yyyy') = '2019' and                                                                                  " 
-  sql = sql + "        to_char(seikyu.deliver_ymd,'mm') = '12'                                                                                          " 
-  sql = sql + "  ORDER  BY to_char(seikyu.deliver_ymd,'yyyy'),                                                                                          " 
-  sql = sql + "            to_char(seikyu.deliver_ymd,'mm'),                                                                                            " 
-  sql = sql + "            customer.list,                                                                                                               " 
-  sql = sql + "            seikyu.customer_id,                                                                                                          " 
-  sql = sql + "            seikyu.item_id,                                                                                                              " 
-  sql = sql + "            seikyu.deliver_ymd;                                                                                                          " 
-
-
-  sql = " select * from v_seikyu_b where nen = '2021' and tuki = '02' and group_id = 100 "
-
-  if db.session.execute(text(sql)).fetchone() is not None:
-    data_list = db.session.execute(text(sql))
-
+def make(filename="resume", seikyulist=None): # ファイル名の設定
 
 
     pdf_canvas = set_info(filename) # キャンバス名の設定
     print_string(pdf_canvas)
     print_string(pdf_canvas)
 
-    for d in data_list:
+    for d in seikyulist:
       # print(d["customer_id"])
       pdf_canvas.showPage()                        # 1ページ目を確定
       print_string(pdf_canvas)
