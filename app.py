@@ -257,8 +257,9 @@ def resPdf_printSeikyu(customerid, nentuki, randnum):
     # result = q.enqueue(makeWrapper, data_list) # 本番用
     # makeWrapper(data_list) #開発用
     # makeWrapper()
-    result = q.enqueue(makeWrapper) # 本番用
-    print(result)
+    with app.app_context():
+      result = q.enqueue(makeWrapper) # 本番用
+      print(result)
 
     return "1"
 
@@ -271,6 +272,7 @@ def makeWrapper():
 
 
   # make("file" + timestampStr, data_list)
+  # with app.app_context():
   make("file" + timestampStr)
 
   response = make_response()
