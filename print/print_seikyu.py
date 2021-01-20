@@ -15,7 +15,7 @@ from sqlalchemy.sql import text
 
 font_type = 'HeiseiKakuGo-W5'
 
-def make(filename="resume"): # ファイル名の設定
+def make(filename="resume", app=None): # ファイル名の設定
 
   sql = ""
   sql = sql + "  SELECT to_char(seikyu.deliver_ymd,'yyyy')        nen,                                                                                  " 

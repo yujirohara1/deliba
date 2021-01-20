@@ -211,16 +211,16 @@ q = Queue(connection=conn)
 @app.route('/printSeikyu/<customerid>/<nentuki>/<randnum>')
 @login_required
 def resPdf_printSeikyu(customerid, nentuki, randnum):
-    result = q.enqueue(makeWrapper)
+    result = q.enqueue(makeWrapper, app)
     print(result)
     return "1"
 
 
-def makeWrapper():
+def makeWrapper(app):
     timestamp = datetime.datetime.now()
     timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
 
-    make("file" + timestampStr)
+    make("file" + timestampStr, app)
 
     response = make_response()
     response.data = open("output/" + "file" + timestampStr + ".pdf", "rb").read()
