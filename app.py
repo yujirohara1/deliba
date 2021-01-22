@@ -26,6 +26,7 @@ from sqlalchemy.sql import text
 import json
 from rq import Queue
 from worker import conn
+import PyPDF2
 # from bottle import route, run
 
 
@@ -249,11 +250,25 @@ def resPdf_printSeikyu(customerid, nentuki, randnum):
   sql = sql + "            seikyu.deliver_ymd;                                                                                                          " 
 
 
-  sql = " select * from v_seikyu_b where nen = '2021' and tuki = '02' and group_id = 100 "
+  sql = " select * from v_seikyu_b where nen = '2021' and tuki = '02' and customer_id = " + customerid
 
   if db.session.execute(text(sql)).fetchone() is not None:
     data_list = db.session.execute(text(sql))
+    timestamp = datetime.datetime.now()
+    timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+    # make("file" + timestampStr, data_list)
+    # with app.app_context():
+    make("file" + timestampStr, data_list)
 
+    response = make_response()
+    response.data = open("output/" + "file" + timestampStr + ".pdf", "rb").read()
+    response.headers['Content-Disposition'] = "attachment; filename=unicode.pdf"
+    response.mimetype = 'application/pdf'
+    # return response
+    # return send_file("output/" + "file" + timestampStr + ".pdf", as_attachment=True)
+    return "file" + timestampStr + ".pdf"
+  else:
+    return "-1"
     # result = q.enqueue(makeWrapper, data_list) # 本番用
     # makeWrapper(data_list) #開発用
     # makeWrapper()
@@ -263,21 +278,23 @@ def resPdf_printSeikyu(customerid, nentuki, randnum):
 
     # return "1"
 
-    timestamp = datetime.datetime.now()
-    timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+@app.route('/pdfMergeSeikyusho',methods=["GET", "POST"])
+@login_required
+def print_pdfMergeSeikyusho():
+  timestamp = datetime.datetime.now()
+  timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+  vals = request.json["data"]
+  merger = PyPDF2.PdfFileMerger()
 
+  for id_list in vals:
+    merger.append("output/" + id_list + "")
 
-  # make("file" + timestampStr, data_list)
-  # with app.app_context():
-    make("file" + timestampStr, data_list)
+  merger.write("output/" + timestampStr + ".pdf")
+  merger.close()
+  
+  return send_file("output/" + timestampStr + ".pdf", as_attachment=True)
 
-    response = make_response()
-    response.data = open("output/" + "file" + timestampStr + ".pdf", "rb").read()
-    response.headers['Content-Disposition'] = "attachment; filename=unicode.pdf"
-    response.mimetype = 'application/pdf'
-  # return response
-    return send_file("output/" + "file" + timestampStr + ".pdf", as_attachment=True)
-
+        
 
 
 # def makeWrapper(data_list):

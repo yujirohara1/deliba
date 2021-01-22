@@ -90,31 +90,176 @@ $(document).ready(function() {
 
 
 
+// async function mergeAllPDFs(urls) {
+    
+//     const pdfDoc = await PDFLib.PDFDocument.create();
+//     const numDocs = urls.length;
+//     try{
+//         for(var i = 0; i < numDocs; i++) {
+//             const donorPdfBytes = await fetch(urls[i]).then(res => res.arrayBuffer());
+//             const donorPdfDoc = await PDFLib.PDFDocument.load(donorPdfBytes);
+//             const docLength = donorPdfDoc.getPageCount();
+//             for(var k = 0; k < docLength; k++) {
+//                 const [donorPage] = await pdfDoc.copyPages(donorPdfDoc, [k]);
+//                 //console.log("Doc " + i+ ", page " + k);
+//                 pdfDoc.addPage(donorPage);
+//             }
+//         }
+    
+//         const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
+//         //console.log(pdfDataUri);
+      
+//         // strip off the first part to the first comma "data:image/png;base64,iVBORw0K..."
+//         var data_pdf = pdfDataUri.substring(pdfDataUri.indexOf(',')+1);
 
+//         var blob2 = new Blob([data_pdf], {type: "application/pdf"});//
+//         var link2 = document.createElement('a');
+//         link2.href = window.URL.createObjectURL(blob2);
+//         link2.download = "" + Math.random().toString(32).substring(2) + ".pdf";
+//         link2.click();
+
+//     }catch(e){
+//         consoler.log(e.message);
+//     }
+// }
 
 
 /*
 || 請求書印刷
 */
+//var files = new Array();
+var files = [];
+var index = 0;
+var blReady = false;
 $('#btnSeikyuPrint').on('click', function() {
-  var randnum = Math.floor(Math.random()*10101010101)
-  var customerid = $(".row_selected.customer").find("td:eq(0)").text();
-  var nentuki = $('#selNentuki').val();
-  $.ajax({
-      type: "GET",
-      url: "/printSeikyu/" + customerid + "/" + nentuki + "/" + randnum + "",
-      success: function(data) {
-          var blob=new Blob([data], {type: "application/pdf"});//
-          var link = document.createElement('a');
-          link.href = window.URL.createObjectURL(blob);
-          link.download = "" + Math.random().toString(32).substring(2) + ".pdf";
-          link.click();
-      },
-      error: function(data){
-          alert("エラー：" + data.statusText);
-      }
-  });
+    var randnum = Math.floor(Math.random()*10101010101)
+    var customerid = $(".row_selected.customer").find("td:eq(0)").text();
+    var nentuki = $('#selNentuki').val();
+    var hoge_func = function (dummyId) {
+        $.ajax({
+            type: "GET",
+            url: "/printSeikyu/" + dummyId + "/" + nentuki + "/" + randnum + "",
+        }).done(function(data) {
+            if(data=="-1"){
+
+            }else{
+                files.push(data);
+            }
+            if(dummyId==999){
+                blReady = true;
+            }
+        }).fail(function(data) {
+            alert("エラー：" + data.statusText);
+        }).always(function(data) {
+        });
+    }
+
+     for(var i=1; i<1000; i++){
+         hoge_func(i);
+     }
+
+    sample_func();
+//}
 });
+
+function sample_func() {
+    if ( !blReady ) {
+        setTimeout( sample_func, 2000 ); // wait 100ms and execute sample_func() again
+        return;
+    }
+
+    //1000人分のPDFファイル名をクライアントから伝えて、マージPDFをもらう
+    $.ajax({
+        type: "POST",
+        data: JSON.stringify({"data":files}),
+        url: "/pdfMergeSeikyusho",
+        contentType:'application/json'
+    }).done(function(data) {
+        var blob=new Blob([data], {type: "application/pdf"});//
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "" + Math.random().toString(32).substring(2) + ".pdf";
+        link.click();
+    }).fail(function(data) {
+        alert("エラー：" + data.statusText);
+    }).always(function(data) {
+        $('#btnUpdList').removeAttr("disabled");
+   });
+
+}
+
+
+// /*
+// || 請求書印刷
+// */
+// var Analysts = new Array();
+// var index = 0;
+// $('#btnSeikyuPrint').on('click', function() {
+//     var randnum = Math.floor(Math.random()*10101010101)
+//     var customerid = $(".row_selected.customer").find("td:eq(0)").text();
+//     var nentuki = $('#selNentuki').val();
+//     var hoge_func = function (dummyId) {
+//         $.ajax({
+//             type: "GET",
+//             url: "/printSeikyu/" + dummyId + "/" + nentuki + "/" + randnum + "",
+//         }).done(function(data) {
+//             if(data=="-1"){
+
+//             }else{
+//                 var blob=new Blob([data], {type: "application/pdf"});//
+//                 //var Stream = new Uint8Array(blob);
+//                 //var Stream = new Uint8Array([data], {type: "application/pdf"});
+//                 //var Stream = new Uint8Array(data);
+//                 // var Stream = new Uint8Array([data]);
+//                 var link = document.createElement('a');
+//                 link.href = window.URL.createObjectURL(blob);
+//                 link.download = "" + Math.random().toString(32).substring(2) + ".pdf";
+//                 // link.click();
+//                 // var pdfDataArray = new Array();
+//                 // pdfDataArray.push[link.href];
+//                 // pdfDataArray.push[link.href];
+//                 var pdfDataArray = [link.href, link.href];
+//                 // var pdfDataArray = [link.download, link.download];
+//                 mergeAllPDFs(pdfDataArray);
+
+                
+//                 // Analysts[index] = new TPDFAnalyst();
+        
+//                 // try {
+                  
+//                 //     //Analysts[index].LoadFromStream(blob);
+//                 //     Analysts[index].LoadFromStream(Stream);
+                    
+//                 //     if (Analysts[index].Encrypt) {
+//                 //         document.getElementById("p"+(index+1)).innerHTML =
+//                 //            (index+1) + 'つ目のファイル - 未対応';
+//                 //         document.getElementById("errmsg").innerHTML = 
+//                 //            '暗号化されているファイルには対応していません。';
+//                 //     } else {
+//                 //         document.getElementById("p"+(index+1)).innerHTML = 
+//                 //            (index+1) + 'つ目のファイル - [' + Analysts[index].PageCount +
+//                 //             'ページ / PDF' + Analysts[index].Version + ']';
+//                 //     }
+//                 // } catch (e) {
+//                 //     Analysts[index] = null;
+//                 //     document.getElementById("p"+(index+1)).innerHTML =
+//                 //            (index+1) + 'つ目のファイル - 未対応';        
+//                 //     document.getElementById("errmsg").innerHTML =
+//                 //        (index+1) +'つ目のファイルは未対応です。';
+//                 // }
+                
+//             }
+//         }).fail(function(data) {
+//             alert("エラー：" + data.statusText);
+//         }).always(function(data) {
+//         });
+//     }
+//     for(var i=1; i<10; i++){
+//         hoge_func(i);
+//     }
+//     hoge_func();
+//   //}
+// });
 
 
 
