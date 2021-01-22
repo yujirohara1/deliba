@@ -24,8 +24,8 @@ from models.seikyu import Seikyu, SeikyuSchema, VSeikyuA, VSeikyuASchema, VSeiky
 from print.print_seikyu import *
 from sqlalchemy.sql import text
 import json
-from rq import Queue
-from worker import conn
+# from rq import Queue
+# from worker import conn
 import PyPDF2
 # from bottle import route, run
 
@@ -75,7 +75,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 ma.init_app(app)
-q = Queue(connection=conn)
+# q = Queue(connection=conn)
         
 @app.route("/favicon.ico")
 def favicon():
