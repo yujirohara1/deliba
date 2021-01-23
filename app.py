@@ -261,11 +261,11 @@ def resPdf_printSeikyu(customerid, nentuki, randnum):
     make("file" + timestampStr, data_list)
 
     response = make_response()
-    response.data = open("output/" + "file" + timestampStr + ".pdf", "rb").read()
+    response.data = open("tmp/" + "file" + timestampStr + ".pdf", "rb").read()
     response.headers['Content-Disposition'] = "attachment; filename=unicode.pdf"
     response.mimetype = 'application/pdf'
     # return response
-    # return send_file("output/" + "file" + timestampStr + ".pdf", as_attachment=True)
+    # return send_file("tmp/" + "file" + timestampStr + ".pdf", as_attachment=True)
     return "file" + timestampStr + ".pdf"
   else:
     return "-1"
@@ -287,12 +287,12 @@ def print_pdfMergeSeikyusho():
   merger = PyPDF2.PdfFileMerger()
 
   for id_list in vals:
-    merger.append("output/" + id_list + "")
+    merger.append("tmp/" + id_list + "")
 
-  merger.write("output/" + timestampStr + ".pdf")
+  merger.write("tmp/" + timestampStr + ".pdf")
   merger.close()
   
-  return send_file("output/" + timestampStr + ".pdf", as_attachment=True)
+  return send_file("tmp/" + timestampStr + ".pdf", as_attachment=True)
 
         
 
@@ -309,11 +309,11 @@ def makeWrapper():
   make("file" + timestampStr)
 
   response = make_response()
-  response.data = open("output/" + "file" + timestampStr + ".pdf", "rb").read()
+  response.data = open("tmp/" + "file" + timestampStr + ".pdf", "rb").read()
   response.headers['Content-Disposition'] = "attachment; filename=unicode.pdf"
   response.mimetype = 'application/pdf'
   # return response
-  return send_file("output/" + "file" + timestampStr + ".pdf", as_attachment=True)
+  return send_file("tmp/" + "file" + timestampStr + ".pdf", as_attachment=True)
 
 
 @app.route('/getMstSetting_Main/<param_id>')

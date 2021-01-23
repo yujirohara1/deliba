@@ -37,7 +37,7 @@ def make(filename="resume", seikyulist=None): # ファイル名の設定
 
 
 def set_info(filename): 
-    pdf_canvas = canvas.Canvas("./output/{0}.pdf".format(filename), pagesize=landscape(A4), bottomup=False) # 保存先の設定 bottomup=Falseで座標の始点を左上へ変更
+    pdf_canvas = canvas.Canvas("./tmp/{0}.pdf".format(filename), pagesize=landscape(A4), bottomup=False) # 保存先の設定 bottomup=Falseで座標の始点を左上へ変更
     # ファイル情報の登録（任意）
     pdf_canvas.setAuthor("") # 作者
     pdf_canvas.setTitle("") # 表題
