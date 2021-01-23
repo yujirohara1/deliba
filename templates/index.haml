@@ -543,8 +543,13 @@
                 %tbody
       %div.modal-footer#modalSeikyuKanriFooter
         %div.row
-          %div.col-md-4.text-left#divSeikyuDeleteAll
-          %div.col-md-7.text-right#modalSeikyuKanriMessageArea
+          %div.col-md-2.text-left#divSeikyuDeleteAll
+          %div.col-md-2.text-left#divSeikyuPrintAll
+          %div.col-md-7.text-left#modalSeikyuKanriMessageArea
+            %div.row
+              %div.col-md-5.text-right#progressPrintSeikyuPercent
+              %div.col-md-7.text-left
+                %progress#progressSeikyuPrint(value="0" max="100")
           %div.col-md-1
             %button.btn.btn-default(type="button" data-dismiss="modal")
               閉じる

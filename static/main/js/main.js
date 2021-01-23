@@ -124,69 +124,69 @@ $(document).ready(function() {
 // }
 
 
-/*
-|| 請求書印刷
-*/
-//var files = new Array();
-var files = [];
-var index = 0;
-var blReady = false;
-$('#btnSeikyuPrint').on('click', function() {
-    var randnum = Math.floor(Math.random()*10101010101)
-    var customerid = $(".row_selected.customer").find("td:eq(0)").text();
-    var nentuki = $('#selNentuki').val();
-    var hoge_func = function (dummyId) {
-        $.ajax({
-            type: "GET",
-            url: "/printSeikyu/" + dummyId + "/" + nentuki + "/" + randnum + "",
-        }).done(function(data) {
-            if(data=="-1"){
+// /*
+// || 請求書印刷
+// */
+// //var files = new Array();
+// var files = [];
+// var index = 0;
+// var blReady = false;
+// $('#btnSeikyuPrint').on('click', function() {
+//     var randnum = Math.floor(Math.random()*10101010101)
+//     var customerid = $(".row_selected.customer").find("td:eq(0)").text();
+//     var nentuki = $('#selNentuki').val();
+//     var hoge_func = function (dummyId) {
+//         $.ajax({
+//             type: "GET",
+//             url: "/printSeikyu/" + dummyId + "/" + nentuki + "/" + randnum + "",
+//         }).done(function(data) {
+//             if(data=="-1"){
 
-            }else{
-                files.push(data);
-            }
-            if(dummyId==999){
-                blReady = true;
-            }
-        }).fail(function(data) {
-            alert("エラー：" + data.statusText);
-        }).always(function(data) {
-        });
-    }
+//             }else{
+//                 files.push(data);
+//             }
+//             if(dummyId==999){
+//                 blReady = true;
+//             }
+//         }).fail(function(data) {
+//             alert("エラー：" + data.statusText);
+//         }).always(function(data) {
+//         });
+//     }
 
-     for(var i=1; i<1000; i++){
-         hoge_func(i);
-     }
+//      for(var i=1; i<1000; i++){
+//          hoge_func(i);
+//      }
 
-    sample_func();
-//}
-});
+//     sample_func();
+// //}
+// });
 
-function sample_func() {
-    if ( !blReady ) {
-        setTimeout( sample_func, 2000 ); // wait 100ms and execute sample_func() again
-        return;
-    }
+// function sample_func() {
+//     if ( !blReady ) {
+//         setTimeout( sample_func, 2000 ); // wait 100ms and execute sample_func() again
+//         return;
+//     }
 
-    //1000人分のPDFファイル名をクライアントから伝えて、マージPDFをもらう
-    $.ajax({
-        type: "POST",
-        data: JSON.stringify({"data":files}),
-        url: "/pdfMergeSeikyusho",
-        contentType:'application/json'
-    }).done(function(data) {
-        var blob=new Blob([data], {type: "application/pdf"});//
-        var link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = "" + Math.random().toString(32).substring(2) + ".pdf";
-        link.click();
-    }).fail(function(data) {
-        alert("エラー：" + data.statusText);
-    }).always(function(data) {
-        $('#btnUpdList').removeAttr("disabled");
-   });
+//     //1000人分のPDFファイル名をクライアントから伝えて、マージPDFをもらう
+//     $.ajax({
+//         type: "POST",
+//         data: JSON.stringify({"data":files}),
+//         url: "/pdfMergeSeikyusho",
+//         contentType:'application/json'
+//     }).done(function(data) {
+//         var blob=new Blob([data], {type: "application/pdf"});//
+//         var link = document.createElement('a');
+//         link.href = window.URL.createObjectURL(blob);
+//         link.download = "" + Math.random().toString(32).substring(2) + ".pdf";
+//         link.click();
+//     }).fail(function(data) {
+//         alert("エラー：" + data.statusText);
+//     }).always(function(data) {
+//         $('#btnUpdList').removeAttr("disabled");
+//    });
 
-}
+// }
 
 
 // /*
@@ -510,6 +510,9 @@ $('#modalUpdList').on("shown.bs.modal", function (e) {
 $('#modalSeikyuKanri').on("shown.bs.modal", function (e) {
     $('#btnSeikyuIkkatuCreate').remove();
     $('#btnSeikyuIkkatuDelete').remove();
+    $('#btnSeikyuIkkatuPrint').remove();
+    $('#progressSeikyuPrint').hide();
+    
     createSeikyuKanriTable_Sub();
     createSeikyuKanriCsutomerTable_Sub(0, 0)
 });
@@ -522,6 +525,7 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
     var tuki = rowData.nengetu.split(".")[1];
     $('#btnSeikyuIkkatuCreate').remove();
     $('#btnSeikyuIkkatuDelete').remove();
+    $('#btnSeikyuIkkatuPrint').remove();
     if(rowData.getugaku==0 && rowData.ninzu==0){
         $('#divSeikyuMeisaiOrButton2').hide();
         var btnTag = "";
@@ -533,6 +537,7 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
         $('#divSeikyuMeisaiOrButton').append(btnTag);
     }else{
         $('#divSeikyuMeisaiOrButton2').show();
+        // 削除ボタンを作成
         var btnTag = "";
         btnTag = btnTag + '<a href="#" ';
         btnTag = btnTag + ' id="btnSeikyuIkkatuDelete" ';
@@ -540,6 +545,15 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
         btnTag = btnTag + ' class="btn btn-danger btn-sm" ';
         btnTag = btnTag + ' role="button">' + nen + '年' + tuki + '月分を全て削除' + '</a>';
         $('#divSeikyuDeleteAll').append(btnTag);
+
+        // 印刷ボタンを作成
+        btnTag = "";
+        btnTag = btnTag + '<a href="#" ';
+        btnTag = btnTag + ' id="btnSeikyuIkkatuPrint" ';
+        btnTag = btnTag + ' onclick="funcSeikyuIkkatuPrint(-1,'+ nen + "," + tuki +')" ';
+        btnTag = btnTag + ' class="btn btn-success btn-sm" ';
+        btnTag = btnTag + ' role="button">' + nen + '年' + tuki + '月分をプレビュー' + '</a>';
+        $('#divSeikyuPrintAll').append(btnTag);
     }
     createSeikyuKanriCsutomerTable_Sub(nen, tuki)
   } );
@@ -558,6 +572,113 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
         } else {
         }
   }
+
+
+  function funcSeikyuIkkatuPrint(customerid,nen, tuki){
+    if (confirm("請求書をプレビューします。よろしいですか？")) {
+        $('#btnSeikyuIkkatuPrint').attr("disabled","disabled");
+        $('#progressSeikyuPrint').show();
+        PrintSeikyu(customerid, nen, tuki);
+        //CreateSeikyuData(customerid, nen + "" + tuki, true)
+        // //createSeikyuKanriCsutomerTable_Sub(nen, tuki)
+        // var table = $('#tableCustomerListHenko').DataTable();
+        // var newData = [];
+        // var targetNum = JSON.parse(listChangeTarget).list;
+        // $.each(table.rows().data(), function(i, row){
+        //     if(row.list > targetNum ){
+        //         row.list--;
+        //         }
+        //     newData.push(row);
+        // });
+    } else {
+    }
+}
+
+
+
+/*
+|| 請求書印刷
+*/
+//var files = new Array();
+var files = [];
+var index = 0;
+var blReady = false;
+function PrintSeikyu(customerid, nen, tuki) {
+    $("#progressSeikyuPrint").val(0);
+    var randnum = Math.floor(Math.random()*10101010101)
+
+    var tmpPrint = function (dummyId, rowNo, rowSize) {
+        $.ajax({
+            type: "GET",
+            url: "/printSeikyu/" + dummyId + "/" + nen + ('00'+tuki).slice(-2) + "/" + randnum + "",
+        }).done(function(data) {
+            if(data=="-1"){
+
+            }else{
+                files.push(data);
+                //var currentNum = toNumber($("#myProgress").val());
+                var nowProgress = Math.floor((rowNo / rowSize) * 100);
+                $("#progressSeikyuPrint").val( nowProgress );
+                $('#progressPrintSeikyuPercent').html("PDFを作成しています。（" + nowProgress + "％）");
+            }
+            if(dummyId==999999999){
+                blReady = true;
+            }
+        }).fail(function(data) {
+            alert("エラー：" + data.statusText);
+        }).always(function(data) {
+        });
+    }
+    if(customerid=="-1"){
+        var table = $('#tableSeikyuKanriCustomer').DataTable();
+        var rowSize = $('#tableSeikyuKanriCustomer').DataTable().rows().data().length;
+        $.each(table.rows().data(), function(i, row){
+            tmpPrint(row.customer_id, i, rowSize);
+        });
+        //for(var i=1; i<1000; i++){
+        //    tmpPrint(i);
+         //}
+    } else{
+        tmpPrint(customerid, 99, 100);
+    }
+    tmpPrint(999999999, 99, 100);
+
+
+    MergePdfExecute();
+//}
+}
+
+function MergePdfExecute() {
+    if ( !blReady ) {
+        setTimeout( MergePdfExecute, 2000 ); // wait 100ms and execute sample_func() again
+        return;
+    }
+
+    $('#progressSeikyuPrint').hide();
+    $('#progressPrintSeikyuPercent').html("あと少しで出来上がります...");
+    
+    //1000人分のPDFファイル名をクライアントから伝えて、マージPDFをもらう
+    $.ajax({
+        type: "POST",
+        data: JSON.stringify({"data":files}),
+        url: "/pdfMergeSeikyusho",
+        contentType:'application/json'
+    }).done(function(data) {
+        var blob=new Blob([data], {type: "application/pdf"});//
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "" + Math.random().toString(32).substring(2) + ".pdf";
+        link.click();
+        setTimeout("$('#progressPrintSeikyuPercent').hide()", 3000);
+}).fail(function(data) {
+        alert("エラー：" + data.statusText);
+    }).always(function(data) {
+        $('#btnUpdList').removeAttr("disabled");
+   });
+
+}
+
+  
 
 function CreateSeikyuData(customerid, nentuki, sakujonomi){
 
