@@ -30,7 +30,7 @@ import PyPDF2
 # from bottle import route, run
 
 
-DELIMIT = "@|@|@";
+DELIMIT = "@|@|@"
 
 
 class FlaskWithHamlish(Flask):
@@ -209,10 +209,10 @@ def isDate(year,month,day):
 
 
 
-@app.route('/printSeikyu/<customerid>/<nentuki>/<randnum>')
+@app.route('/printSeikyu/<customerid>/<customeridB>/<nentuki>/<randnum>')
 @login_required
-def resPdf_printSeikyu(customerid, nentuki, randnum):
-
+def resPdf_printSeikyu(customerid, customeridB, nentuki, randnum):
+  # 
   sql = ""
   sql = sql + "  SELECT to_char(seikyu.deliver_ymd,'yyyy')        nen,                                                                                  " 
   sql = sql + "         to_char(seikyu.deliver_ymd,'mm')         tuki,                                                                                   " 
@@ -239,9 +239,10 @@ def resPdf_printSeikyu(customerid, nentuki, randnum):
   sql = sql + "  on                                                                                                                                     " 
   sql = sql + "      seikyu.customer_id = customer.id                                                                                                   " 
   sql = sql + "  where                                                                                                                                  " 
-  sql = sql + "       list IS NOT NULL and                                                                                                              " 
-  sql = sql + "        to_char(seikyu.deliver_ymd,'yyyy') = '2019' and                                                                                  " 
-  sql = sql + "        to_char(seikyu.deliver_ymd,'mm') = '12'                                                                                          " 
+  sql = sql + "       to_char(seikyu.deliver_ymd,'yyyy') = '" + nentuki[0:4] + "' and                                                                   " 
+  sql = sql + "       to_char(seikyu.deliver_ymd,'mm') = '" + nentuki[4:6] + "' and                                                                     " 
+  sql = sql + "       seikyu.customer_id = V_CUSTOMER_ID_V and                                                                                       " 
+  sql = sql + "       list IS NOT NULL                                                                                                                  " 
   sql = sql + "  ORDER  BY to_char(seikyu.deliver_ymd,'yyyy'),                                                                                          " 
   sql = sql + "            to_char(seikyu.deliver_ymd,'mm'),                                                                                            " 
   sql = sql + "            customer.list,                                                                                                               " 
@@ -249,34 +250,30 @@ def resPdf_printSeikyu(customerid, nentuki, randnum):
   sql = sql + "            seikyu.item_id,                                                                                                              " 
   sql = sql + "            seikyu.deliver_ymd;                                                                                                          " 
 
+  sqlA = sql.replace("V_CUSTOMER_ID_V",customerid)
+  sqlB = sql.replace("V_CUSTOMER_ID_V",customeridB)
+  # sql = " select * from v_seikyu_b where nen = '2021' and tuki = '02' and customer_id = " + customerid
 
-  sql = " select * from v_seikyu_b where nen = '2021' and tuki = '02' and customer_id = " + customerid
+  if db.session.execute(text(sqlA)).fetchone() is not None:
+    data_listA = db.session.execute(text(sqlA))
 
-  if db.session.execute(text(sql)).fetchone() is not None:
-    data_list = db.session.execute(text(sql))
+    if db.session.execute(text(sqlB)).fetchone() is not None:
+      data_listB = db.session.execute(text(sqlB))
+    else:
+      data_listB = None
+    
     timestamp = datetime.datetime.now()
     timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
-    # make("file" + timestampStr, data_list)
-    # with app.app_context():
-    make("file" + timestampStr, data_list)
+    make("file" + timestampStr, data_listA, data_listB)
 
     response = make_response()
     response.data = open("tmp/" + "file" + timestampStr + ".pdf", "rb").read()
     response.headers['Content-Disposition'] = "attachment; filename=unicode.pdf"
     response.mimetype = 'application/pdf'
-    # return response
-    # return send_file("tmp/" + "file" + timestampStr + ".pdf", as_attachment=True)
     return "file" + timestampStr + ".pdf"
   else:
     return "-1"
-    # result = q.enqueue(makeWrapper, data_list) # 本番用
-    # makeWrapper(data_list) #開発用
-    # makeWrapper()
-    # with app.app_context():
-    # result = q.enqueue(makeWrapper) # 本番用
-      # print(result)
 
-    # return "1"
 
 @app.route('/pdfMergeSeikyusho',methods=["GET", "POST"])
 @login_required
@@ -286,8 +283,32 @@ def print_pdfMergeSeikyusho():
   vals = request.json["data"]
   merger = PyPDF2.PdfFileMerger()
 
-  for id_list in vals:
-    merger.append("tmp/" + id_list + "")
+  # for id_list in vals:
+  #   try:
+  #     merger.append("tmp/" + id_list + "")
+  #   except:
+  #     errorfile = id_list
+  #     import traceback
+  #     traceback.print_exc()
+
+  idx = 0
+  tryCnt = 0
+  while True :
+    try:
+      # merger.append("tmp/" + vals.pop(idx) + "")
+      # idx = idx + 1
+      merger.append("tmp/" + vals.pop(0) + "")
+    except:
+      print(vals[0])
+      # import traceback
+      # traceback.print_exc()
+    finally:
+      tryCnt = tryCnt + 1
+
+    if len(vals)==0 :
+      break
+    if tryCnt > 9999 :
+      break
 
   merger.write("tmp/" + timestampStr + ".pdf")
   merger.close()

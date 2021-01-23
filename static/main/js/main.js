@@ -574,22 +574,23 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
   }
 
 
+  var files = [];
+  var index = 0;
+  var blReady = false;
   function funcSeikyuIkkatuPrint(customerid,nen, tuki){
     if (confirm("請求書をプレビューします。よろしいですか？")) {
         $('#btnSeikyuIkkatuPrint').attr("disabled","disabled");
         $('#progressSeikyuPrint').show();
-        PrintSeikyu(customerid, nen, tuki);
-        //CreateSeikyuData(customerid, nen + "" + tuki, true)
-        // //createSeikyuKanriCsutomerTable_Sub(nen, tuki)
-        // var table = $('#tableCustomerListHenko').DataTable();
-        // var newData = [];
-        // var targetNum = JSON.parse(listChangeTarget).list;
-        // $.each(table.rows().data(), function(i, row){
-        //     if(row.list > targetNum ){
-        //         row.list--;
-        //         }
-        //     newData.push(row);
-        // });
+        files = [];
+        index = 0;
+        blReady = false;
+        if(toNumber($(".row_selected.seikyuKanri2").find("td:eq(0)").text())!=0){
+            tokutei = toNumber($(".row_selected.seikyuKanri2").find("td:eq(0)").text());
+        }else{
+            tokutei = customerid;
+        }
+        
+        PrintSeikyu(tokutei, nen, tuki);
     } else {
     }
 }
@@ -599,18 +600,16 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
 /*
 || 請求書印刷
 */
-//var files = new Array();
-var files = [];
-var index = 0;
-var blReady = false;
 function PrintSeikyu(customerid, nen, tuki) {
     $("#progressSeikyuPrint").val(0);
+    $('#progressPrintSeikyuPercent').show();
+
     var randnum = Math.floor(Math.random()*10101010101)
 
-    var tmpPrint = function (dummyId, rowNo, rowSize) {
+    var tmpPrint = function (dummyA, dummyB, rowNo, rowSize) {
         $.ajax({
             type: "GET",
-            url: "/printSeikyu/" + dummyId + "/" + nen + ('00'+tuki).slice(-2) + "/" + randnum + "",
+            url: "/printSeikyu/" + dummyA + "/" + dummyB + "/" + nen + ('00'+tuki).slice(-2) + "/" + randnum + "",
         }).done(function(data) {
             if(data=="-1"){
 
@@ -621,7 +620,8 @@ function PrintSeikyu(customerid, nen, tuki) {
                 $("#progressSeikyuPrint").val( nowProgress );
                 $('#progressPrintSeikyuPercent').html("PDFを作成しています。（" + nowProgress + "％）");
             }
-            if(dummyId==999999999){
+            //if(dummyA==999999999){
+            if(files.length == Math.ceil(rowSize/2)){
                 blReady = true;
             }
         }).fail(function(data) {
@@ -632,25 +632,32 @@ function PrintSeikyu(customerid, nen, tuki) {
     if(customerid=="-1"){
         var table = $('#tableSeikyuKanriCustomer').DataTable();
         var rowSize = $('#tableSeikyuKanriCustomer').DataTable().rows().data().length;
+        var Asan=0;
         $.each(table.rows().data(), function(i, row){
-            tmpPrint(row.customer_id, i, rowSize);
+            if(Asan==0 && (i+1)==rowSize){ //最終レコードでAが空白の場合１人でも実行する
+                Asan = row.customer_id;
+                tmpPrint(Asan, 0, i, rowSize);
+            }else if(Asan==0){
+                Asan = row.customer_id;
+            }else{
+                tmpPrint(Asan, row.customer_id, i, rowSize);
+                Asan = 0;
+            }
         });
         //for(var i=1; i<1000; i++){
         //    tmpPrint(i);
          //}
     } else{
-        tmpPrint(customerid, 99, 100);
+        tmpPrint(customerid, 0, 1, 1);
     }
-    tmpPrint(999999999, 99, 100);
-
-
+    //setTimeout( tmpPrint(999999999, 999999999, 99, 100), 100 );
     MergePdfExecute();
 //}
 }
 
 function MergePdfExecute() {
     if ( !blReady ) {
-        setTimeout( MergePdfExecute, 2000 ); // wait 100ms and execute sample_func() again
+        setTimeout( MergePdfExecute, 100 ); // wait 100ms and execute sample_func() again
         return;
     }
 
@@ -669,11 +676,11 @@ function MergePdfExecute() {
         link.href = window.URL.createObjectURL(blob);
         link.download = "" + Math.random().toString(32).substring(2) + ".pdf";
         link.click();
-        setTimeout("$('#progressPrintSeikyuPercent').hide()", 3000);
-}).fail(function(data) {
+    }).fail(function(data) {
         alert("エラー：" + data.statusText);
     }).always(function(data) {
-        $('#btnUpdList').removeAttr("disabled");
+        $('#btnSeikyuIkkatuPrint').removeAttr("disabled");
+        setTimeout("$('#progressPrintSeikyuPercent').hide(); $('#progressPrintSeikyuPercent').html('')", 3000);
    });
 
 }
