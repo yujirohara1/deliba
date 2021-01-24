@@ -1467,19 +1467,24 @@ function createSeikyuTables_Main(customerId, nentuki){
 
 function getSeikyuQuantityColorFlg(val, row, youbiwa){
     var rows = $('#tableDaicho').DataTable().rows().data();
+    var teiki;
     for(var i=0; i<rows.length; i++){
         if(rows[i].item_id == row.item_id){
             var ret = ""
-            if(youbiwa == "月"){ if(toNumber(rows[i].getu)==toNumber(val)){return (val==0 ? '' : val);} }
-            if(youbiwa == "火"){ if(toNumber(rows[i].ka)==toNumber(val)){return (val==0 ? '' : val);} }
-            if(youbiwa == "水"){ if(toNumber(rows[i].sui)==toNumber(val)){return (val==0 ? '' : val);} }
-            if(youbiwa == "木"){ if(toNumber(rows[i].moku)==toNumber(val)){return (val==0 ? '' : val);} }
-            if(youbiwa == "金"){ if(toNumber(rows[i].kin)==toNumber(val)){return (val==0 ? '' : val);} }
-            if(youbiwa == "土"){ if(toNumber(rows[i].dou)==toNumber(val)){return (val==0 ? '' : val);} }
-            if(youbiwa == "日"){ if(toNumber(rows[i].niti)==toNumber(val)){return (val==0 ? '' : val);} }
+            if(youbiwa == "月"){teiki=rows[i].getu; }
+            if(youbiwa == "火"){teiki=rows[i].ka;   }
+            if(youbiwa == "水"){teiki=rows[i].sui;  }
+            if(youbiwa == "木"){teiki=rows[i].moku; }
+            if(youbiwa == "金"){teiki=rows[i].kin;  }
+            if(youbiwa == "土"){teiki=rows[i].dou;  }
+            if(youbiwa == "日"){teiki=rows[i].niti; }
+
+            if(toNumber(teiki)==toNumber(val)){return (val==0 ? '' : val);} 
         }
     }
-    return "<span style='color:red'/>" + (val==0 ? '' : (val==null ? '' : val));
+    //
+    //return "<span style='color:red' title='定期:" + teiki + "'/>" + (val==0 ? '' : (val==null ? '' : val));
+    return "<span style='color:red' aria-label='定期なら" + teiki + "' data-balloon-pos='left'/>" + (val==0 ? '' : (val==null ? '' : val));
 }
 
 
