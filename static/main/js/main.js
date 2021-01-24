@@ -1374,81 +1374,122 @@ function createSeikyuTables_Main(customerId, nentuki){
     // btnTag = btnTag + ' class="btn btn-default btn-sm" ';
     // btnTag = btnTag + ' role="button">編集</a>';
     //$('#thSeikyuItemName').append(btnTag);
-    
-    //台帳データテーブルを作成
-    $("#tableSeikyu").DataTable({
-        bInfo: false,
-        bSort: false,
-        destroy: true,
-        "processing": true,
-        ajax: {
-            url: "/getVSeikyuA_ByCusotmerIdAndTuki/" + customerId + "/" + nentuki + "",
-            dataType: "json",
-            dataSrc: function ( json ) {
-                return JSON.parse(json.data);
+    //
+
+    $.getJSON("/getCustomer_ById/" + customerId + "", function(json) {
+        list = JSON.parse(json.data);
+        if (list.length==1){
+            var customerName = list[0].name1;
+            var nentukiMoji = (nentuki+"").substr(0,4) + "年 " + (nentuki+"").substr(4,2) + " 月 "
+            var customerNameTag = "<span id='spnCustomerLabel' style='font-size:18px'>" + nentukiMoji + "<br>" + customerName + "</span>"
+        } else {
+            var customerNameTag = "";
+        }
+        //請求データテーブルを作成
+        $("#tableSeikyu").DataTable({
+            bInfo: false,
+            bSort: false,
+            destroy: true,
+            "processing": true,
+            ajax: {
+                url: "/getVSeikyuA_ByCusotmerIdAndTuki/" + customerId + "/" + nentuki + "",
+                dataType: "json",
+                dataSrc: function ( json ) {
+                    return JSON.parse(json.data);
+                },
+                contentType:"application/json; charset=utf-8",
+                complete: function () {
+                    return; 
+                }
             },
-            contentType:"application/json; charset=utf-8",
-            complete: function () {
-                return; 
-            }
-        },
-        columns: [
-            { data: 'item_id'     ,width: '7%'},
-            { data: 'item_name1'  ,width: '34%'},
-            { data: 'price'          ,width: '7%'   ,className: 'dt-body-right'  ,render: function (data, type, row) { return (data*1).toLocaleString();} },
-            { data: 'quantity_d01', title: youbiWa[0]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d02', title: youbiWa[1]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d03', title: youbiWa[2]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d04', title: youbiWa[3]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d05', title: youbiWa[4]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d06', title: youbiWa[5]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d07', title: youbiWa[6]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d08', title: youbiWa[7]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d09', title: youbiWa[8]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d10', title: youbiWa[9]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d11', title: youbiWa[10]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d12', title: youbiWa[11]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d13', title: youbiWa[12]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d14', title: youbiWa[13]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d15', title: youbiWa[14]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d16', title: youbiWa[15]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d17', title: youbiWa[16]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d18', title: youbiWa[17]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d19', title: youbiWa[18]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d20', title: youbiWa[19]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d21', title: youbiWa[20]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d22', title: youbiWa[21]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d23', title: youbiWa[22]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d24', title: youbiWa[23]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d25', title: youbiWa[24]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d26', title: youbiWa[25]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d27', title: youbiWa[26]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d28', title: youbiWa[27]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d29', title: youbiWa[28]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d30', title: youbiWa[29]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'quantity_d31', title: youbiWa[30]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} }
-        ],
-        language: {
-           url: "../static/main/js/japanese.json"
-        },
-        "scrollY":        "150px",
-        "pageLength": 1000,
-        searching: false,
-        info: false,
-        paging: false,
-        "order": [ 0, "asc" ],
-        "lengthMenu": [100, 300, 500, 1000],
-        dom:"<'row'<'col-sm-12'tr>>" +
-            "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
-            "<'row'<'col-sm-5'i><'col-sm-7'p>>"
-    });
+            columns: [
+                { data: 'item_id'     ,width: '7%'},
+                { data: 'item_name1'  , title: customerNameTag, width: '34%'},
+                { data: 'price'          ,width: '7%'   ,className: 'dt-body-right'  ,render: 
+                    function (data, type, row) { 
+                        return (data*1).toLocaleString();
+                    } 
+                },
+                { data: 'quantity_d01', title: youbiWa[0]  ,width: '2%'    ,className: 'dt-body-center' ,render:  function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[0] );}},
+                { data: 'quantity_d02', title: youbiWa[1]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row)  { return getSeikyuQuantityColorFlg(data, row, youbiWa[1] );}},
+                { data: 'quantity_d03', title: youbiWa[2]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row)  { return getSeikyuQuantityColorFlg(data, row, youbiWa[2] );}},
+                { data: 'quantity_d04', title: youbiWa[3]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row)  { return getSeikyuQuantityColorFlg(data, row, youbiWa[3] );}},
+                { data: 'quantity_d05', title: youbiWa[4]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row)  { return getSeikyuQuantityColorFlg(data, row, youbiWa[4] );}},
+                { data: 'quantity_d06', title: youbiWa[5]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row)  { return getSeikyuQuantityColorFlg(data, row, youbiWa[5] );}},
+                { data: 'quantity_d07', title: youbiWa[6]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row)  { return getSeikyuQuantityColorFlg(data, row, youbiWa[6] );}},
+                { data: 'quantity_d08', title: youbiWa[7]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row)  { return getSeikyuQuantityColorFlg(data, row, youbiWa[7] );}},
+                { data: 'quantity_d09', title: youbiWa[8]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row)  { return getSeikyuQuantityColorFlg(data, row, youbiWa[8] );}},
+                { data: 'quantity_d10', title: youbiWa[9]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row)  { return getSeikyuQuantityColorFlg(data, row, youbiWa[9] );}},
+                { data: 'quantity_d11', title: youbiWa[10]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[10]);}},
+                { data: 'quantity_d12', title: youbiWa[11]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[11]);}},
+                { data: 'quantity_d13', title: youbiWa[12]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[12]);}},
+                { data: 'quantity_d14', title: youbiWa[13]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[13]);}},
+                { data: 'quantity_d15', title: youbiWa[14]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[14]);}},
+                { data: 'quantity_d16', title: youbiWa[15]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[15]);}},
+                { data: 'quantity_d17', title: youbiWa[16]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[16]);}},
+                { data: 'quantity_d18', title: youbiWa[17]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[17]);}},
+                { data: 'quantity_d19', title: youbiWa[18]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[18]);}},
+                { data: 'quantity_d20', title: youbiWa[19]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[19]);}},
+                { data: 'quantity_d21', title: youbiWa[20]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[20]);}},
+                { data: 'quantity_d22', title: youbiWa[21]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[21]);}},
+                { data: 'quantity_d23', title: youbiWa[22]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[22]);}},
+                { data: 'quantity_d24', title: youbiWa[23]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[23]);}},
+                { data: 'quantity_d25', title: youbiWa[24]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[24]);}},
+                { data: 'quantity_d26', title: youbiWa[25]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[25]);}},
+                { data: 'quantity_d27', title: youbiWa[26]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[26]);}},
+                { data: 'quantity_d28', title: youbiWa[27]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[27]);}},
+                { data: 'quantity_d29', title: youbiWa[28]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[28]);}},
+                { data: 'quantity_d30', title: youbiWa[29]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[29]);}},
+                { data: 'quantity_d31', title: youbiWa[30]  ,width: '2%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return getSeikyuQuantityColorFlg(data, row, youbiWa[30]);}}
+
+            ],
+            language: {
+               url: "../static/main/js/japanese.json"
+            },
+            "scrollY":        "150px",
+            "pageLength": 1000,
+            searching: false,
+            info: false,
+            paging: false,
+            "order": [ 0, "asc" ],
+            "lengthMenu": [100, 300, 500, 1000],
+            dom:"<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+        });
     
+      });
+
 }
 
 
 
 
+function getSeikyuQuantityColorFlg(val, row, youbiwa){
+    var rows = $('#tableDaicho').DataTable().rows().data();
+    for(var i=0; i<rows.length; i++){
+        if(rows[i].item_id == row.item_id){
+            var ret = ""
+            if(youbiwa == "月"){ if(toNumber(rows[i].getu)==toNumber(val)){return (val==0 ? '' : val);} }
+            if(youbiwa == "火"){ if(toNumber(rows[i].ka)==toNumber(val)){return (val==0 ? '' : val);} }
+            if(youbiwa == "水"){ if(toNumber(rows[i].sui)==toNumber(val)){return (val==0 ? '' : val);} }
+            if(youbiwa == "木"){ if(toNumber(rows[i].moku)==toNumber(val)){return (val==0 ? '' : val);} }
+            if(youbiwa == "金"){ if(toNumber(rows[i].kin)==toNumber(val)){return (val==0 ? '' : val);} }
+            if(youbiwa == "土"){ if(toNumber(rows[i].dou)==toNumber(val)){return (val==0 ? '' : val);} }
+            if(youbiwa == "日"){ if(toNumber(rows[i].niti)==toNumber(val)){return (val==0 ? '' : val);} }
+        }
+    }
+    return "<span style='color:red'/>" + (val==0 ? '' : (val==null ? '' : val));
+}
 
+
+
+                        // var flg = getSeikyuQuantityColorFlg(data, row, youbiWa[0]);
+                        // if(flg==1){
+                        //     return 
+                        // }else{
+                        //     return (data==0 ? '' : data);
+                        // }
 
 
 
@@ -1620,7 +1661,7 @@ $('#modalAddDaicho').on("show.bs.modal", function (e) {
 */
 function createDaichoTables_Main(customerId){
     //台帳データテーブルを作成
-    $("#tableDaicho").DataTable({
+    var table = $("#tableDaicho").DataTable({
         bInfo: true,
         bSort: false,
         destroy: true,
@@ -1662,6 +1703,9 @@ function createDaichoTables_Main(customerId){
             "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
             "<'row'<'col-sm-5'i><'col-sm-7'p>>"
     });
+
+    // var table = $('#tableDaicho').DataTable();
+    // table.columns.adjust().draw();
 }
 
 function fncNumOnly(){
@@ -1813,6 +1857,8 @@ $('#tableSeikyu tbody').on( 'click', 'td', function () {
                 var qua;
                 if(chil.id == "inputQuantityTmp"){
                     qua = $('#inputQuantityTmp').val();
+                } else if(chil.tagName=="SPAN"){
+                    qua = chil.innerText;
                 }
                 $('#tableSeikyu')[0].rows[r].cells[c].removeChild(chil);
                 $('#tableSeikyu')[0].rows[r].cells[c].innerText = qua;

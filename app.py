@@ -69,8 +69,8 @@ for i in users.values():
 def load_user(user_id):
     return users.get(int(user_id))
 
-# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用
+db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
+# db_uri = os.environ.get('DATABASE_URL') #本番用
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -115,6 +115,13 @@ def resJson_getVSeikyuA_ByCusotmerId(customerid, nentuki):
       seikyu = VSeikyuA.query.filter(VSeikyuA.customer_id==customerid, VSeikyuA.nen==nentuki[0:4], VSeikyuA.tuki==nentuki[4:6]).all()
       seikyu_schema = VSeikyuASchema(many=True)
       return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
+
+@app.route('/getCustomer_ById/<customerid>')
+@login_required
+def resJson_getCustomer_ById(customerid):
+      customer = Customer.query.filter(Customer.id==customerid).all()
+      customer_schema = CustomerSchema(many=True)
+      return jsonify({'data': customer_schema.dumps(customer, ensure_ascii=False)})
 
 
 @app.route('/getSeikyuNengetuShukei_Main')
