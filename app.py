@@ -23,6 +23,7 @@ from models.daicho import Daicho, DaichoSchema, VDaichoA, VDaichoASchema
 from models.seikyu import Seikyu, SeikyuSchema, VSeikyuA, VSeikyuASchema, VSeikyuB, VSeikyuBSchema, VSeikyuC, VSeikyuCSchema
 from print.print_seikyu import *
 from sqlalchemy.sql import text
+from sqlalchemy import distinct
 import json
 # from rq import Queue
 # from worker import conn
@@ -152,6 +153,7 @@ def dbUpdate_insSeikyu(customerid, nentuki, sakujonomi):
     db.session.commit()
     return "1"
   
+  blAri = False
   for d in range(1,32):
     if isDate(y, m, d):
       deliverymdstr="%04d/%02d/%02d"%(y,m,d)
@@ -189,7 +191,7 @@ def dbUpdate_insSeikyu(customerid, nentuki, sakujonomi):
       
       if db.session.execute(text(sql)).fetchone() is not None:
         # print(db.session.execute(text(sql)).fetchone())
-        
+        blAri = True
         data_list = db.session.execute(text(sql))
         seikyus = [{'customer_id':d[0], 'deliver_ymd': d[1], 'item_id': d[2],
                   'price': d[3], 'price_sub': d[4], 'quantity': d[5], 'user_id': current_user.name, 'ymdt': d[7]} for d in data_list]
@@ -197,7 +199,10 @@ def dbUpdate_insSeikyu(customerid, nentuki, sakujonomi):
         db.session.execute(Seikyu.__table__.insert(), seikyus)
         db.session.commit()
   
-  return "1"
+  if blAri :
+    return str(customerid)
+  else :
+    return "-1"
   
 def isDate(year,month,day):
     try:
@@ -346,6 +351,13 @@ def resJson_getMstSetting_Main(param_id):
   setting_schema = MstSettingSchema(many=True)
   return jsonify({'data': setting_schema.dumps(setting, ensure_ascii=False)})
 
+
+@app.route('/getDaichoCustomer_SeikyuSub')
+@login_required
+def resJson_getDaichoCustomer_SeikyuSub():
+  customer = Customer.query.filter(Customer.list!=None).all()
+  customer_schema = CustomerSchema(many=True)
+  return jsonify({'data': customer_schema.dumps(customer, ensure_ascii=False)})
 
 @app.route('/updAddDaicho/<param>')
 @login_required
