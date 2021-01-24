@@ -12,6 +12,7 @@ import datetime
 import locale
 from api.database import db, ma
 from sqlalchemy.sql import text
+import math
 
 font_type = 'HeiseiKakuGo-W5'
 
@@ -87,6 +88,113 @@ def print_waku_subA(pdf_canvas):
     pdf_canvas.setFont(font_type, 14)
     pdf_canvas.drawString(554,26+297, '請    求    書')
 
+    # 【右】商品名等 見出し 上段
+    pdf_canvas.setFont(font_type, 9)
+    pdf_canvas.drawString(397,101, '商　　品　　名')
+    pdf_canvas.setFont(font_type, 8)
+    pdf_canvas.drawString(480,101, '数量')
+    pdf_canvas.setFont(font_type, 9)
+    pdf_canvas.drawString(502,101, '単価')
+    pdf_canvas.drawString(537,101, '小　計')
+
+    # 【右】商品名等 見出し 上段
+    pdf_canvas.setFont(font_type, 9)
+    pdf_canvas.drawString(397,101+298, '商　　品　　名')
+    pdf_canvas.setFont(font_type, 8)
+    pdf_canvas.drawString(480,101+298, '数量')
+    pdf_canvas.setFont(font_type, 9)
+    pdf_canvas.drawString(502,101+298, '単価')
+    pdf_canvas.drawString(537,101+298, '小　計')
+
+
+    # 上段
+    pdf_canvas.rect(375, 92, 200, 13, stroke=1, fill=0) # 商品名等 見出し
+    pdf_canvas.rect(375, 105, 453, 76, stroke=1, fill=0) # 1~15の大枠
+    pdf_canvas.rect(575, 80, 253, 12, stroke=1, fill=0) # 1～15の日付　1,2,3,4,5,,,
+    pdf_canvas.rect(575, 92, 253, 13, stroke=1, fill=0) # 1～15の曜日　月火水木金土,,,
+    pdf_canvas.rect(479, 92, 18, 89, stroke=1, fill=0) # 1~15の大枠　本数を囲う縦長の四角
+    pdf_canvas.rect(527, 92, 48, 89, stroke=1, fill=0) # 1~15の大枠　商品小計を囲う縦長の四角
+
+    pdf_canvas.rect(558, 207, 270, 77, stroke=1, fill=0) # 16以降の大枠
+    pdf_canvas.rect(558, 181, 270, 13, stroke=1, fill=0) # 16以降の日付　1,2,3,4,5,,,
+    pdf_canvas.rect(558, 194, 270, 13, stroke=1, fill=0) # 16以降の曜日　月火水木金土,,,
+
+    pdf_canvas.rect(592, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角1
+    pdf_canvas.rect(592+34, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34+33, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34+33+34, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34+33+34+33, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+
+    pdf_canvas.rect(558, 80+101, 17, 103, stroke=1, fill=0) # 16日分の縦四角（下枠のみ）
+
+    pdf_canvas.rect(375, 117, 453, 13, stroke=1, fill=0) # 商品２の横枠 上
+    pdf_canvas.rect(375, 117+26, 453, 13, stroke=1, fill=0) # 商品２の横枠 上
+    pdf_canvas.rect(375, 117+26+26, 453, 12, stroke=1, fill=0) # 商品２の横枠 上
+
+    pdf_canvas.rect(558, 220, 270, 13, stroke=1, fill=0) # 商品２の横枠 下
+    pdf_canvas.rect(558, 220+26, 270, 13, stroke=1, fill=0) # 商品２の横枠 下
+    pdf_canvas.rect(558, 220+26+26, 270, 12, stroke=1, fill=0) # 商品２の横枠 下
+
+
+    # 下段
+    pdf_canvas.rect(375, 92+297, 200, 13, stroke=1, fill=0) # 商品名等 見出し
+    pdf_canvas.rect(375, 105+297, 453, 76, stroke=1, fill=0) # 1~15の大枠
+    pdf_canvas.rect(575, 80+297, 253, 12, stroke=1, fill=0) # 1～15の日付　1,2,3,4,5,,,
+    pdf_canvas.rect(575, 92+297, 253, 13, stroke=1, fill=0) # 1～15の曜日　月火水木金土,,,
+    pdf_canvas.rect(479, 92+297, 18, 89, stroke=1, fill=0) # 1~15の大枠　本数を囲う縦長の四角
+    pdf_canvas.rect(527, 92+297, 48, 89, stroke=1, fill=0) # 1~15の大枠　商品小計を囲う縦長の四角
+
+    pdf_canvas.rect(558, 207+297, 270, 77, stroke=1, fill=0) # 16以降の大枠
+    pdf_canvas.rect(558, 181+297, 270, 13, stroke=1, fill=0) # 16以降の日付　1,2,3,4,5,,,
+    pdf_canvas.rect(558, 194+297, 270, 13, stroke=1, fill=0) # 16以降の曜日　月火水木金土,,,
+
+    pdf_canvas.rect(592, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角1
+    pdf_canvas.rect(592+34, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34+33, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34+33+34, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34+33+34+33, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+
+    pdf_canvas.rect(558, 80+101+297, 17, 103, stroke=1, fill=0) # 16日分の縦四角（下枠のみ）
+
+    pdf_canvas.rect(375, 117+297, 453, 13, stroke=1, fill=0) # 商品２の横枠 上
+    pdf_canvas.rect(375, 117+26+297, 453, 13, stroke=1, fill=0) # 商品２の横枠 上
+    pdf_canvas.rect(375, 117+26+26+297, 453, 12, stroke=1, fill=0) # 商品２の横枠 上
+
+    pdf_canvas.rect(558, 220+297, 270, 13, stroke=1, fill=0) # 商品２の横枠 下
+    pdf_canvas.rect(558, 220+26+297, 270, 13, stroke=1, fill=0) # 商品２の横枠 下
+    pdf_canvas.rect(558, 220+26+26+297, 270, 12, stroke=1, fill=0) # 商品２の横枠 下
+
+    #【入金伝票のグリッド作成】
+    # 【右】商品名等 見出し 上段
+    pdf_canvas.setFont(font_type, 8)
+    pdf_canvas.drawString(47,204, '商　品　名')
+    pdf_canvas.drawString(127,204, '数量')
+    pdf_canvas.drawString(145,204, '単価')
+    pdf_canvas.drawString(165,204, '小　計')
+    pdf_canvas.rect(45, 195, 150, 89, stroke=1, fill=0) #
+    pdf_canvas.rect(45, 195+12, 150, 12, stroke=1, fill=0) #
+    pdf_canvas.rect(45, 195+12+25, 150, 13, stroke=1, fill=0) #
+    pdf_canvas.rect(45, 195+12+25+26, 150, 13, stroke=1, fill=0) #
+    pdf_canvas.rect(126, 195, 18, 89, stroke=1, fill=0) #
+    pdf_canvas.rect(144, 195, 19, 89, stroke=1, fill=0) #
+
+    #【入金伝票のグリッド作成】
+    # 【右】商品名等 見出し 下段
+    pdf_canvas.setFont(font_type, 8)
+    pdf_canvas.drawString(47,204+297, '商　品　名')
+    pdf_canvas.drawString(127,204+297, '数量')
+    pdf_canvas.drawString(145,204+297, '単価')
+    pdf_canvas.drawString(165,204+297, '小　計')
+    pdf_canvas.rect(45, 195+297, 150, 89, stroke=1, fill=0) #
+    pdf_canvas.rect(45, 195+12+297, 150, 12, stroke=1, fill=0) #
+    pdf_canvas.rect(45, 195+12+25+297, 150, 13, stroke=1, fill=0) #
+    pdf_canvas.rect(45, 195+12+25+26+297, 150, 13, stroke=1, fill=0) #
+    pdf_canvas.rect(126, 195+297, 18, 89, stroke=1, fill=0) #
+    pdf_canvas.rect(144, 195+297, 19, 89, stroke=1, fill=0) #
 
 # 縦横線のみ
 def print_waku_kihon(pdf_canvas):
@@ -128,32 +236,35 @@ def print_string_sub(pdf_canvas, start_x, start_y, data):
   itemKinKei = 0
   itemQuantity = {}
   itemTanka = {}
+  zeikb = 0
   for row in data:
 
     gyoNo = gyoNo + 1
 
     if gyoNo == 1 :
 
+      zeikb = int(row["zei_kb"])
+
       # 顧客ID
       font_size = def_font_size
       pdf_canvas.setFont(def_font_type, font_size)
-      pdf_canvas.drawString(start_x,         start_y+5, str(row["customer_id"]))     # 左　顧客ID
+      pdf_canvas.drawString(start_x,         start_y+5, str(row["customer_id"])) # 左　顧客ID
       pdf_canvas.drawString(start_x+178,     start_y+5, str(row["customer_id"])) # 中　顧客ID
       pdf_canvas.drawString(start_x+333,     start_y+5, str(row["customer_id"])) # 右　顧客ID
-# 
+
       # 氏名
       font_size = def_font_size+2
       pdf_canvas.setFont(def_font_type, font_size)
       pdf_canvas.drawString(start_x,         start_y+44, row["customer_name1"] + '　　様') 
       pdf_canvas.drawString(start_x+178,     start_y+44, row["customer_name1"] + '　　様') 
       pdf_canvas.drawString(start_x+178+155, start_y+19, row["customer_name1"] + '　　様') 
-# 
+
        # 顧客名のアンダーライン
       pdf_canvas.setLineWidth(0.5)
       pdf_canvas.line(start_x-2,         start_y+44+3,  start_x-2    +150, start_y+44+3)
       pdf_canvas.line(start_x+178-2,     start_y+44+3,  start_x+178-2+135, start_y+44+3)
       pdf_canvas.line(start_x+333-2,     start_y+19+3,  start_x+333-2+140, start_y+19+3)
-# 
+
       # ○年○月分
       font_size = def_font_size+1
       pdf_canvas.setFont(def_font_type, font_size)
@@ -161,12 +272,30 @@ def print_string_sub(pdf_canvas, start_x, start_y, data):
       pdf_canvas.drawString(start_x+37+158,  start_y+76, '　　　' + row["nen"] +'年　' + row["tuki"] + '月分') 
       pdf_canvas.drawString(start_x+510,     start_y+21, row["nen"] +'年　' + row["tuki"] + '月分') 
 
+      # 請求額のアンダーライン
+      pdf_canvas.setLineWidth(0.5)
+      pdf_canvas.line(start_x-2,         start_y+106+14+3+10,  start_x-2    +150, start_y+106+14+3+10)
+      pdf_canvas.line(start_x+178-2,     start_y+106+14+3+10,  start_x+178-2+135, start_y+106+14+3+10)
+      pdf_canvas.line(start_x+660-2,     start_y+20    +3,  start_x+660-2+132, start_y+20    +3)
+
+      font_size = def_font_size
+      pdf_canvas.setFont(def_font_type, font_size)
+      pdf_canvas.drawString(start_x+178+155+6, start_y+170, 'ご希望の方には、口座引落しを') 
+      pdf_canvas.drawString(start_x+178+155+6, start_y+181, 'ご案内しております。ご相談ください。') 
+      
+      pdf_canvas.setFont(def_font_type, def_font_size+6)
+      pdf_canvas.drawString(start_x+178+155, start_y+213, 'は ら 牛 乳 販 売 店') 
+      pdf_canvas.setFont(def_font_type, def_font_size+1)
+      pdf_canvas.drawString(start_x+178+155, start_y+213+15, '新潟市 南区 下曲通 133 - 1') 
+      pdf_canvas.setFont(def_font_type, def_font_size)
+      pdf_canvas.drawString(start_x+178+155, start_y+213+15+15, '☎   0 2 5  -  3 7 5  -  3 0 1 8') 
+
       # カレンダー 1日～15日 見出し
       font_size = def_font_size-1
       pdf_canvas.setFont(def_font_type, font_size)
       pdf_canvas.setFillColorRGB(float(1)/255,float(1)/255,float(255)/255) 
       for i in range(15):
-        pdf_canvas.drawString(start_x+517+((i+1)*16.8),         start_y+44, str(i+1)) 
+        pdf_canvas.drawString(start_x+517+((i+1)*16.8),         start_y+44, str(i+1).rjust(2)) 
 
       # カレンダー 1日～15日 曜日
       font_size = def_font_size
@@ -181,16 +310,20 @@ def print_string_sub(pdf_canvas, start_x, start_y, data):
       pdf_canvas.setFont(def_font_type, font_size)
       pdf_canvas.setFillColorRGB(float(1)/255,float(1)/255,float(255)/255) 
       for i in range(16):
-        pdf_canvas.drawString(start_x+500+((i+1)*16.9),         start_y+146, str(i+16)) 
+        if isDate(int(row["nen"]), int(row["tuki"]), i+16):
+          dt = datetime.datetime(int(row["nen"]), int(row["tuki"]), i+16)
+          pdf_canvas.drawString(start_x+500+((i+1)*16.9),         start_y+146, str(i+16)) 
 
       font_size = def_font_size
       pdf_canvas.setFont(def_font_type, font_size)
       pdf_canvas.setFillColorRGB(float(1)/255,float(1)/255,float(255)/255) 
       for i in range(16):
-        dt = datetime.datetime(int(row["nen"]), int(row["tuki"]), i+16)
-        pdf_canvas.drawString(start_x+500+((i+1)*16.9),         start_y+159, get_day_of_week_jp(dt)) 
+        if isDate(int(row["nen"]), int(row["tuki"]), i+16):
+          dt = datetime.datetime(int(row["nen"]), int(row["tuki"]), i+16)
+          pdf_canvas.drawString(start_x+500+((i+1)*16.9),         start_y+159, get_day_of_week_jp(dt)) 
 
     quantityShokei = 0
+    pdf_canvas.setFillColorRGB(float(1)/255,float(1)/255,float(1)/255) 
     if itemId != row["item_id"] :
       itemCnt = itemCnt + 1
       itemQuantity[itemCnt] = 0
@@ -199,73 +332,102 @@ def print_string_sub(pdf_canvas, start_x, start_y, data):
       pdf_canvas.setFont(def_font_type, font_size)
       
       pdf_canvas.drawString(start_x+3,       start_y+157 + (itemCnt*13),    row["item_name1"])  # item_name1
-      # pdf_canvas.drawString(start_x+3+80,    start_y+157 + (itemCnt*13),    '8') 
-      pdf_canvas.drawString(start_x+3+95,    start_y+157 + (itemCnt*13),    str(row["price"]))
+      pdf_canvas.drawString(start_x+3+95,    start_y+157 + (itemCnt*13),    kingakuFormat(row["price"]))
       font_size = def_font_size-1
       pdf_canvas.setFont(def_font_type, font_size)
       pdf_canvas.drawString(start_x+178+155+2, start_y+55 + (itemCnt*13), row["item_name1"])  # item_name1
-      pdf_canvas.drawString(start_x+178+155+103, start_y+55 + (itemCnt*13),    '10') 
-      pdf_canvas.drawString(start_x+178+155+123, start_y+55 + (itemCnt*13),   str(row["price"]))
-      
-      pdf_canvas.drawString(start_x+178+155+170, start_y+55 + (itemCnt*13),    '　110') 
+      pdf_canvas.drawString(start_x+178+155+123, start_y+55 + (itemCnt*13),   kingakuFormat(row["price"]))
       
       itemId = row["item_id"]
 
     # カレンダー 1日～15日 本数
     font_size = def_font_size-1
     pdf_canvas.setFont(def_font_type, font_size)
-    pdf_canvas.setFillColorRGB(float(1)/255,float(1)/255,float(1)/255) 
 
     d = int(row["deliver_ymd"].strftime("%d"))
     if 1 <= d and d <= 15 :
-      pdf_canvas.drawString(start_x+517+((d)*16.8),         (start_y+55)+(itemCnt*13), str(row["quantity"])) 
+      pdf_canvas.drawString(start_x+517+((d)*16.8),         (start_y+55)+(itemCnt*13), str(row["quantity"]).rjust(2)) 
       itemQuantity[itemCnt] = tonum(itemQuantity.get(itemCnt)) +  row["quantity"]
     if 16 <= d and d <= 31 :
-      pdf_canvas.drawString(start_x+500+((d-15)*16.9),         (start_y+159)+(itemCnt*13), str(row["quantity"])) 
+      pdf_canvas.drawString(start_x+500+((d-15)*16.9),         (start_y+159)+(itemCnt*13), str(row["quantity"]).rjust(2)) 
       itemQuantity[itemCnt] = tonum(itemQuantity.get(itemCnt)) +  row["quantity"]
 
-
-    font_size = def_font_size-1
-    pdf_canvas.setFont(def_font_type, font_size)
-    pdf_canvas.drawString(start_x+57,      start_y+106+10, '（本体' + '12,360' + ' + 税' + '18L' + '）') 
-    pdf_canvas.drawString(start_x+218,     start_y+106+10, '（本体' + '12,360' + ' + 税' + '18C' + '）') 
-    pdf_canvas.drawString(start_x+690,     start_y+2  , '（本体' + '12,360' + ' + 税' + '18R' + '）') 
-
-    font_size = def_font_size+2
-    pdf_canvas.setFont(def_font_type, font_size)
-    pdf_canvas.drawString(start_x,          start_y+106+14+10, '請求額　　　　　' + '￥ 12,548') 
-    pdf_canvas.drawString(start_x+178,      start_y+106+14+10, '領収金額　　　' + '￥ 12,548') 
-    pdf_canvas.drawString(start_x+660,      start_y+20,        '御請求額　　' + '￥ 12,548') 
-
-    # 請求額のアンダーライン
-    pdf_canvas.setLineWidth(0.5)
-    pdf_canvas.line(start_x-2,         start_y+106+14+3+10,  start_x-2    +150, start_y+106+14+3+10)
-    pdf_canvas.line(start_x+178-2,     start_y+106+14+3+10,  start_x+178-2+135, start_y+106+14+3+10)
-    pdf_canvas.line(start_x+660-2,     start_y+20    +3,  start_x+660-2+132, start_y+20    +3)
-
-    font_size = def_font_size+5
-    pdf_canvas.setFont(def_font_type, font_size)
-    pdf_canvas.drawString(start_x+178+155+10, start_y+161, '御請求額　￥2,548') 
-
-    font_size = def_font_size+0.5
-    pdf_canvas.setFont(def_font_type, font_size)
-    pdf_canvas.drawString(start_x+178+155+6, start_y+179, 'ご希望の方には、口座引落しを') 
-    pdf_canvas.drawString(start_x+178+155+6, start_y+190, 'ご案内しております。ご相談ください。') 
-
-    #比較用のライン
-    pdf_canvas.setLineWidth(0.5)
-    pdf_canvas.line(start_x+339, start_y+165, start_x+485, start_y+165)
-  
   
   font_size = def_font_size-2
   pdf_canvas.setFont(def_font_type, font_size)
-  for num in range(1, 6):
+  seikyuKei = 0
+  for num in range(1, 7):
     if itemQuantity.get(num) != None:
-      pdf_canvas.drawString(start_x+3+80,    start_y+157 + (num*13),    str(itemQuantity.get(num))) 
-      pdf_canvas.drawString(start_x+3+120,    start_y+157 + (num*13),    str(itemQuantity.get(num) * itemTanka.get(num))) 
+      pdf_canvas.drawString(start_x+3+80,    start_y+157 + (num*13),    quantityFormat(itemQuantity.get(num))) 
+      pdf_canvas.drawString(start_x+3+120,    start_y+157 + (num*13),    kingakuFormat(itemQuantity.get(num) * itemTanka.get(num))) 
+      pdf_canvas.drawString(start_x+178+155+103, start_y+55 + (num*13),    quantityFormat(itemQuantity.get(num))) 
+      pdf_canvas.drawString(start_x+178+155+170, start_y+55 + (num*13),     kingakuFormat(itemQuantity.get(num) * itemTanka.get(num))) 
+      seikyuKei = seikyuKei + itemQuantity.get(num) * itemTanka.get(num)
+
+  font_size = def_font_size-1
+  pdf_canvas.setFont(def_font_type, font_size)
+  if zeikb == 2:
+    zeigaku = 0
+    pdf_canvas.drawString(start_x+57+65,      start_y+106+10, '（税込）') 
+    pdf_canvas.drawString(start_x+218+65,     start_y+106+10, '（税込）') 
+    pdf_canvas.drawString(start_x+690+65,     start_y+2  ,    '（税込）') 
+  else:
+    zeigaku = math.floor(seikyuKei*0.08)
+    pdf_canvas.drawString(start_x+57,      start_y+106+10, '（本体' + kingakuFormat(seikyuKei) + ' + 税' + kingakuFormat(zeigaku) + '）') 
+    pdf_canvas.drawString(start_x+218,     start_y+106+10, '（本体' + kingakuFormat(seikyuKei) + ' + 税' + kingakuFormat(zeigaku) + '）') 
+    pdf_canvas.drawString(start_x+690,     start_y+2  , '（本体' + kingakuFormat(seikyuKei) + ' + 税' + kingakuFormat(zeigaku) + '）') 
+    
+  font_size = def_font_size+2
+  pdf_canvas.setFont(def_font_type, font_size)
+  pdf_canvas.drawString(start_x,          start_y+106+14+10, '請求額　　　　　' + '￥ '+ kingakuFormat(seikyuKei+zeigaku)) 
+  pdf_canvas.drawString(start_x+178,      start_y+106+14+10, '領収金額　　　' + '￥ '+ kingakuFormat(seikyuKei+zeigaku)) 
+  pdf_canvas.drawString(start_x+660,      start_y+20,        '御請求額　　' + '￥ '+ kingakuFormat(seikyuKei+zeigaku)) 
+
+  font_size = def_font_size+5
+  pdf_canvas.setFont(def_font_type, font_size)
+  pdf_canvas.drawString(start_x+178+155+10, start_y+155, '御請求額　￥'+kingakuFormat(seikyuKei+zeigaku)) 
+  
+  #比較用のライン
+  pdf_canvas.setLineWidth(0.5)
+  pdf_canvas.line(start_x+339, start_y+157, start_x+485, start_y+157)
+  
+  # 領収書の固定文字
+  pdf_canvas.setFont(def_font_type, def_font_size)
+  pdf_canvas.drawString(start_x+178,      start_y+106+14+10+30, '上記の金額正に領収致しました。') 
+  pdf_canvas.drawString(start_x+178,      start_y+106+14+10+30+20, '　　　　　年　　　月　　　日') 
+
+  pdf_canvas.setFont(def_font_type, def_font_size+6)
+  pdf_canvas.drawString(start_x+178+10, start_y+213, 'はら牛乳販売店') 
+  pdf_canvas.setFont(def_font_type, def_font_size+1)
+  pdf_canvas.drawString(start_x+178+10, start_y+213+15, '新潟市南区下曲通133-1') 
+  pdf_canvas.setFont(def_font_type, def_font_size)
+  pdf_canvas.drawString(start_x+178+10, start_y+213+15+15, '☎ 0 2 5 - 3 7 5 - 3 0 1 8') 
+
+
 
 def tonum(val):
   if val==None:
     return 0
   else:
     return int(val)
+  
+def kingakuFormat(val):
+  return "{:,}".format(val).rjust(5)
+
+def quantityFormat(val):
+  return str(val).rjust(3)
+
+# 1:外税／2:内税
+def IsUchizei(zeikb) :
+  if zeikb == '2':
+    return True
+  else :
+    return False
+      
+def isDate(year,month,day):
+    try:
+        newDataStr="%04d/%02d/%02d"%(year,month,day)
+        newDate=datetime.datetime.strptime(newDataStr,"%Y/%m/%d")
+        return True
+    except ValueError:
+        return False

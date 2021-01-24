@@ -264,13 +264,14 @@ def resPdf_printSeikyu(customerid, customeridB, nentuki, randnum):
     
     timestamp = datetime.datetime.now()
     timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
-    make("file" + timestampStr, data_listA, data_listB)
+    filename = "file_" + customerid + "_" + customeridB + "_" + timestampStr + "_" + current_user.name
+    make(filename, data_listA, data_listB)
 
     response = make_response()
-    response.data = open("tmp/" + "file" + timestampStr + ".pdf", "rb").read()
+    response.data = open("tmp/" + filename + ".pdf", "rb").read()
     response.headers['Content-Disposition'] = "attachment; filename=unicode.pdf"
     response.mimetype = 'application/pdf'
-    return "file" + timestampStr + ".pdf"
+    return filename + ".pdf"
   else:
     return "-1"
 
@@ -297,9 +298,10 @@ def print_pdfMergeSeikyusho():
     try:
       # merger.append("tmp/" + vals.pop(idx) + "")
       # idx = idx + 1
-      merger.append("tmp/" + vals.pop(0) + "")
+      merger.append("tmp/" + vals[0] + "")
+      print("成功：" + vals.pop(0))
     except:
-      print(vals[0])
+      print("失敗：" + vals[0])
       # import traceback
       # traceback.print_exc()
     finally:
