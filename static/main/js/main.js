@@ -1711,7 +1711,7 @@ function createDaichoTables_Main(customerId){
     try{
         setTimeout(
             "$('#tableDaicho').DataTable().columns.adjust().draw();"
-            , 100);
+            , 200);
         
     }catch(e){
         console.log(e);
