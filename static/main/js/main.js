@@ -1367,6 +1367,14 @@ function getAllYoubiByNentuki(nen, tuki){
 function createSeikyuTables_Main(customerId, nentuki){
     var youbiWa = getAllYoubiByNentuki((nentuki+"").substr(0,4), (nentuki+"").substr(4,2));
     
+    // var btnTag = "";
+    // btnTag = btnTag + '商品名&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" ';
+    // btnTag = btnTag + ' id="btnEditSeikyu" ';
+    // btnTag = btnTag + ' onclick="alert(1);" ';
+    // btnTag = btnTag + ' class="btn btn-default btn-sm" ';
+    // btnTag = btnTag + ' role="button">編集</a>';
+    //$('#thSeikyuItemName').append(btnTag);
+    
     //台帳データテーブルを作成
     $("#tableSeikyu").DataTable({
         bInfo: false,
@@ -1767,24 +1775,112 @@ $('#tableAddDaicho tbody').on( 'click', 'tr', function () {
 
 
 $('#tableCustomer tbody').on( 'click', 'tr', function () {
-  //顧客テーブルから指定したレコード
-  var rowData =   $('#tableCustomer').DataTable().row( this ).data();
-  $('#subAtitle')[0].innerText = rowData.id + "," + rowData.name1 + " " + "へ追加する商品を選択してください。";
-  createDaichoTables_Main(rowData.id);
-  createSeikyuTables_Main(rowData.id,$('#selNentuki').val());
-  $('#txtCustomerName').val(rowData.name1);
-  $('#txtCustomerKana').val(rowData.name2);
-  $('#txtAddress1').val(rowData.address1);
-  $('#txtTel1').val(rowData.tel1);
-  $('#selHaraiKb').val(rowData.harai_kb);
-  $('#selCustomerGroupKb').val(rowData.group_id);
-  $('#selCustomerZeiKb').val(rowData.biko2);
-  $('#txtTantoName').val(rowData.biko3);
-  $('#txtList').val(rowData.list);
+    //顧客テーブルから指定したレコード
+    var rowData =   $('#tableCustomer').DataTable().row( this ).data();
+    $('#subAtitle')[0].innerText = rowData.id + "," + rowData.name1 + " " + "へ追加する商品を選択してください。";
+    createDaichoTables_Main(rowData.id);
+    createSeikyuTables_Main(rowData.id,$('#selNentuki').val());
+    $('#txtCustomerName').val(rowData.name1);
+    $('#txtCustomerKana').val(rowData.name2);
+    $('#txtAddress1').val(rowData.address1);
+    $('#txtTel1').val(rowData.tel1);
+    $('#selHaraiKb').val(rowData.harai_kb);
+    $('#selCustomerGroupKb').val(rowData.group_id);
+    $('#selCustomerZeiKb').val(rowData.biko2);
+    $('#txtTantoName').val(rowData.biko3);
+    $('#txtList').val(rowData.list);
+    
+  } );
+  
+  
+
+$('#tableSeikyu tbody').on( 'click', 'td', function () {
+    if(this.firstChild != null){
+        if(this.firstChild.id=="inputQuantityTmp"){
+            return;
+        }
+    }
+
+    
+
+    //事前に子要素（インプットタグ）を削除
+    var rowCnt = $('#tableSeikyu')[0].rows.length;
+    for(var r=2; r<rowCnt; r++){ //r=0, r=1 はヘッダ
+        for(var c=3; c<=33; c++){
+            var elCount = $('#tableSeikyu')[0].rows[r].cells[c].childElementCount;
+            for(var el=0; el<elCount; el++){
+                var chil = $('#tableSeikyu')[0].rows[r].cells[c].children[el];
+                var qua;
+                if(chil.id == "inputQuantityTmp"){
+                    qua = $('#inputQuantityTmp').val();
+                }
+                $('#tableSeikyu')[0].rows[r].cells[c].removeChild(chil);
+                $('#tableSeikyu')[0].rows[r].cells[c].innerText = qua;
+                $('#tableSeikyu')[0].rows[r].cells[c].innerHTML = qua;
+            }
+            // var cell = $('#tableSeikyu')[0].rows[r].cells[c];
+            // while(cell.firstChild){
+            //     cell.removeChild(cell.firstChild)
+            // }
+        }
+    }
+    
+    //alert(this);
+    //alert(this.cellIndex);
+    var row = $('#tableSeikyu').DataTable().row( this ).data();
+    var niti = this.cellIndex-2;
+    if(!(1<=niti && niti <=31)){
+        return;
+    }
+    var item_id = row.item_id;
+    //alert(item_id + "," + niti);
+    var inputtag = "";
+    var inputtag = inputtag + '<input id="inputQuantityTmp" ';
+    var inputtag = inputtag + 'class="form-control input-sm" ';
+    var inputtag = inputtag + 'type="text" ';
+    var inputtag = inputtag + 'style="width:40px" ';
+    var inputtag = inputtag + 'maxlength="3" ';
+    var inputtag = inputtag + 'oninput="fncNumOnly();" ';
+    var inputtag = inputtag + 'onchange="fncUpdateSeikyuQuantity( ';
+    var inputtag = inputtag + '  ' + row.customer_id + ', ';
+    var inputtag = inputtag + '  ' + row.item_id + ', ';
+    var inputtag = inputtag + '  ' + row.nen + ', ';
+    var inputtag = inputtag + '  ' + row.tuki + ', ';
+    var inputtag = inputtag + '  ' + niti + ', ';
+    var inputtag = inputtag + '  ' + row.price + ', ';
+    var inputtag = inputtag + '  ' + row.price_sub + ' ';
+    var inputtag = inputtag + ' );" ';
+    var inputtag = inputtag + 'value=' + this.innerText + '>';
+    //this.html(inputtag);
+    $(this).html(inputtag);
+
+    var table = $('#tableSeikyu').DataTable();
+ 
+    //$('#container').css( 'display', 'block' );
+    table.columns.adjust().draw();
+    $('#inputQuantityTmp').focus()
+    $('#inputQuantityTmp').select()
+
 } );
+  
+function fncUpdateSeikyuQuantity(customerid, itemid, nen, tuki, niti, price, pricesub){
+    var deliverymd = nen + "-" + tuki + "-" + niti;
+    var quantity = toNumber($("#inputQuantityTmp").val());
+    $.ajax({
+        type: "GET",
+        url: "/updateSeikyuQuantity/" + customerid + "/" + itemid + "/" + deliverymd + "/" + quantity + "/" + price + "/" + pricesub + ""
+    }).done(function(data) {
+        //alert(data);
+        createSeikyuTables_Main(customerid, nen + ("00"+tuki).slice(-2));
 
-
-
+    }).fail(function(data) {
+        alert("エラー：" + data.statusText);
+    }).always(function(data) {
+        //何もしない
+    });
+}
+  
+    
 
 
 
@@ -1826,12 +1922,20 @@ $("#tableCustomerListMuko tbody").on('click',function(event) {
 
 
 
+$("#tableSeikyu tbody").on('click',function(event) {
+    $("#tableSeikyu").removeClass('row_selected seikyu');        
+    $("#tableSeikyu tbody tr").removeClass('row_selected seikyu');        
+    $("#tableSeikyu tbody td").removeClass('row_selected seikyu');        
+    $(event.target.parentNode).addClass('row_selected seikyu');
+});
+
+
+
 $("#tableSeikyuKanri tbody").on('click',function(event) {
     $("#tableSeikyuKanri").removeClass('row_selected seikyuKanri1');        
     $("#tableSeikyuKanri tbody tr").removeClass('row_selected seikyuKanri1');        
     $("#tableSeikyuKanri tbody td").removeClass('row_selected seikyuKanri1');        
     $(event.target.parentNode).addClass('row_selected seikyuKanri1');
-    
 });
 
 

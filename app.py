@@ -391,7 +391,30 @@ def dbUpdate_updTakuhaijun():
       customer.address3 = str(id_list[1])
   db.session.commit()
   return "1"
-        
+
+
+@app.route('/updateSeikyuQuantity/<customerid>/<itemid>/<deliverymd>/<quantity>/<price>/<pricesub>')
+@login_required
+def dbUpdate_updSeikyuQuantity(customerid, itemid, deliverymd, quantity, price, pricesub):
+  
+  Seikyu.query.filter(Seikyu.customer_id==customerid, Seikyu.item_id==itemid, Seikyu.deliver_ymd==deliverymd).delete()
+  if int(quantity) != 0:
+    seikyu = Seikyu()
+    seikyu.customer_id = customerid
+    seikyu.item_id = itemid
+    seikyu.deliver_ymd = deliverymd
+    seikyu.price = price
+    seikyu.price_sub = price if price == "null" else None
+    seikyu.quantity = int(quantity)
+    seikyu.user_id = current_user.name
+    seikyu.ymdt = datetime.datetime.now()
+    db.session.add(seikyu)
+
+  # データを確定
+  db.session.commit()
+  return "1"
+
+
 @app.route('/updateCustomer/<customerid>/<param>')
 @login_required
 def dbUpdate_updCustomer(customerid, param):
