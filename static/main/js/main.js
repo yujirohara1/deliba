@@ -1683,16 +1683,16 @@ function createDaichoTables_Main(customerId){
             }
         },
         columns: [
-            { data: 'item_id'     ,width: '12%'},
-            { data: 'iname1'      ,width: '41%'},
-            { data: 'tanka'       ,width: '12%'   ,className: 'dt-body-right'  ,render: function (data, type, row) { return (data*1).toLocaleString();} },
-            { data: 'getu'        ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'ka'          ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'sui'         ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'moku'        ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'kin'         ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'dou'         ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
-            { data: 'niti'        ,width: '5%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} }
+            { data: 'item_id'     ,width: '7%'},
+            { data: 'iname1'      ,width: '40%'},
+            { data: 'tanka'       ,width: '11%'   ,className: 'dt-body-right'  ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+            { data: 'getu'        ,width: '6%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'ka'          ,width: '6%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'sui'         ,width: '6%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'moku'        ,width: '6%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'kin'         ,width: '6%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'dou'         ,width: '6%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} },
+            { data: 'niti'        ,width: '6%'    ,className: 'dt-body-center' ,render: function (data, type, row) { return (data==0 ? '' : data);} }
         ],
         language: {
            url: "../static/main/js/japanese.json"

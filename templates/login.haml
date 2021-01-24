@@ -6,6 +6,8 @@
  
   %div.container
     %div.row
+      &nbsp;
+    %div.row
       %div.col-md-4
         %img.img-responsive(src="../static/image/logo_small.png" align="left" style="position:absolute; top:-5px")
         %h5(style="position:absolute; left:100px; top10px")
@@ -32,6 +34,154 @@
           {% if result == 401 %}
             <p class="text-danger">ユーザー名またはパスワードが違います。</p>
           {% endif %}　
+          
+      %div.col-md-8
+          <div class="jumbotron" style="background-color:#fff4f9">
+            <h1>宅配システムの新常識</h1>
+            <h1>LatteCloud ラテクラウド</h1>
+            <p>牛乳宅配店向け、完全無料の請求管理システム</p>
+            <p><a class="btn btn-primary btn-lg" id="btnJmbTrn" role="button">もっと詳しく</a></p>
+          </div>
+
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      %span#spanTest
+        a
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
 {% endblock %}
 
 {% block scripts %}
@@ -40,6 +190,16 @@
 <script>
   $(function() {
     $("#tableCustomer").DataTable();
+    
+    $('#btnJmbTrn').click(function() {
+      var speed = 400; 
+      var href= $(this).attr("href");
+      var target = $('#spanTest');
+      var position = target.offset().top;
+      $('body,html').animate({scrollTop:position}, speed, 'swing');
+      return false;
+    });
   });
+
 </script>
 {% endblock  %}
