@@ -1708,9 +1708,14 @@ function createDaichoTables_Main(customerId){
             "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
             "<'row'<'col-sm-5'i><'col-sm-7'p>>"
     });
-
-    // var table = $('#tableDaicho').DataTable();
-    // table.columns.adjust().draw();
+    try{
+        setTimeout(
+            "$('#tableDaicho').DataTable().columns.adjust().draw();"
+            , 100);
+        
+    }catch(e){
+        console.log(e);
+    }
 }
 
 function fncNumOnly(){
