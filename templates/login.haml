@@ -1,0 +1,206 @@
+-extends "common.html"
+
+{% block title %}牛乳宅配管理サービス{% endblock %}
+
+{% block content %}
+ 
+  %div.container
+    %div.row
+      &nbsp;
+    %div.row
+      %div.col-md-4
+        %img.img-responsive(src="../static/image/logo_small.png" align="left" style="position:absolute; top:-5px")
+        %h5(style="position:absolute; left:100px; top10px")
+          牛乳宅配管理サービス&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;© Yujiro Hara, 2020
+        %h1(style="font-size:45px; position:absolute; left:90px;")
+          &nbsp;Latte Cloud
+        %br
+        %h1(style="font-size:45px; color:transparent" )
+           &nbsp;
+        %br
+        %form(action="/" method="POST")
+          %div.input-group
+            %span.input-group-addon
+              ユーザー名
+            %input.form-control(type="text" name="username")
+          %div.input-group
+            %span.input-group-addon
+              パスワード
+            %input.form-control(type="password" name="password")
+          %br
+          %input.btn.btn-primary(type="submit" value="サインイン")
+          
+          
+          {% if result == 401 %}
+            <p class="text-danger">ユーザー名またはパスワードが違います。</p>
+          {% endif %}　
+          
+      %div.col-md-8
+          <div class="jumbotron" style="background-color:#fff4f9">
+            <h1>宅配システムの新常識</h1>
+            <h1>LatteCloud ラテクラウド</h1>
+            <p>シンプル、速い、インストール不要</p>
+            <p>牛乳宅配店向け、完全無料の請求管理システム</p>
+            <p><a class="btn btn-primary btn-lg" id="btnJmbTrn" role="button">もっと詳しく</a></p>
+          </div>
+
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      %span#spanTest
+        a
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+    %div.row
+      &nbsp;
+{% endblock %}
+
+{% block scripts %}
+
+
+<script>
+  $(function() {
+    $("#tableCustomer").DataTable();
+    
+    $('#btnJmbTrn').click(function() {
+      var speed = 400; 
+      var href= $(this).attr("href");
+      var target = $('#spanTest');
+      var position = target.offset().top;
+      $('body,html').animate({scrollTop:position}, speed, 'swing');
+      return false;
+    });
+  });
+
+</script>
+{% endblock  %}

@@ -1,0 +1,637 @@
+{% extends 'common.html' %}
+ 
+{% block title %}牛乳宅配管理サービス{% endblock %}
+
+{% block content %}
+    %div.container-fluid
+      %div.row
+        %div.col-md-4
+          %img.img-responsive(src="../static/image/logo_small.png" align="left" style="position:absolute; top:-5px")
+          %h5(style="position:absolute; left:100px; top10px")
+            牛乳宅配管理サービス&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;© Yujiro Hara, 2020
+          %h1(style="font-size:45px; position:absolute; left:90px;")
+            &nbsp;Latte Cloud
+          %br
+          %h1(style="font-size:45px; color:transparent" )
+             &nbsp;
+        %div.col-md-8
+          %br
+          %div.row
+            %div.col-md-3
+              %div.input-group
+                %span.input-group-addon
+                  操作年月
+                %div.form-group
+                    %select.form-control.input-sm#selNentuki
+            %div.col-md-1
+              &nbsp;
+            %div.col-md-2
+              %div.input-group
+                %button.btn.btn-primary.btn-sm(type="button" data-toggle="modal" data-target="#modalSeikyuKanri")
+                  請求データ管理
+            %div.col-md-2
+              %div.input-group
+                %button.btn.btn-primary.btn-sm#btnNewCustomerToroku(type="button")
+                  新規顧客登録
+            %div.col-md-4
+              %div.input-group.pull-right
+                %a.btn.btn-warning(href="/logout/" role="button")
+                  サインアウト
+                  
+              
+    %div.container-fluid
+      %div.row
+        %div.col-md-2
+          %div.input-group
+            %span.input-group-addon
+              グループ
+            %div.form-group
+                %select.form-control.input-sm#selGroupKb
+        %div.col-md-6
+          %div.row
+            %div.col-md-2
+              %div.form-group
+                %input#chkYuko(type="checkbox" value="checkboxA" checked)
+                &nbsp;
+                %label(for="chkYuko")
+                  有効
+            %div.col-md-2
+              %div.form-group
+                %input#chkMuko(type="checkbox" value="checkboxB")
+                &nbsp;
+                %label(for="chkMuko")
+                  無効
+          
+        
+      %div.row
+        %div.col-md-3
+          %table.table-bordered.row.hover#tableCustomer
+            %thead
+              %tr
+                %th 
+                  ID
+                %th
+                  経路
+                %th
+                  氏名
+            %tbody
+            
+        %div.col-md-5
+          %div.row
+            %div.col-md-3
+              %button.btn.btn-primary.btn-sm(type="button" data-toggle="modal" data-target="#modalAddDaicho")
+                新しい配達商品を追加
+            %div.col-md-9
+              %div.col-md-10.text-left#mainAddDaichoMessageArea
+          %div.row
+            %div.col-md-12
+              %table.table-bordered.row.hover#tableDaicho
+                %thead
+                  %tr
+                    %th 
+                      ID
+                    %th
+                      商品名
+                    %th
+                      単価
+                    %th
+                      月
+                    %th
+                      火
+                    %th
+                      水
+                    %th
+                      木
+                    %th
+                      金
+                    %th
+                      土
+                    %th
+                      日
+                %tbody
+          %div.row
+            %div.col-md-2
+              %div.input-group
+                  %button.btn.btn-primary.btn-sm#btnSeikyuCreateKobetu(type="button")
+                    請求書作成
+            %div.col-md-4.text-left#mainSeikyuKobetuCreateMessageArea(style="font-size:12px; color:red")
+              &nbsp;
+            %div.col-md-2
+              %div.input-group
+                  %button.btn.btn-danger.btn-sm#btnSeikyuDeleteKobetu(type="button")
+                    請求書削除
+            %div.col-md-4.text-left#mainSeikyuKobetuDeleteMessageArea(style="font-size:12px; color:red")
+              &nbsp;
+        %div.col-md-4
+          %div.panel.with-nav-tabs.panel-primary
+              %div.panel-heading
+                %ul.nav.nav-tabs
+                  %li.active
+                    %a(href="#tab1primary" data-toggle="tab")
+                      顧客情報
+                  %li
+                    %a(href="#tab2primary" data-toggle="tab")
+                      請求履歴
+                  %li
+                    %a(href="#tab3primary" data-toggle="tab")
+                      連絡事項
+              %div.panel-body
+                %div.tab-content
+                  %div.tab-pane.fade.in.active#tab1primary
+                    %div.row
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              氏名
+                            %input.form-control#txtCustomerName(type="text")
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              カナ
+                            %input.form-control#txtCustomerKana(type="text")
+                    %div.row
+                      %div.col-md-12
+                        %div.input-group
+                            %span.input-group-addon
+                              住所
+                            %input.form-control#txtAddress1(type="text")
+                            %span.input-group-btn
+                              %button#btnMap.btn.btn-default(type="button")
+                                map
+                    %br
+                    %div.row
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              電話
+                            %input.form-control#txtTel1(type="text")
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              支払
+                            %select.form-control.input-sm#selHaraiKb
+                            
+                    %div.row
+                      %div.col-md-6
+                        %div.input-group
+                          %span.input-group-addon
+                            経路
+                          %input.form-control#txtList(type="text" disabled)
+                          %span.input-group-btn
+                            %button#btnListHenko.btn.btn-default(type="button")
+                              変更
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              消税
+                            %select.form-control.input-sm#selCustomerZeiKb
+                    %br
+                    %div.row
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              担当
+                            %input.form-control#txtTantoName(type="text")
+                      %div.col-md-6
+                        %div.input-group
+                            %span.input-group-addon
+                              分類
+                            %select.form-control.input-sm#selCustomerGroupKb
+                    %br
+                    %div.row
+                      %div.col-md-10.text-left#mainUpdCustomerMessageArea
+                      %div.col-md-2
+                        %div.input-group
+                          %button.btn.btn-primary.btn-sm#btnUpdateCustomer(type="button")
+                            更新
+                      
+                  %div.tab-pane.fade#tab2primary
+                    Primary 2
+                  %div.tab-pane.fade#tab3primary
+                    Primary 3
+
+    %div.container-fluid
+      %div.row
+        %div.col-md-12
+          %table.table-bordered.row.hover#tableSeikyu
+            %thead
+              %tr
+                %th(rowspan="2")
+                  ID
+                %th#thSeikyuItemName(rowspan="2")
+                  商品名
+                %th(rowspan="2")
+                  単価
+                %th
+                  1
+                %th
+                  2
+                %th
+                  3
+                %th
+                  4
+                %th
+                  5
+                %th
+                  6
+                %th
+                  7
+                %th
+                  8
+                %th
+                  9
+                %th
+                  10
+                %th
+                  11
+                %th
+                  12
+                %th
+                  13
+                %th
+                  14
+                %th
+                  15
+                %th
+                  16
+                %th
+                  17
+                %th
+                  18
+                %th
+                  19
+                %th
+                  20
+                %th
+                  21
+                %th
+                  22
+                %th
+                  23
+                %th
+                  24
+                %th
+                  25
+                %th
+                  26
+                %th
+                  27
+                %th
+                  28
+                %th
+                  29
+                %th
+                  30
+                %th
+                  31
+              %tr
+                %th#thYoubi1
+                  
+                %th#thYoubi2
+                  2
+                %th#thYoubi3
+                  3
+                %th#thYoubi4
+                  4
+                %th#thYoubi5
+                  5
+                %th#thYoubi6
+                  6
+                %th#thYoubi7
+                  7
+                %th#thYoubi8
+                  8
+                %th#thYoubi9
+                  9
+                %th#thYoubi10
+                  10
+                %th#thYoubi11
+                  11
+                %th#thYoubi12
+                  12
+                %th#thYoubi13
+                  13
+                %th#thYoubi14
+                  14
+                %th#thYoubi15
+                  15
+                %th#thYoubi16
+                  16
+                %th#thYoubi17
+                  17
+                %th#thYoubi18
+                  18
+                %th#thYoubi19
+                  19
+                %th#thYoubi20
+                  20
+                %th#thYoubi21
+                  21
+                %th#thYoubi22
+                  22
+                %th#thYoubi23
+                  23
+                %th#thYoubi24
+                  24
+                %th#thYoubi25
+                  25
+                %th#thYoubi26
+                  26
+                %th#thYoubi27
+                  27
+                %th#thYoubi28
+                  28
+                %th#thYoubi29
+                  29
+                %th#thYoubi30
+                  30
+                %th#thYoubi31
+                  31
+            %tbody
+%div#loading
+
+<!-- 配達順変更モーダル -->
+%div.modal.fade#modalUpdList(tabindex="-1")
+  %div.modal-dialog.modal-lg
+    %div.modal-content
+      %div.modal-header
+        %button.close(type="button" data-dismiss="modal")
+          %span
+            ×
+        %h4.modal-title#subBtitle
+          配達順を変更します。
+      %div.modal-body
+        %div.row
+          %div.col-md-5
+            %h4#divUpdateListReserveArea
+              &nbsp;
+          %div.col-md-7#guideListHenko
+              &nbsp;
+        %div.row
+          %div.col-md-7
+            %div.row
+              %div.col-md-12
+                %table.table-bordered.row.hover#tableCustomerListHenko
+                  %thead
+                      %tr
+                          %th
+                            配達順
+                          %th
+                            ID
+                          %th
+                            氏名
+                          %th
+                            住所
+                  %tbody
+            %div.row
+              %div.col-md-12
+                「配達順」でドラッグ＆ドロップが可能。
+          %div.col-md-1
+            &nbsp;
+            
+          %div.col-md-4
+            %table.table-bordered.row.hover#tableCustomerListMuko
+              %thead
+                  %tr
+                      %th
+                        ID
+                      %th
+                        氏名
+                      %th
+                        配達順
+              %tbody
+        %br
+      %div.modal-footer
+        %div.row
+          %div.col-md-10.text-right#modalUpdListMessageArea
+          %div.col-md-1
+            %button.btn.btn-default(type="button" data-dismiss="modal")
+              閉じる
+          %div.col-md-1
+            %button#btnUpdList.btn.btn-primary(type="button")
+              決定
+
+
+
+<!-- 台帳への商品追加モーダル -->
+%div.modal.fade#modalAddDaicho(tabindex="-1")
+  %div.modal-dialog.modal-lg
+    %div.modal-content
+      %div.modal-header
+        %button.close(type="button" data-dismiss="modal")
+          %span
+            ×
+        %h4.modal-title#subAtitle
+          タイトル
+      %div.modal-body
+        %div.row
+          %div.col-md-8
+            %table.table-bordered.row.hover#tableAddDaicho
+              %thead
+                %tr
+                  %th 
+                    ID
+                  %th
+                    コード
+                  %th
+                   商品名
+                  %th
+                    単価
+                  %th
+                    登録状況
+              %tbody
+          %div.col-md-4
+            %br
+        %div.row
+          %div.col-md-12
+            %h4
+              曜日ごとの宅配本数を入力してください。
+        %div.row
+          %div.col-md-12
+            %div.form-group.form-inline
+              %div.input-group
+                %span.input-group-addon
+                  月
+                %input#inpDaichoAddMon.form-control.input-sm(type="text" style="width:50px" maxlength="2" oninput="fncNumOnly();")
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              %div.input-group
+                %span.input-group-addon
+                  火
+                %input#inpDaichoAddTue.form-control.input-sm(type="text" style="width:50px" maxlength="2" oninput="fncNumOnly();")
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              %div.input-group
+                %span.input-group-addon
+                  水
+                %input#inpDaichoAddWed.form-control.input-sm(type="text" style="width:50px" maxlength="2" oninput="fncNumOnly();")
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              %div.input-group
+                %span.input-group-addon
+                  木
+                %input#inpDaichoAddThu.form-control.input-sm(type="text" style="width:50px" maxlength="2" oninput="fncNumOnly();")
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              %div.input-group
+                %span.input-group-addon
+                  金
+                %input#inpDaichoAddFri.form-control.input-sm(type="text" style="width:50px" maxlength="2" oninput="fncNumOnly();")
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              %div.input-group
+                %span.input-group-addon
+                  土
+                %input#inpDaichoAddSat.form-control.input-sm(type="text" style="width:50px" maxlength="2" oninput="fncNumOnly();")
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              %div.input-group
+                %span.input-group-addon
+                  日
+                %input#inpDaichoAddSun.form-control.input-sm(type="text" style="width:50px" maxlength="2" oninput="fncNumOnly();")
+      %div.modal-footer#modalAddDaichoFooter
+        %div.row
+          %div.col-md-10.text-right#modalAddDaichoMessageArea
+          %div.col-md-1
+            %button.btn.btn-default(type="button" data-dismiss="modal")
+              閉じる
+          %div.col-md-1
+            %button#btnDaichoAdd.btn.btn-primary(type="button")
+              決定
+
+
+
+<!-- 請求データ管理モーダル -->
+%div.modal.fade#modalSeikyuKanri(tabindex="-1")
+  %div.modal-dialog.modal-lg
+    %div.modal-content
+      %div.modal-header
+        %button.close(type="button" data-dismiss="modal")
+          %span
+            ×
+        %h4.modal-title#subDtitle
+          請求データを作成する年月を、左の表から選択してください。
+      %div.modal-body
+        %div.row
+          %div.col-md-5
+            %table.table-bordered.row.hover#tableSeikyuKanri
+              %thead
+                %tr
+                  %th 
+                    年月
+                  %th
+                    請求額計
+                  %th
+                    うち税
+                  %th
+                    人数
+                  %th
+                    最終更新
+              %tbody
+          %div.col-md-7#divSeikyuMeisaiOrButton
+            %div.row
+            %div.col-md-12#divSeikyuMeisaiOrButton2
+              %table.table-bordered.row.hover#tableSeikyuKanriCustomer
+                %thead
+                  %tr
+                    %th 
+                      ID
+                    %th
+                      氏名
+                    %th
+                      請求額
+                    %th
+                      うち税
+                    %th
+                      最終更新
+                %tbody
+      %div.modal-footer#modalSeikyuKanriFooter
+        %div.row
+          %div.col-md-2.text-left#divSeikyuDeleteAll
+          %div.col-md-2.text-left#divSeikyuPrintAll
+          %div.col-md-7.text-left#modalSeikyuKanriMessageArea
+            %div.row
+              %div.col-md-5.text-right#progressPrintSeikyuPercent
+              %div.col-md-7.text-left
+                %progress#progressSeikyuPrint(value="0" max="100")
+          %div.col-md-1
+            %button.btn.btn-default(type="button" data-dismiss="modal")
+              閉じる
+
+
+
+
+
+<!-- マップモーダル -->
+%div.modal.fade#modalMap(tabindex="-1")
+  %div.modal-dialog.modal-md
+    %div.modal-content
+      %div.modal-header
+        %button.close(type="button" data-dismiss="modal")
+          %span
+            ×
+        %h4.modal-title#subCtitle
+          マップを表示します。
+      %div.modal-body
+        %div.row
+          %div.col-md-12
+          <iframe id="ifrMap" width="95%" height="400px" frameborder="0" style="border:0" allowfullscreen></iframe>
+        %br
+      %div.modal-footer
+        %div.row
+            %button.btn.btn-default(type="button" data-dismiss="modal")
+              閉じる
+
+
+
+
+<!-- 請求データへの商品追加モーダル -->
+%div.modal.fade#modalAddSeikyu(tabindex="-1")
+  %div.modal-dialog.modal-lg
+    %div.modal-content
+      %div.modal-header
+        %button.close(type="button" data-dismiss="modal")
+          %span
+            ×
+        %h4.modal-title#subEtitle
+          請求データに追加する商品を選択してください。
+      %div.modal-body
+        %div.row
+          %div.col-md-8
+            %table.table-bordered.row.hover#tableAddSeikyu
+              %thead
+                %tr
+                  %th 
+                    ID
+                  %th
+                    コード
+                  %th
+                   商品名
+                  %th
+                    単価
+                  %th
+                    登録状況
+              %tbody
+          %div.col-md-4
+            %br
+        %div.row
+          %div.col-md-12
+            %h4
+              &nbsp;
+        %div.row
+          %div.col-md-12
+            &nbsp;
+      %div.modal-footer#modalAddSeikyuFooter
+        %div.row
+          %div.col-md-10.text-right#modalAddSeikyuMessageArea
+          %div.col-md-1
+            %button.btn.btn-default(type="button" data-dismiss="modal")
+              閉じる
+          %div.col-md-1
+            %button#btnSeikyuAdd.btn.btn-primary(type="button")
+              決定
+
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="../static/main/js/main.js"></script>
+{% endblock  %}
+
