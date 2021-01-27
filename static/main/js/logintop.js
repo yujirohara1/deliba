@@ -1,6 +1,8 @@
 //btnSendMail
 
 $('#btnSendMail').on('click', function() {
+    $('#btnSendMail').attr("disabled","disabled");
+    $('#btnSendMail').text("送信中...")
     var acc = new Array();
     acc.push($('#txtMailAddr').val());
     acc.push($('#txtOmise').val());
@@ -10,11 +12,12 @@ $('#btnSendMail').on('click', function() {
         url: "/AccountToroku",
         contentType:'application/json'
     }).done(function(data) {
-        alert("受け付けました");
+        $('#btnSendMail').text("申請完了");
     }).fail(function(data) {
         alert("エラー：" + data.statusText);
     }).always(function(data) {
-        alert(data);
+        setTimeout('$("#btnSendMail").text("利用登録");$("#btnSendMail").removeAttr("disabled");', 2000);
+        
    });
 });
 
