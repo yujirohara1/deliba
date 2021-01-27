@@ -98,11 +98,11 @@ def SendMail_AccountToroku():
   try:
     msg = create_message(mail_address, mail_address, "", "アカウント登録申請", vals[0] + ", " + vals[1])
     send(mail_address, mail_address, mail_password, msg)
-    return 0
+    return "0"
   except:
     # 何もしない
     import traceback  
-  return -1
+  return "-1"
 
 @login_manager.user_loader
 def load_user(user_id):
