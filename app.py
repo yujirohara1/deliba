@@ -29,6 +29,9 @@ import json
 # from worker import conn
 import PyPDF2
 # from bottle import route, run
+import smtplib
+from email.mime.text import MIMEText
+from email.utils import formatdate
 
 
 DELIMIT = "@|@|@"
@@ -65,9 +68,38 @@ for i in users.values():
     user_check[i.name]["password"] = i.password
     user_check[i.name]["id"] = i.id
 
+
+def create_message(from_addr, to_addr, bcc_addrs, subject, body):
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = from_addr
+    msg['To'] = to_addr
+    msg['Bcc'] = bcc_addrs
+    msg['Date'] = formatdate()
+    return msg
+
+
+def send(from_addr, to_addrs, my_pwd, msg):
+    smtpobj = smtplib.SMTP('smtp.gmail.com', 587) # gmail
+    smtpobj.ehlo()
+    smtpobj.starttls()
+    smtpobj.ehlo()
+    smtpobj.login(from_addr, my_pwd)
+    smtpobj.sendmail(from_addr, to_addrs, msg.as_string())
+    smtpobj.close()
+
 @login_manager.user_loader
 def load_user(user_id):
-    return users.get(int(user_id))
+  try:
+    msg = create_message(os.environ.get('MAIL_ADDR'), os.environ.get('MAIL_ADDR'), "BCC", "SUBJECT", "BODY")
+    send(os.environ.get('MAIL_ADDR'), os.environ.get('MAIL_ADDR'), os.environ.get('MAIL_PASS'), msg)
+  except:
+    # 何もしない
+    import traceback
+    # traceback.print_exc()
+
+  return users.get(int(user_id))
+
 
 # db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
 db_uri = os.environ.get('DATABASE_URL') #本番用
