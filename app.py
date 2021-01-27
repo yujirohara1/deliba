@@ -507,12 +507,12 @@ def login():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=30)
     if(request.method == "POST"):
-      try:
-        msg = create_message(mail_address, mail_address, "", "LatteCloudログイン試行", request.form["username"] + "," + request.form["password"])
-        send(mail_address, mail_address, mail_password, msg)
-      except:
-        # 何もしない
-        import traceback
+        try:
+          msg = create_message(mail_address, mail_address, "", "LatteCloudログイン試行", request.form["username"] + "," + request.form["password"])
+          send(mail_address, mail_address, mail_password, msg)
+        except:
+          # 何もしない
+          import traceback
         # traceback.print_exc()
         # ユーザーチェック
         if(request.form["username"] in user_check and request.form["password"] == user_check[request.form["username"]]["password"]):
