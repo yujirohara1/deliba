@@ -512,7 +512,7 @@ def login():
         send(mail_address, mail_address, mail_password, msg)
       except:
         # 何もしない
-        # import traceback
+        import traceback
         # traceback.print_exc()
         # ユーザーチェック
         if(request.form["username"] in user_check and request.form["password"] == user_check[request.form["username"]]["password"]):
