@@ -518,8 +518,7 @@ def login():
         if(request.form["username"] in user_check and request.form["password"] == user_check[request.form["username"]]["password"]):
             # ユーザーが存在した場合はログイン
             login_user(users.get(user_check[request.form["username"]]["id"]))
-            
-            # entries = Item.query.all() #変更
+            entries = Item.query.all() #変更
             return render_template('index.haml', entries=entries)
         else:
             # return "401"
