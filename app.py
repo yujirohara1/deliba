@@ -48,6 +48,8 @@ bootstrap = Bootstrap(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = "secret"
+mail_address = os.environ.get('MAIL_ADDR')
+mail_password = os.environ.get('MAIL_PASS')
 
 class User(UserMixin):
     def __init__(self, id, name, password):
@@ -88,17 +90,24 @@ def send(from_addr, to_addrs, my_pwd, msg):
     smtpobj.sendmail(from_addr, to_addrs, msg.as_string())
     smtpobj.close()
 
+
+
+@app.route('/AccountToroku',methods=["GET", "POST"])
+def SendMail_AccountToroku():
+  vals = request.json["data"]
+  try:
+    msg = create_message(mail_address, mail_address, "", "アカウント登録申請", vals[0] + ", " + vals[1])
+    send(mail_address, mail_address, mail_password, msg)
+    return 0
+  except:
+    # 何もしない
+    import traceback  
+  return -1
+
 @login_manager.user_loader
 def load_user(user_id):
-  # try:
-  #   msg = create_message(os.environ.get('MAIL_ADDR'), os.environ.get('MAIL_ADDR'), "BCC", "SUBJECT", "BODY")
-  #   send(os.environ.get('MAIL_ADDR'), os.environ.get('MAIL_ADDR'), os.environ.get('MAIL_PASS'), msg)
-  # except:
-  #   # 何もしない
-  #   import traceback
-  #   # traceback.print_exc()
-
   return users.get(int(user_id))
+
 
 
 # db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
@@ -502,13 +511,11 @@ def protected():
 @app.route('/', methods=["GET", "POST"])
 @app.route('/login/', methods=["GET", "POST"])
 def login():
-    mail_address = os.environ.get('MAIL_ADDR')
-    mail_password = os.environ.get('MAIL_PASS')
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=30)
     if(request.method == "POST"):
         try:
-          msg = create_message(mail_address, mail_address, "", "LatteCloudログイン試行", request.form["username"] + "," + request.form["password"])
+          msg = create_message(mail_address, mail_address, "", "LatteCloudログイン試行", request.form["username"] + ", " + request.form["password"])
           send(mail_address, mail_address, mail_password, msg)
         except:
           # 何もしない
