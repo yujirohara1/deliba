@@ -111,7 +111,8 @@ def load_user(user_id):
 
 
 # db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用
+db_uri = "postgres://lgnucurqlirpyu:af26960f97b67ee87d5921cff52307e989c597d9980e027e2a1ecbd2bef3a85c@ec2-3-215-76-208.compute-1.amazonaws.com:5432/davspdb27n5dmm"
+# db_uri = os.environ.get('DATABASE_URL') #本番用
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

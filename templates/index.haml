@@ -547,7 +547,10 @@
             %div.row
               %div.col-md-5.text-right#progressPrintSeikyuPercent
               %div.col-md-7.text-left
-                %progress#progressSeikyuPrint(value="0" max="100")
+                <div class="progress">
+                  <div class="progress-bar" id="progressDivSeikyuPrint" role="progressbar">
+                  </div>
+                </div>
           %div.col-md-1
             %button.btn.btn-default(type="button" data-dismiss="modal")
               閉じる

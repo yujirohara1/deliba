@@ -510,7 +510,8 @@ $('#modalSeikyuKanri').on("shown.bs.modal", function (e) {
     $('#btnSeikyuIkkatuCreate').remove();
     $('#btnSeikyuIkkatuDelete').remove();
     $('#btnSeikyuIkkatuPrint').remove();
-    $('#progressSeikyuPrint').hide();
+    //$('#progressSeikyuPrint').hide();
+    $('#progressDivSeikyuPrint').hide();
     
     createSeikyuKanriTable_Sub();
     createSeikyuKanriCsutomerTable_Sub(0, 0)
@@ -563,7 +564,8 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
     tuki = ('00'+tuki).slice(-2);
     $('#btnSeikyuIkkatuCreate').attr("disabled","disabled");
     //CreateSeikyuData(customerid, nen + "" + tuki, false) // ←従来の一括処理。これを１件ずつの連続通信に変更する。
-    $('#progressSeikyuPrint').show();
+    //$('#progressSeikyuPrint').show();
+    $('#progressDivSeikyuPrint').show();
     files = [];
     index = 0;
     blReady = false;
@@ -588,7 +590,8 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
   function funcSeikyuIkkatuPrint(customerid,nen, tuki){
     if (confirm("請求書をプレビューします。よろしいですか？")) {
         $('#btnSeikyuIkkatuPrint').attr("disabled","disabled");
-        $('#progressSeikyuPrint').show();
+        //$('#progressSeikyuPrint').show();
+        $('#progressDivSeikyuPrint').show();
         files = [];
         index = 0;
         blReady = false;
@@ -609,7 +612,8 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
 || 請求書印刷
 */
 function PrintSeikyu(customerid, nen, tuki) {
-    $("#progressSeikyuPrint").val(0);
+    //$("#progressSeikyuPrint").val(0);
+    $("#progressDivSeikyuPrint").css( "width", "0%" );
     $('#progressPrintSeikyuPercent').show();
 
     var randnum = Math.floor(Math.random()*10101010101)
@@ -625,8 +629,9 @@ function PrintSeikyu(customerid, nen, tuki) {
                 files.push(data);
                 //var currentNum = toNumber($("#myProgress").val());
                 var nowProgress = Math.floor((rowNo / rowSize) * 100);
-                $("#progressSeikyuPrint").val( nowProgress );
-                $('#progressPrintSeikyuPercent').html("PDFを作成しています。（" + nowProgress + "％）");
+                // $("#progressSeikyuPrint").val( nowProgress );
+                $("#progressDivSeikyuPrint").css( "width", nowProgress+"%" );
+                $('#progressPrintSeikyuPercent').html("PDFを作成しています。");
             }
             //if(dummyA==999999999){
             if(files.length == Math.ceil(rowSize/2)){
@@ -669,7 +674,8 @@ function MergePdfExecute() {
         return;
     }
 
-    $('#progressSeikyuPrint').hide();
+    //$('#progressSeikyuPrint').hide();
+    $('#progressDivSeikyuPrint').hide();
     $('#progressPrintSeikyuPercent').html("ファイルをダウンロードしています...");
     
     //1000人分のPDFファイル名をクライアントから伝えて、マージPDFをもらう
@@ -696,7 +702,8 @@ function MergePdfExecute() {
 
 
 function CreateSeikyuDataRenzoku(customerid, nentuki, sakujonomi){
-    $("#progressSeikyuPrint").val(0);
+    //$("#progressSeikyuPrint").val(0);
+    $("#progressDivSeikyuPrint").css( "width", "0%" );
     $('#progressPrintSeikyuPercent').show();
     // var tmpPrint = function (dummyA, dummyB, rowNo, rowSize) {
     //     $.ajax({
@@ -754,8 +761,9 @@ function CreateSeikyuDataRenzoku(customerid, nentuki, sakujonomi){
                 files.push(data);
                 //var currentNum = toNumber($("#myProgress").val());
                 var nowProgress = Math.floor((rowNo / rowSize) * 100);
-                $("#progressSeikyuPrint").val( nowProgress );
-                $('#progressPrintSeikyuPercent').html("請求データを作成中...（" + nowProgress + "％）");
+                //$("#progressSeikyuPrint").val( nowProgress );
+                $("#progressDivSeikyuPrint").css( "width", nowProgress+"%" );
+                $('#progressPrintSeikyuPercent').html("請求データを作成中...");
             }
             if(rowNo == rowSize){
                 blReady = true;
@@ -784,7 +792,8 @@ function SeikyuInsertComplete() {
         return;
     }
 
-    $('#progressSeikyuPrint').hide();
+    //$('#progressSeikyuPrint').hide();
+    $('#progressDivSeikyuPrint').hide();
     $('#progressPrintSeikyuPercent').html("作成完了しました。");
     createSeikyuKanriTable_Sub();
     setTimeout("$('#progressPrintSeikyuPercent').hide(); $('#progressPrintSeikyuPercent').html('')", 3000);
