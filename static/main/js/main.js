@@ -510,8 +510,8 @@ $('#modalSeikyuKanri').on("shown.bs.modal", function (e) {
     $('#btnSeikyuIkkatuCreate').remove();
     $('#btnSeikyuIkkatuDelete').remove();
     $('#btnSeikyuIkkatuPrint').remove();
-    //$('#progressSeikyuPrint').hide();
     $('#progressDivSeikyuPrint').hide();
+    $('#progressParentDivSeikyuPrint').hide();
     $('#progressDivSeikyuPrint').text("");
     
     createSeikyuKanriTable_Sub();
@@ -567,6 +567,7 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
     //CreateSeikyuData(customerid, nen + "" + tuki, false) // ←従来の一括処理。これを１件ずつの連続通信に変更する。
     //$('#progressSeikyuPrint').show();
     $('#progressDivSeikyuPrint').show();
+    $('#progressParentDivSeikyuPrint').show();
     $('#progressDivSeikyuPrint').text("");
     files = [];
     index = 0;
@@ -594,6 +595,7 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
         $('#btnSeikyuIkkatuPrint').attr("disabled","disabled");
         //$('#progressSeikyuPrint').show();
         $('#progressDivSeikyuPrint').show();
+        $('#progressParentDivSeikyuPrint').show();
         $('#progressDivSeikyuPrint').text("");
     files = [];
         index = 0;
@@ -681,6 +683,7 @@ function MergePdfExecute() {
 
     //$('#progressSeikyuPrint').hide();
     $('#progressDivSeikyuPrint').hide();
+    $('#progressParentDivSeikyuPrint').hide();
     $('#progressDivSeikyuPrint').text("");
     $('#progressPrintSeikyuPercent').html("ファイルをダウンロードしています...");
     
@@ -802,6 +805,7 @@ function SeikyuInsertComplete() {
 
     //$('#progressSeikyuPrint').hide();
     $('#progressDivSeikyuPrint').hide();
+    $('#progressParentDivSeikyuPrint').hide();
     $('#progressDivSeikyuPrint').text("");
     $('#progressPrintSeikyuPercent').html("作成完了しました。");
     createSeikyuKanriTable_Sub();
