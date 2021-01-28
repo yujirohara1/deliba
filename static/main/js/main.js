@@ -1533,17 +1533,7 @@ $('#modalAddSeikyu').on("shown.bs.modal", function (e) {
     } ;
     $('#tableSeikyu').dataTable().fnAddData( item ); // DataTable でなく、dataTable 。これはOKなのか？
 
-    // // 行数分繰り返し
-    // for (i = 0; i < rows; ++i) {
-
-    //     $tr = $('<tr />');
-
-    //     $tr.append($('<td />').text(jsonData[i].Name));
-    //     $tr.append($('<td />').text(jsonData[i].Email))
-
-    //     $$tbody.append($tr);
-
-
+    $('#modalAddSeikyu').modal("hide");
 
  });
 
@@ -1616,7 +1606,7 @@ function createItemTables_SeikyuSub(){
 
 function getSeikyuQuantityColorFlg(val, row, youbiwa){
     var rows = $('#tableDaicho').DataTable().rows().data();
-    var teiki;
+    var teiki=-1;
     for(var i=0; i<rows.length; i++){
         if(rows[i].item_id == row.item_id){
             var ret = ""
@@ -1633,7 +1623,11 @@ function getSeikyuQuantityColorFlg(val, row, youbiwa){
     }
     //
     //return "<span style='color:red' title='定期:" + teiki + "'/>" + (val==0 ? '' : (val==null ? '' : val));
-    return "<span style='color:red' aria-label='定期なら" + teiki + "' data-balloon-pos='left'/>" + (val==0 ? '' : (val==null ? '' : val));
+    if(teiki == -1){
+        return "<span style='color:red' aria-label='今月のみ追加商品' data-balloon-pos='left'/>" + (val==0 ? '' : (val==null ? '' : val));
+    }else{
+        return "<span style='color:red' aria-label='定期なら" + teiki + "' data-balloon-pos='left'/>" + (val==0 ? '' : (val==null ? '' : val));
+    }
 }
 
 
