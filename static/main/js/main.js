@@ -512,6 +512,7 @@ $('#modalSeikyuKanri').on("shown.bs.modal", function (e) {
     $('#btnSeikyuIkkatuPrint').remove();
     //$('#progressSeikyuPrint').hide();
     $('#progressDivSeikyuPrint').hide();
+    $('#progressDivSeikyuPrint').text("");
     
     createSeikyuKanriTable_Sub();
     createSeikyuKanriCsutomerTable_Sub(0, 0)
@@ -566,6 +567,7 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
     //CreateSeikyuData(customerid, nen + "" + tuki, false) // ←従来の一括処理。これを１件ずつの連続通信に変更する。
     //$('#progressSeikyuPrint').show();
     $('#progressDivSeikyuPrint').show();
+    $('#progressDivSeikyuPrint').text("");
     files = [];
     index = 0;
     blReady = false;
@@ -592,7 +594,8 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
         $('#btnSeikyuIkkatuPrint').attr("disabled","disabled");
         //$('#progressSeikyuPrint').show();
         $('#progressDivSeikyuPrint').show();
-        files = [];
+        $('#progressDivSeikyuPrint').text("");
+    files = [];
         index = 0;
         blReady = false;
         if(toNumber($(".row_selected.seikyuKanri2").find("td:eq(0)").text())!=0){
@@ -614,6 +617,7 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
 function PrintSeikyu(customerid, nen, tuki) {
     //$("#progressSeikyuPrint").val(0);
     $("#progressDivSeikyuPrint").css( "width", "0%" );
+    $('#progressDivSeikyuPrint').text("");
     $('#progressPrintSeikyuPercent').show();
 
     var randnum = Math.floor(Math.random()*10101010101)
@@ -631,6 +635,7 @@ function PrintSeikyu(customerid, nen, tuki) {
                 var nowProgress = Math.floor((rowNo / rowSize) * 100);
                 // $("#progressSeikyuPrint").val( nowProgress );
                 $("#progressDivSeikyuPrint").css( "width", nowProgress+"%" );
+                $("#progressDivSeikyuPrint").text( nowProgress+"%" );
                 $('#progressPrintSeikyuPercent').html("PDFを作成しています。");
             }
             //if(dummyA==999999999){
@@ -676,6 +681,7 @@ function MergePdfExecute() {
 
     //$('#progressSeikyuPrint').hide();
     $('#progressDivSeikyuPrint').hide();
+    $('#progressDivSeikyuPrint').text("");
     $('#progressPrintSeikyuPercent').html("ファイルをダウンロードしています...");
     
     //1000人分のPDFファイル名をクライアントから伝えて、マージPDFをもらう
@@ -704,6 +710,7 @@ function MergePdfExecute() {
 function CreateSeikyuDataRenzoku(customerid, nentuki, sakujonomi){
     //$("#progressSeikyuPrint").val(0);
     $("#progressDivSeikyuPrint").css( "width", "0%" );
+    $('#progressDivSeikyuPrint').text("");
     $('#progressPrintSeikyuPercent').show();
     // var tmpPrint = function (dummyA, dummyB, rowNo, rowSize) {
     //     $.ajax({
@@ -763,6 +770,7 @@ function CreateSeikyuDataRenzoku(customerid, nentuki, sakujonomi){
                 var nowProgress = Math.floor((rowNo / rowSize) * 100);
                 //$("#progressSeikyuPrint").val( nowProgress );
                 $("#progressDivSeikyuPrint").css( "width", nowProgress+"%" );
+                $("#progressDivSeikyuPrint").text( nowProgress+"%" );
                 $('#progressPrintSeikyuPercent').html("請求データを作成中...");
             }
             if(rowNo == rowSize){
@@ -794,6 +802,7 @@ function SeikyuInsertComplete() {
 
     //$('#progressSeikyuPrint').hide();
     $('#progressDivSeikyuPrint').hide();
+    $('#progressDivSeikyuPrint').text("");
     $('#progressPrintSeikyuPercent').html("作成完了しました。");
     createSeikyuKanriTable_Sub();
     setTimeout("$('#progressPrintSeikyuPercent').hide(); $('#progressPrintSeikyuPercent').html('')", 3000);
