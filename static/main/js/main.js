@@ -1502,6 +1502,8 @@ $('#modalAddSeikyu').on("shown.bs.modal", function (e) {
  });
  
  
+
+
  /*
  || 請求データ臨時追加画面起動[直前]イベント
  */
@@ -1512,9 +1514,42 @@ $('#modalAddSeikyu').on("shown.bs.modal", function (e) {
     a.fnClearTable();
  });
  
- 
+ $('#btnSeikyuAdd').on('click', function() {
+    var customerid = toNumber($(".row_selected.customer").find("td:eq(0)").text());
+    var itemid = toNumber($(".row_selected.addSeikyu").find("td:eq(0)").text()); //アイテムID
+    var itemname = $(".row_selected.addSeikyu").find("td:eq(2)").text(); //商品名 
+    var itemtanka = toNumber($(".row_selected.addSeikyu").find("td:eq(3)").text()); //単価
+    var nentuki = $('#selNentuki').val();
+    var nen = (nentuki+"").substr(0,4);
+    var tuki = (nentuki+"").substr(4,2);
+
+    var item = {
+        'nen':nen,
+        'tuki':tuki,
+        'customer_id':customerid,
+        'item_id':itemid,
+        'item_name1':itemname,
+        'price':itemtanka
+    } ;
+    $('#tableSeikyu').dataTable().fnAddData( item ); // DataTable でなく、dataTable 。これはOKなのか？
+
+    // // 行数分繰り返し
+    // for (i = 0; i < rows; ++i) {
+
+    //     $tr = $('<tr />');
+
+    //     $tr.append($('<td />').text(jsonData[i].Name));
+    //     $tr.append($('<td />').text(jsonData[i].Email))
+
+    //     $$tbody.append($tr);
+
+
+
+ });
+
+
 /*
-|| 台帳追加サブ画面のテーブル作成
+|| 請求データ臨時追加サブ画面のテーブル作成
 */
 function createItemTables_SeikyuSub(){
     
