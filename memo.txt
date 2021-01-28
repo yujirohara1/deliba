@@ -8,7 +8,7 @@ Heroku CLI heroku pg:psql postgresql-cylindrical-36948 --app deliba
 heroku pg:psql postgresql-solid-08326 --app deliba
 
 
-
+ 
 
 deliba_db=# select setval('customer_id_seq',(select max(id) from customer));
  setval

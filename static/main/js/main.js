@@ -262,8 +262,6 @@ $(document).ready(function() {
 // });
 
 
-
-
 /*
 || 請求データ作成　個別
 */
@@ -512,7 +510,9 @@ $('#modalSeikyuKanri').on("shown.bs.modal", function (e) {
     $('#btnSeikyuIkkatuCreate').remove();
     $('#btnSeikyuIkkatuDelete').remove();
     $('#btnSeikyuIkkatuPrint').remove();
-    $('#progressSeikyuPrint').hide();
+    //$('#progressSeikyuPrint').hide();
+    $('#progressDivSeikyuPrint').hide();
+    $('#progressDivSeikyuPrint').text("");
     
     createSeikyuKanriTable_Sub();
     createSeikyuKanriCsutomerTable_Sub(0, 0)
@@ -565,7 +565,9 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
     tuki = ('00'+tuki).slice(-2);
     $('#btnSeikyuIkkatuCreate').attr("disabled","disabled");
     //CreateSeikyuData(customerid, nen + "" + tuki, false) // ←従来の一括処理。これを１件ずつの連続通信に変更する。
-    $('#progressSeikyuPrint').show();
+    //$('#progressSeikyuPrint').show();
+    $('#progressDivSeikyuPrint').show();
+    $('#progressDivSeikyuPrint').text("");
     files = [];
     index = 0;
     blReady = false;
@@ -590,8 +592,10 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
   function funcSeikyuIkkatuPrint(customerid,nen, tuki){
     if (confirm("請求書をプレビューします。よろしいですか？")) {
         $('#btnSeikyuIkkatuPrint').attr("disabled","disabled");
-        $('#progressSeikyuPrint').show();
-        files = [];
+        //$('#progressSeikyuPrint').show();
+        $('#progressDivSeikyuPrint').show();
+        $('#progressDivSeikyuPrint').text("");
+    files = [];
         index = 0;
         blReady = false;
         if(toNumber($(".row_selected.seikyuKanri2").find("td:eq(0)").text())!=0){
@@ -611,7 +615,9 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
 || 請求書印刷
 */
 function PrintSeikyu(customerid, nen, tuki) {
-    $("#progressSeikyuPrint").val(0);
+    //$("#progressSeikyuPrint").val(0);
+    $("#progressDivSeikyuPrint").css( "width", "0%" );
+    $('#progressDivSeikyuPrint').text("");
     $('#progressPrintSeikyuPercent').show();
 
     var randnum = Math.floor(Math.random()*10101010101)
@@ -627,8 +633,10 @@ function PrintSeikyu(customerid, nen, tuki) {
                 files.push(data);
                 //var currentNum = toNumber($("#myProgress").val());
                 var nowProgress = Math.floor((rowNo / rowSize) * 100);
-                $("#progressSeikyuPrint").val( nowProgress );
-                $('#progressPrintSeikyuPercent').html("PDFを作成しています。（" + nowProgress + "％）");
+                // $("#progressSeikyuPrint").val( nowProgress );
+                $("#progressDivSeikyuPrint").css( "width", nowProgress+"%" );
+                $("#progressDivSeikyuPrint").text( nowProgress+"%" );
+                $('#progressPrintSeikyuPercent').html("PDFを作成しています。");
             }
             //if(dummyA==999999999){
             if(files.length == Math.ceil(rowSize/2)){
@@ -671,7 +679,9 @@ function MergePdfExecute() {
         return;
     }
 
-    $('#progressSeikyuPrint').hide();
+    //$('#progressSeikyuPrint').hide();
+    $('#progressDivSeikyuPrint').hide();
+    $('#progressDivSeikyuPrint').text("");
     $('#progressPrintSeikyuPercent').html("ファイルをダウンロードしています...");
     
     //1000人分のPDFファイル名をクライアントから伝えて、マージPDFをもらう
@@ -698,7 +708,9 @@ function MergePdfExecute() {
 
 
 function CreateSeikyuDataRenzoku(customerid, nentuki, sakujonomi){
-    $("#progressSeikyuPrint").val(0);
+    //$("#progressSeikyuPrint").val(0);
+    $("#progressDivSeikyuPrint").css( "width", "0%" );
+    $('#progressDivSeikyuPrint').text("");
     $('#progressPrintSeikyuPercent').show();
     // var tmpPrint = function (dummyA, dummyB, rowNo, rowSize) {
     //     $.ajax({
@@ -756,8 +768,10 @@ function CreateSeikyuDataRenzoku(customerid, nentuki, sakujonomi){
                 files.push(data);
                 //var currentNum = toNumber($("#myProgress").val());
                 var nowProgress = Math.floor((rowNo / rowSize) * 100);
-                $("#progressSeikyuPrint").val( nowProgress );
-                $('#progressPrintSeikyuPercent').html("請求データを作成中...（" + nowProgress + "％）");
+                //$("#progressSeikyuPrint").val( nowProgress );
+                $("#progressDivSeikyuPrint").css( "width", nowProgress+"%" );
+                $("#progressDivSeikyuPrint").text( nowProgress+"%" );
+                $('#progressPrintSeikyuPercent').html("請求データを作成中...");
             }
             if(rowNo == rowSize){
                 blReady = true;
@@ -786,7 +800,9 @@ function SeikyuInsertComplete() {
         return;
     }
 
-    $('#progressSeikyuPrint').hide();
+    //$('#progressSeikyuPrint').hide();
+    $('#progressDivSeikyuPrint').hide();
+    $('#progressDivSeikyuPrint').text("");
     $('#progressPrintSeikyuPercent').html("作成完了しました。");
     createSeikyuKanriTable_Sub();
     setTimeout("$('#progressPrintSeikyuPercent').hide(); $('#progressPrintSeikyuPercent').html('')", 3000);
@@ -1380,8 +1396,13 @@ function createSeikyuTables_Main(customerId, nentuki){
         list = JSON.parse(json.data);
         if (list.length==1){
             var customerName = list[0].name1;
-            var nentukiMoji = (nentuki+"").substr(0,4) + "年 " + (nentuki+"").substr(4,2) + " 月 "
-            var customerNameTag = "<span id='spnCustomerLabel' style='font-size:18px'>" + nentukiMoji + "<br>" + customerName + "</span>"
+            var nentukiMoji = (nentuki+"").substr(0,4) + "年 " + (nentuki+"").substr(4,2) + " 月 ";
+            var customerNameTag = "<span id='spnCustomerLabel' style='font-size:18px'>" + nentukiMoji + "<br>" + customerName + "</span>";
+            var customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+            var customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+            var customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+            var customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+            var customerNameTag = customerNameTag + '<a id="btnAddSeikyuItem" onclick="funcOpenSeikyuItemDialog(' + (nentuki+"").substr(0,4) + ',' + (nentuki+"").substr(4,2) + ',' + customerId + ');" class="btn btn-default btn-sm" role="button" style="top:-14px;position:relative">商品追加</a>';
         } else {
             var customerNameTag = "";
         }
@@ -1462,7 +1483,96 @@ function createSeikyuTables_Main(customerId, nentuki){
 
 }
 
+function funcOpenSeikyuItemDialog(nen, tuki, customerid){
+    //alert(nen + "," + tuki + "," + customerid);
+    $('#modalAddSeikyu').modal();
+}
 
+
+/*
+|| 請求データの臨時追加画面起動[直後]イベント
+*/
+$('#modalAddSeikyu').on("shown.bs.modal", function (e) {
+     //createItemTables_DaichoSub();
+     createItemTables_SeikyuSub();
+ });
+ 
+ 
+ /*
+ || 請求データ臨時追加画面起動[直前]イベント
+ */
+ $('#modalAddSeikyu').on("show.bs.modal", function (e) {
+    var a = $('#tableAddSeikyu').dataTable({
+        destroy: true
+    });
+    a.fnClearTable();
+ });
+ 
+ 
+/*
+|| 台帳追加サブ画面のテーブル作成
+*/
+function createItemTables_SeikyuSub(){
+    
+    $('#tableAddSeikyu').DataTable({
+        bInfo: false,
+        bSort: true,
+        destroy: true,
+        "processing": true,
+        ajax: {
+            url: "/getItem_Daicho",
+            dataType: "json",
+            dataSrc: function ( json ) {
+                return JSON.parse(json.data);
+            },
+            contentType:"application/json; charset=utf-8",
+            complete: function () {
+                return; 
+            }
+        },
+        columns: [
+            { data: 'id'     ,width: '8%'},
+            { data: 'code'   ,width: '12%'},
+            { data: 'name1'  ,width: '33%'},
+            { data: 'tanka'  ,width: '10%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+            { data: null     ,width: '37%' ,render: 
+                function (data, type, row) { 
+                    //row.id が $('#tableSeikyu').DataTable().rows().data() に含まれるかどうか検査
+                    var rows = $('#tableSeikyu').DataTable().rows().data();
+                    for(var i=0; i<rows.length; i++){
+                        if(rows[i].item_id == row.id){
+                            return "登録済み";
+                        }
+                    }
+                    return "";
+                }
+            }
+        ],
+        language: {
+           url: "../static/main/js/japanese.json"
+        },
+        "scrollY":$(window).height() * 30 / 100,
+        order: [[ 4, "desc" ],[ 1, "asc" ],[ 3, "asc" ]],
+        "pageLength": 1000,
+        paging: false,
+        "lengthMenu": [100, 300, 500, 1000],
+        dom:"<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        "fnRowCallback": function( nRow, row, iDisplayIndex, iDisplayIndexFull ) {
+            var rows = $('#tableSeikyu').DataTable().rows().data();
+            for(var i=0; i<rows.length; i++){
+                if(rows[i].item_id == row.id){
+                    //$('td:eq(2)', nRow).html( '<b>1</b>' );
+                    nRow.style.backgroundColor = "#ffefe0";
+                }
+            }
+        }
+    });
+  }
+  
+  
+  
 
 
 function getSeikyuQuantityColorFlg(val, row, youbiwa){
@@ -1962,6 +2072,14 @@ $("#tableAddDaicho tbody").on('click',function(event) {
     $("#tableAddDaicho tbody tr").removeClass('row_selected addDaicho');        
     $("#tableAddDaicho tbody td").removeClass('row_selected addDaicho');        
     $(event.target.parentNode).addClass('row_selected addDaicho');
+    
+});
+
+$("#tableAddSeikyu tbody").on('click',function(event) {
+    $("#tableAddSeikyu").removeClass('row_selected addSeikyu');        
+    $("#tableAddSeikyu tbody tr").removeClass('row_selected addSeikyu');        
+    $("#tableAddSeikyu tbody td").removeClass('row_selected addSeikyu');        
+    $(event.target.parentNode).addClass('row_selected addSeikyu');
     
 });
 

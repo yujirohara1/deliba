@@ -503,7 +503,7 @@
         %button.close(type="button" data-dismiss="modal")
           %span
             ×
-        %h4.modal-title#subAtitle
+        %h4.modal-title#subDtitle
           請求データを作成する年月を、左の表から選択してください。
       %div.modal-body
         %div.row
@@ -547,7 +547,10 @@
             %div.row
               %div.col-md-5.text-right#progressPrintSeikyuPercent
               %div.col-md-7.text-left
-                %progress#progressSeikyuPrint(value="0" max="100")
+                <div class="progress">
+                  <div class="progress-bar" id="progressDivSeikyuPrint" role="progressbar">
+                  </div>
+                </div>
           %div.col-md-1
             %button.btn.btn-default(type="button" data-dismiss="modal")
               閉じる
@@ -575,6 +578,58 @@
         %div.row
             %button.btn.btn-default(type="button" data-dismiss="modal")
               閉じる
+
+
+
+
+<!-- 請求データへの商品追加モーダル -->
+%div.modal.fade#modalAddSeikyu(tabindex="-1")
+  %div.modal-dialog.modal-lg
+    %div.modal-content
+      %div.modal-header
+        %button.close(type="button" data-dismiss="modal")
+          %span
+            ×
+        %h4.modal-title#subEtitle
+          請求データに追加する商品を選択してください。
+      %div.modal-body
+        %div.row
+          %div.col-md-8
+            %table.table-bordered.row.hover#tableAddSeikyu
+              %thead
+                %tr
+                  %th 
+                    ID
+                  %th
+                    コード
+                  %th
+                   商品名
+                  %th
+                    単価
+                  %th
+                    登録状況
+              %tbody
+          %div.col-md-4
+            %br
+        %div.row
+          %div.col-md-12
+            %h4
+              &nbsp;
+        %div.row
+          %div.col-md-12
+            &nbsp;
+      %div.modal-footer#modalAddSeikyuFooter
+        %div.row
+          %div.col-md-10.text-right#modalAddSeikyuMessageArea
+          %div.col-md-1
+            %button.btn.btn-default(type="button" data-dismiss="modal")
+              閉じる
+          %div.col-md-1
+            %button#btnSeikyuAdd.btn.btn-primary(type="button")
+              決定
+
+
+
 
 
 {% endblock %}

