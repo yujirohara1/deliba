@@ -23,17 +23,19 @@
                   操作年月
                 %div.form-group
                     %select.form-control.input-sm#selNentuki
-            %div.col-md-1
-              &nbsp;
             %div.col-md-2
               %div.input-group
                 %button.btn.btn-primary.btn-sm(type="button" data-toggle="modal" data-target="#modalSeikyuKanri")
                   請求データ管理
             %div.col-md-2
               %div.input-group
+                %button.btn.btn-primary.btn-sm#btnItemMaster(type="button")
+                  商品管理
+            %div.col-md-2
+              %div.input-group
                 %button.btn.btn-primary.btn-sm#btnNewCustomerToroku(type="button")
                   新規顧客登録
-            %div.col-md-4
+            %div.col-md-3
               %div.input-group.pull-right
                 %a.btn.btn-warning(href="/logout/" role="button")
                   サインアウト
