@@ -16,7 +16,7 @@ from reportlab.platypus import Table, TableStyle
 from reportlab.lib.units import mm
 from reportlab.lib import colors
 from api.database import db, ma
-from models.item import Item, ItemSchema
+from models.item import Item, ItemSchema, VItemGroup, VItemGroupSchema
 from models.customer import Customer, CustomerSchema
 from models.mstsetting import MstSetting, MstSettingSchema
 from models.daicho import Daicho, DaichoSchema, VDaichoA, VDaichoASchema
@@ -136,12 +136,26 @@ def resJson_getCustomer_Main(group_kb, yuko_muko):
       customers_schema = CustomerSchema(many=True)
       return jsonify({'data': customers_schema.dumps(customers, ensure_ascii=False)})
 
-@app.route('/getItem_Daicho/')
+@app.route('/getItem_Daicho/<itemname1>')
 @login_required
-def resJson_getItem_Daicho():
-     items = Item.query.all()
-     items_schema = ItemSchema(many=True)
-     return jsonify({'data': items_schema.dumps(items, ensure_ascii=False)})
+def resJson_getItem_Daicho(itemname1):
+    if itemname1=="すべて":
+      items = Item.query.all()
+    else:
+      items = Item.query.filter(Item.name1==itemname1).all()
+
+    items_schema = ItemSchema(many=True)
+    return jsonify({'data': items_schema.dumps(items, ensure_ascii=False)})
+
+     
+@app.route('/getItemGroup_Daicho/')
+@login_required
+def resJson_getItemGroup_Daicho():
+     itemgroup = VItemGroup.query.all()
+     itemsgroup_schema = VItemGroupSchema(many=True)
+     return jsonify({'data': itemsgroup_schema.dumps(itemgroup, ensure_ascii=False)})
+
+     
 
 @app.route('/getVDaichoA_ByCusotmerId/<customerid>')
 @login_required

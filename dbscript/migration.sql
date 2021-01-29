@@ -452,6 +452,36 @@ CREATE VIEW v_seikyu_c AS
   GROUP BY a.nen, a.tuki
   ORDER BY a.nen, a.tuki;
 
+
+
+CREATE VIEW v_item_group AS
+select
+    min(id) min_id,
+    '‚·‚×‚Ä' name1,
+    count(1) kensu,
+    min(tanka) min_tanka,
+    max(tanka) max_tanka
+from
+    item
+where
+    del_flg = 0
+union all
+select
+    min(id) min_id,
+    name1,
+    count(1) kensu,
+    min(tanka) min_tanka,
+    max(tanka) max_tanka
+from
+    item
+where
+    del_flg = 0
+group by
+    name1
+;
+
+
+
 --
 -- Name: customer id; Type: DEFAULT; Schema: public; Owner: lgnucurqlirpyu
 --

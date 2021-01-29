@@ -1339,8 +1339,10 @@ $('#btnDaichoAdd').on('click', function() {
         $("#modalAddDaichoMessageArea").append("<p style='color:red'>更新しました。</p>");
         setTimeout('$("#modalAddDaichoMessageArea")[0].innerText="";', 3000);
         createDaichoTables_Main(customerid);
-        createItemTables_DaichoSub();
-        $('#btnDaichoAdd').removeAttr("disabled");
+        //createItemTables_DaichoSub();
+        createItemGroupTables_DaichoSub();
+        createItemTables_DaichoSub("すべて");
+    $('#btnDaichoAdd').removeAttr("disabled");
     }).fail(function(data) {
           alert("エラー：" + data.statusText);
     }).always(function(data) {
@@ -1497,7 +1499,6 @@ function funcOpenSeikyuItemDialog(nen, tuki, customerid){
 || 請求データの臨時追加画面起動[直後]イベント
 */
 $('#modalAddSeikyu').on("shown.bs.modal", function (e) {
-     //createItemTables_DaichoSub();
      createItemTables_SeikyuSub();
  });
  
@@ -1549,7 +1550,7 @@ function createItemTables_SeikyuSub(){
         destroy: true,
         "processing": true,
         ajax: {
-            url: "/getItem_Daicho",
+            url: "/getItem_Daicho/すべて",
             dataType: "json",
             dataSrc: function ( json ) {
                 return JSON.parse(json.data);
@@ -1700,7 +1701,7 @@ $("#chkMuko").change(function(){
 /*
 || 台帳追加サブ画面のテーブル作成
 */
-function createItemTables_DaichoSub(){
+function createItemTables_DaichoSub(itemname1){
     
   $('#tableAddDaicho').DataTable({
       bInfo: false,
@@ -1708,7 +1709,7 @@ function createItemTables_DaichoSub(){
       destroy: true,
       "processing": true,
       ajax: {
-          url: "/getItem_Daicho",
+          url: "/getItem_Daicho/" + itemname1,
           dataType: "json",
           dataSrc: function ( json ) {
               return JSON.parse(json.data);
@@ -1768,6 +1769,59 @@ function createItemTables_DaichoSub(){
 }
 
 
+/*
+|| 台帳追加サブ画面のテーブル作成
+|| アイテムグループ
+*/
+function createItemGroupTables_DaichoSub(){
+    
+    $('#tableAddDaichoGroup').DataTable({
+        bInfo: false,
+        bSort: true,
+        destroy: true,
+        "processing": true,
+        ajax: {
+            url: "/getItemGroup_Daicho",
+            dataType: "json",
+            dataSrc: function ( json ) {
+                return JSON.parse(json.data);
+            },
+            contentType:"application/json; charset=utf-8",
+            complete: function () {
+                return; 
+            }
+        },
+        columns: [
+            { data: 'name1'  ,width: '60%'},
+            { data: 'kensu'  ,width: '15%' ,className: 'dt-body-center' },
+            { data: null     ,width: '25%' ,render: 
+                function (data, type, row) { 
+                    return (row.min_tanka*1).toLocaleString() + " ～ " + (row.max_tanka*1).toLocaleString();
+                    //(data*1).toLocaleString()
+                }
+            }
+        ],
+        language: {
+           url: "../static/main/js/japanese.json"
+        },
+        "scrollY":$(window).height() * 30 / 100,
+        "pageLength": 1000,
+        order: [[ 1, "desc" ],[ 0, "asc" ]],
+        paging: false,
+        "aoColumnDefs": [
+            { 'bSortable': false, 'aTargets': [ 0 ] },
+            { 'bSortable': false, 'aTargets': [ 1 ] },
+            { 'bSortable': false, 'aTargets': [ 2 ] }
+         ],
+        "lengthMenu": [100, 300, 500, 1000],
+        dom:"<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+    });
+  }
+  
+  
+
 
 /*
 || 台帳サブ画面起動[直後]イベント
@@ -1782,7 +1836,9 @@ $('#modalAddDaicho').on("shown.bs.modal", function (e) {
    $("#inpDaichoAddSat").val("");
    $("#inpDaichoAddSun").val("");
 
-    createItemTables_DaichoSub();
+    //createItemTables_DaichoSub();
+    createItemGroupTables_DaichoSub();
+    createItemTables_DaichoSub("すべて");
 });
 
 
@@ -1941,6 +1997,11 @@ function createCustomerTables_Main(){
     }
   });
 }
+$('#tableAddDaichoGroup tbody').on( 'click', 'tr', function () {
+    var row =   $('#tableAddDaichoGroup').DataTable().row( this ).data(); // 選択データ
+    //alert(row.name1);
+    createItemTables_DaichoSub(row.name1);
+});
 
 
 $('#tableAddDaicho tbody').on( 'click', 'tr', function () {
@@ -2105,6 +2166,14 @@ $("#tableAddDaicho tbody").on('click',function(event) {
     $("#tableAddDaicho tbody tr").removeClass('row_selected addDaicho');        
     $("#tableAddDaicho tbody td").removeClass('row_selected addDaicho');        
     $(event.target.parentNode).addClass('row_selected addDaicho');
+    
+});
+
+$("#tableAddDaichoGroup tbody").on('click',function(event) {
+    $("#tableAddDaichoGroup").removeClass('row_selected addDaichoGroup');        
+    $("#tableAddDaichoGroup tbody tr").removeClass('row_selected addDaichoGroup');        
+    $("#tableAddDaichoGroup tbody td").removeClass('row_selected addDaichoGroup');        
+    $(event.target.parentNode).addClass('row_selected addDaichoGroup');
     
 });
 
