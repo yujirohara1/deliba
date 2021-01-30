@@ -66,6 +66,17 @@ $(document).ready(function() {
     });
   });
   
+
+  $.getJSON("/getMstSetting_Main/ZEI_KB", function(json) {
+    list = JSON.parse(json.data);
+    $.each(list, function(i, item) {
+        var option = $('<option>').text(item.param_val2).val(item.param_no);
+        $('#selItemZeiKb').append(option);
+    });
+  });
+  
+
+  //
   
   
    
@@ -1659,9 +1670,9 @@ function getSeikyuQuantityColorFlg(val, row, youbiwa){
     //
     //return "<span style='color:red' title='定期:" + teiki + "'/>" + (val==0 ? '' : (val==null ? '' : val));
     if(teiki == -1){
-        return "<span style='color:red' aria-label='今月のみ追加商品' data-balloon-pos='left'/>" + (val==0 ? '' : (val==null ? '' : val));
+        return "<span style='color:red' aria-label='今月のみ追加商品 ' data-balloon-pos='left'/>" + (val==0 ? '' : (val==null ? '' : val));
     }else{
-        return "<span style='color:red' aria-label='定期なら" + teiki + "' data-balloon-pos='left'/>" + (val==0 ? '' : (val==null ? '' : val));
+        return "<span style='color:red' aria-label='定期なら " + teiki + "' data-balloon-pos='left'/>" + (val==0 ? '' : (val==null ? '' : val));
     }
 }
 
@@ -1833,13 +1844,13 @@ $('#btnItemToroku').on('click', function() {
     //$('#txtItemOrosi').val("");
     //$('#txtItemCode').val("");
 
-    var param = 0 + DELIMIT + 
+    var param = toNumber($('#txtItemId').val()) + DELIMIT + 
                 $('#txtItemCode').val() + DELIMIT + 
                 $('#txtItemName1').val() + DELIMIT + 
                 toNumber($('#txtItemSiire').val()) + DELIMIT + 
                 toNumber($('#txtItemTanka').val()) + DELIMIT + 
                 toNumber($('#txtItemOrosi').val()) + DELIMIT + 
-                "8" + DELIMIT + 
+                toNumber($('#selItemZeiKb').val()) + DELIMIT + 
                 "0";
     
     $.ajax({
@@ -1866,10 +1877,11 @@ $('#btnItemToroku').on('click', function() {
 var itemeditflg = 0;
 $('#btnEditItem').on('click', function() {
     var itemid = $(".row_selected.addDaicho").find("td:eq(0)").text();
-    funcEditItemClick(itemid);
+    var scrY = $('#tableAddDaicho')[0].parentElement.scrollTop;
+    funcEditItemClick(itemid, scrY);
 });
 
-function funcEditItemClick(itemid){
+function funcEditItemClick(itemid, scrollYposition=0){
     itemeditflg = 1;
     $('#tableAddDaicho')[0].parentNode.style.maxHeight  = "130px";
     $('#tableAddDaicho')[0].parentNode.style.height  = "130px";
@@ -1878,7 +1890,7 @@ function funcEditItemClick(itemid){
     $('#btnDaichoAdd').hide();
     $('#itemInputDiv').show();
 
-    $('#lblShohinEdit').html("<div style='color:red; font-size:16px'>修正する商品を選択し、変更内容を入力してください。</div>");
+    $('#lblShohinEdit').html("<div style='color:red; font-size:16px'>修正する商品を選択し、変更内容を入力後、登録ボタンで更新してください。</div>");
 
     var table = $('#tableAddDaicho').DataTable();
     table.columns.adjust().draw();
@@ -1897,6 +1909,7 @@ function funcEditItemClick(itemid){
             $('#txtItemOrosi').val(list[0].orosine);
             $('#txtItemCode').val(list[0].code);
             $('#txtItemId').val(list[0].id);
+            $('#selItemZeiKb').val(list[0].zei_kb);
             $('#txtItemId').attr("disabled","disabled");
         
         } else {
@@ -1914,10 +1927,15 @@ function funcEditItemClick(itemid){
                 txt = txt + "</div>";
                 
                 $('#divKeiyakuCustomers').html(txt);
+            }else{
+                $('#divKeiyakuCustomers').html("この商品を契約している人はいません。");
             }
         }).fail(function(jqXHR, textStatus, errorThrown) {
         }).always(function(json) {
-        });
+        if(itemeditflg==1 && scrollYposition != 0){
+            $('#tableAddDaicho')[0].parentElement.scrollTop = scrollYposition;
+        }
+});
     });
 }
 
@@ -2217,14 +2235,17 @@ $('#tableAddDaichoGroup tbody').on( 'click', 'tr', function () {
 
 
 $('#tableAddDaicho tbody').on( 'click', 'tr', function () {
-   var scrY = $('#tableAddDaicho')[0].parentElement.scrollTop;
-   $("#inpDaichoAddMon").val("");
-   $("#inpDaichoAddTue").val("");
-   $("#inpDaichoAddWed").val("");
-   $("#inpDaichoAddThu").val("");
-   $("#inpDaichoAddFri").val("");
-   $("#inpDaichoAddSat").val("");
-   $("#inpDaichoAddSun").val("");
+    var scrY = $('#tableAddDaicho')[0].parentElement.scrollTop;
+    $("#inpDaichoAddMon").val("");
+    $("#inpDaichoAddMon").select();
+    $("#inpDaichoAddMon").css("background-color","#ffeff7");
+
+    $("#inpDaichoAddTue").val("");
+    $("#inpDaichoAddWed").val("");
+    $("#inpDaichoAddThu").val("");
+    $("#inpDaichoAddFri").val("");
+    $("#inpDaichoAddSat").val("");
+    $("#inpDaichoAddSun").val("");
    
    var row =   $('#tableAddDaicho').DataTable().row( this ).data(); // 選択データ
    var rows = $('#tableDaicho').DataTable().rows().data(); // 台帳データ
@@ -2242,7 +2263,7 @@ $('#tableAddDaicho tbody').on( 'click', 'tr', function () {
 
    //alert($('#lblShohinEdit').text());
    if(itemeditflg==1){
-        funcEditItemClick(row.id);
+        funcEditItemClick(row.id, scrY);
         //$("#btnEditItem").click();
    }
    $('#tableAddDaicho')[0].parentElement.scrollTop = scrY;

@@ -498,7 +498,8 @@ def dbUpdate_updSeikyuQuantity(customerid, itemid, deliverymd, quantity, price, 
 @login_required
 def dbUpdate_UpdateItem(param):
   vals = param.split(DELIMIT)
-  if int(vals[0]) == 0 :  #新規登録
+  itemid = int(vals[0])
+  if itemid == 0 :  #新規登録
     item = Item()
     item.code = vals[1]
     item.name1 = vals[2]

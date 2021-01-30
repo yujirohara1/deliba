@@ -3,9 +3,9 @@ from api.database import db, ma
 class Item(db.Model): 
     __tablename__ = "item" 
     id = db.Column(db.Integer, primary_key=True) 
-    code = db.Column(db.String(), nullable=False) 
-    name1 = db.Column(db.String(), nullable=False) 
-    name2 = db.Column(db.String(), nullable=False) 
+    code = db.Column(db.String(), nullable=True) 
+    name1 = db.Column(db.String(), nullable=True) 
+    name2 = db.Column(db.String(), nullable=True) 
     tanka = db.Column(db.Integer, nullable=True) 
     orosine = db.Column(db.Integer, nullable=True) 
     zei_kb = db.Column(db.Integer, nullable=True) 

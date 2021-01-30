@@ -489,7 +489,12 @@
                         %input.form-control.input-sm#txtItemSiire(type="text", maxlength="8" onchange="fncNumOnly()" onblur="$(event.srcElement).val(Comma(value));" style="text-align:right")
                   %div.row
                     %div.col-md-6
-                      &nbsp;
+                      %div.input-group
+                        %span.input-group-addon
+                          税　率
+                        %div.form-group
+                          %select.form-control.input-sm2#selItemZeiKb
+
                     %div.col-md-6
                       %div.input-group
                         %span.input-group-addon
