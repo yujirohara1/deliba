@@ -2217,7 +2217,7 @@ $('#tableAddDaichoGroup tbody').on( 'click', 'tr', function () {
 
 
 $('#tableAddDaicho tbody').on( 'click', 'tr', function () {
-   
+   var scrY = $('#tableAddDaicho')[0].parentElement.scrollTop;
    $("#inpDaichoAddMon").val("");
    $("#inpDaichoAddTue").val("");
    $("#inpDaichoAddWed").val("");
@@ -2245,6 +2245,7 @@ $('#tableAddDaicho tbody').on( 'click', 'tr', function () {
         funcEditItemClick(row.id);
         //$("#btnEditItem").click();
    }
+   $('#tableAddDaicho')[0].parentElement.scrollTop = scrY;
    
   
 } );
