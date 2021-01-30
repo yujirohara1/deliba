@@ -1844,7 +1844,7 @@ $('#btnItemToroku').on('click', function() {
     
     $.ajax({
         type: "GET",
-        url: "/DelInsertItem/" + param + ""
+        url: "/UpdateItem/" + param + ""
       }).done(function(data) {
           //alert(data);
         $('#itemTorokuMessageArea').text("更新しました。");
@@ -1859,6 +1859,68 @@ $('#btnItemToroku').on('click', function() {
     });
 });
 
+
+/*
+|| 商品を修正　ボタンクリック
+*/
+var itemeditflg = 0;
+$('#btnEditItem').on('click', function() {
+    var itemid = $(".row_selected.addDaicho").find("td:eq(0)").text();
+    funcEditItemClick(itemid);
+});
+
+function funcEditItemClick(itemid){
+    itemeditflg = 1;
+    $('#tableAddDaicho')[0].parentNode.style.maxHeight  = "130px";
+    $('#tableAddDaicho')[0].parentNode.style.height  = "130px";
+    $('#hLblYoubiGotoTakuhaiHonsu').hide();
+    $('#txtYoubiGotoTakuhaiHonsu').hide();
+    $('#btnDaichoAdd').hide();
+    $('#itemInputDiv').show();
+
+    $('#lblShohinEdit').html("<div style='color:red; font-size:16px'>修正する商品を選択し、変更内容を入力してください。</div>");
+
+    var table = $('#tableAddDaicho').DataTable();
+    table.columns.adjust().draw();
+
+    //var itemid =   $('#tableAddDaicho').DataTable().row( this ).data().id; // 選択データ
+    //var itemid = $(".row_selected.addDaicho").find("td:eq(0)").text();
+
+    $.getJSON("/getItem_ById/" + itemid + "", function(json) {
+    
+    }).done(function(json) {
+        list = JSON.parse(json.data);
+        if (list.length==1){
+            $('#txtItemName1').val(list[0].name1);
+            $('#txtItemTanka').val(list[0].tanka);
+            $('#txtItemSiire').val(list[0].name2);
+            $('#txtItemOrosi').val(list[0].orosine);
+            $('#txtItemCode').val(list[0].code);
+            $('#txtItemId').val(list[0].id);
+            $('#txtItemId').attr("disabled","disabled");
+        
+        } else {
+            alert("もう一度やり直してください。");
+        }
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+    }).always(function() {
+        $.getJSON("/getDaicho_ByItemId/" + itemid + "", function(json) {
+        }).done(function(json) {
+            list = JSON.parse(json.data);
+            if (list.length>=1){
+                var txt = "<div style='color:red; font-size:15px'>"
+                txt = txt + "この商品は、" + list[0].cname1 + (list.length==1 ? "" : " 他 " + (list.length - 1) + "名") + " が契約しています。<br>";
+                txt = txt + "単価を変更した場合、次回以降の請求書作成で新しい単価が適用されます。";
+                txt = txt + "</div>";
+                
+                $('#divKeiyakuCustomers').html(txt);
+            }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+        }).always(function(json) {
+        });
+    });
+}
+
 /*
 || 新しい商品を追加ボタンクリック
 || btnNewItem
@@ -1871,10 +1933,14 @@ $('#btnNewItem').on('click', function() {
     $('#btnDaichoAdd').hide();
     $('#itemInputDiv').show();
 
+    $('#lblShohinEdit').html("<div style='color:red; font-size:16px'>新しく登録する商品情報を入力してください。</div>");
+
     var itemname = $(".row_selected.addDaichoGroup").find("td:eq(0)").text();
     if(itemname != "すべて"){
         $('#txtItemName1').val(itemname);
     }
+    $('#txtItemName1').select();
+    $('#txtItemId').val("");
     $('#txtItemTanka').val("");
     $('#txtItemSiire').val("");
     $('#txtItemOrosi').val("");
@@ -1954,6 +2020,7 @@ $('#modalAddDaicho').on("shown.bs.modal", function (e) {
     $('#btnDaichoAdd').show();
     $('#itemInputDiv').hide();
     
+    itemeditflg = 0;
     
     $("#inpDaichoAddMon").val("");
     $("#inpDaichoAddTue").val("");
@@ -2067,7 +2134,7 @@ function fncNumOnly(){
     inp = inp.replace("７","7");
     inp = inp.replace("８","8");
     inp = inp.replace("９","9");
-    var ret = inp.replace(/[^0-9]+/i,'')*1;
+    var ret = inp.replace(/[‐－―ー]/g, '-').replace(/[^\-\d\.]/g, '').replace(/(?!^\-)[^\d\.]/g, '');
     $(event.srcElement).val(ret);
     // $(event.srcElement).val(ret.toLocaleString());
 }
@@ -2138,6 +2205,7 @@ function createCustomerTables_Main(){
   });
 }
 $('#tableAddDaichoGroup tbody').on( 'click', 'tr', function () {
+    itemeditflg = 0;
     $('#hLblYoubiGotoTakuhaiHonsu').show();
     $('#txtYoubiGotoTakuhaiHonsu').show();
     $('#btnDaichoAdd').show();
@@ -2171,6 +2239,13 @@ $('#tableAddDaicho tbody').on( 'click', 'tr', function () {
            if(rows[i].niti != 0){ $("#inpDaichoAddSun").val(rows[i].niti);}
        }
    }
+
+   //alert($('#lblShohinEdit').text());
+   if(itemeditflg==1){
+        funcEditItemClick(row.id);
+        //$("#btnEditItem").click();
+   }
+   
   
 } );
 

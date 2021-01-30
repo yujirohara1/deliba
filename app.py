@@ -110,8 +110,8 @@ def load_user(user_id):
 
 
 
-# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用
+db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
+# db_uri = os.environ.get('DATABASE_URL') #本番用
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -178,6 +178,20 @@ def resJson_getCustomer_ById(customerid):
       customer_schema = CustomerSchema(many=True)
       return jsonify({'data': customer_schema.dumps(customer, ensure_ascii=False)})
 
+
+@app.route('/getItem_ById/<itemid>')
+@login_required
+def resJson_getItem_ById(itemid):
+      item = Item.query.filter(Item.id==itemid).all()
+      item_schema = ItemSchema(many=True)
+      return jsonify({'data': item_schema.dumps(item, ensure_ascii=False)})
+
+@app.route('/getDaicho_ByItemId/<itemid>')
+@login_required
+def resJson_getDaicho_ByItemId(itemid):
+      daicho = VDaichoA.query.filter(VDaichoA.item_id==itemid).all()
+      daicho_schema = VDaichoASchema(many=True)
+      return jsonify({'data': daicho_schema.dumps(daicho, ensure_ascii=False)})
 
 @app.route('/getSeikyuNengetuShukei_Main')
 @login_required
@@ -480,9 +494,9 @@ def dbUpdate_updSeikyuQuantity(customerid, itemid, deliverymd, quantity, price, 
 
 
 
-@app.route('/DelInsertItem/<param>')
+@app.route('/UpdateItem/<param>')
 @login_required
-def dbUpdate_DelInsertItem(param):
+def dbUpdate_UpdateItem(param):
   vals = param.split(DELIMIT)
   if int(vals[0]) == 0 :  #新規登録
     item = Item()
@@ -494,6 +508,15 @@ def dbUpdate_DelInsertItem(param):
     item.zei_kb = int(vals[6])
     item.del_flg = int(vals[7])
     db.session.add(item)
+  else:
+    item = Item.query.filter(Item.id==itemid).first()
+    item.code = vals[1]
+    item.name1 = vals[2]
+    item.name2 = vals[3]
+    item.tanka = int(vals[4])
+    item.orosine = vals[5]
+    item.zei_kb = int(vals[6])
+    item.del_flg = int(vals[7])
 
   # データを確定
   db.session.commit()
