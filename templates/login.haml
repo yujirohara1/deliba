@@ -4,7 +4,7 @@
 
 {% block content %}
  
-  %div.container
+  %div.container-fluid(style="background-image:url('../static/image/main_image.jpg'); background-size:cover; background-repeat:no-repeat")
     %div.row
       &nbsp;
     %div.row
@@ -19,146 +19,66 @@
            &nbsp;
         %br
         %form(action="/" method="POST")
-          %div.input-group
-            %span.input-group-addon
-              ユーザー名
-            %input.form-control(type="text" name="username")
-          %div.input-group
-            %span.input-group-addon
-              パスワード
-            %input.form-control(type="password" name="password")
-          %br
-          %input.btn.btn-primary(type="submit" value="サインイン")
+          %div.row.text-right
+            %div.col-md-1
+            %div.col-md-11
+              %div.input-group.input-group-lg
+                %span.input-group-addon
+                  ユーザー名
+                %input.form-control.input-sm(type="text" name="username")
+              %div.input-group.input-group-lg
+                %span.input-group-addon
+                  パスワード
+                %input.form-control.input-sm(type="password" name="password")
+          %div.row
+            &nbsp;
+          %div.row.text-right
+            %div.col-md-1
+            %div.col-md-11
+              %input.btn.btn-default.btn-lg(type="submit" value="サインイン")
+              {% if result == 401 %}
+                <p style="font-weight:bold; color:#4d4d4d; font-size:16px">ユーザー名またはパスワードが違います。</p>
+              {% endif %}　
           
-          
-          {% if result == 401 %}
-            <p class="text-danger">ユーザー名またはパスワードが違います。</p>
-          {% endif %}　
-          
-      %div.col-md-8
-          <div class="jumbotron" style="background-color:#fff4f9">
+      %div.col-md-7
+          <div class="jumbotron" style="background-color:#fff4f9; opacity:0.9">
             <h1>宅配システムの新常識</h1>
             <h1>LatteCloud ラテクラウド</h1>
             <p>シンプル、速い、インストール不要</p>
             <p>牛乳宅配店向け、完全無料の請求管理システム</p>
-            <p><a class="btn btn-primary btn-lg" id="btnJmbTrn" role="button">もっと詳しく</a></p>
           </div>
+      %div.col-md-1
     %div.row
-      %div.col-md-12
-        %div.jumbotron(style="background-color:#f4f9ff")
+      %div.col-md-4
+      %div.col-md-7
+        %div.jumbotron(style="background-color:#f4f9ff; opacity:0.95")
           %div.row
             %div.col-md-12
               %p
                 初めての方はこちら
-              %div.input-group.input-group-lg
-                %span.input-group-addon(style="width:220px")
-                  メールアドレス
-                %input#txtMailAddr(type="email" class="form-control" placeholder="lattecloud@gmail.com" style="width:500px")
               %div.row
-                %div.col-md-9
+                %div.col-md-10
                   %div.input-group.input-group-lg
-                    %span.input-group-addon(style="width:220px")
+                    %span.input-group-addon(style="width:180px")
+                      メールアドレス
+                    %input#txtMailAddr(type="email" class="form-control" placeholder="lattecloud@gmail.com" style="width:350px")
+                %div.col-md-2
+                  &nbsp;
+              %div.row
+                %div.col-md-10
+                  %div.input-group.input-group-lg
+                    %span.input-group-addon(style="width:180px")
                       お店の名前
-                    %input#txtOmise(type="text" class="form-control" placeholder="さとう牛乳販売店" style="width:500px")
-                %div.col-md-3
+                    %input#txtOmise(type="text" class="form-control" placeholder="すずき牛乳販売店" style="width:350px")
+                %div.col-md-2
                   <a class="btn btn-success btn-lg text-right" id="btnSendMail" role="button">利用登録</a>
 
           %div.row
             %div.col-md-12
               %span#alertMessageArea
                 &nbsp;
+      %div.col-md-1
 
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      %span#spanTest
-        準備中
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
     %div.row
       &nbsp;
     %div.row
