@@ -140,9 +140,9 @@ def resJson_getCustomer_Main(group_kb, yuko_muko):
 @login_required
 def resJson_getItem_Daicho(itemname1):
     if itemname1=="すべて":
-      items = Item.query.all()
+      items = Item.query.filter(Item.del_flg==0).all()
     else:
-      items = Item.query.filter(Item.name1==itemname1).all()
+      items = Item.query.filter(Item.del_flg==0,Item.name1==itemname1).all()
 
     items_schema = ItemSchema(many=True)
     return jsonify({'data': items_schema.dumps(items, ensure_ascii=False)})
@@ -475,6 +475,30 @@ def dbUpdate_updSeikyuQuantity(customerid, itemid, deliverymd, quantity, price, 
   # データを確定
   db.session.commit()
   return "1"
+
+
+
+
+
+@app.route('/DelInsertItem/<param>')
+@login_required
+def dbUpdate_DelInsertItem(param):
+  vals = param.split(DELIMIT)
+  if int(vals[0]) == 0 :  #新規登録
+    item = Item()
+    item.code = vals[1]
+    item.name1 = vals[2]
+    item.name2 = vals[3]
+    item.tanka = int(vals[4])
+    item.orosine = vals[5]
+    item.zei_kb = int(vals[6])
+    item.del_flg = int(vals[7])
+    db.session.add(item)
+
+  # データを確定
+  db.session.commit()
+  return param
+
 
 
 @app.route('/updateCustomer/<customerid>/<param>')

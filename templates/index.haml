@@ -28,9 +28,7 @@
                 %button.btn.btn-primary.btn-sm(type="button" data-toggle="modal" data-target="#modalSeikyuKanri")
                   請求データ管理
             %div.col-md-2
-              %div.input-group
-                %button.btn.btn-primary.btn-sm#btnItemMaster(type="button")
-                  商品管理
+              &nbsp;
             %div.col-md-2
               %div.input-group
                 %button.btn.btn-primary.btn-sm#btnNewCustomerToroku(type="button")
@@ -439,26 +437,100 @@
                     設定単価
               %tbody
           %div.col-md-8
-            %table.table-bordered.row.hover#tableAddDaicho
-              %thead
-                %tr
-                  %th 
-                    ID
-                  %th
-                    コード
-                  %th
-                   商品名
-                  %th
-                    単価
-                  %th
-                    登録状況
-              %tbody
+            %div#tableAddDaichoDiv
+              %table.table-bordered.row.hover#tableAddDaicho
+                %thead
+                  %tr
+                    %th 
+                      ID
+                    %th
+                      コード
+                    %th
+                     商品名
+                    %th
+                      単価
+                    %th
+                      登録状況
+                %tbody
+            %div.row
+              %div.col-md-12.text-right
+                %a.btn.btn-primary#btnEditItem
+                  商品情報を変更
+            %div#itemInputDiv
+              %div.row
+                %div.col-md-6(style="color:red")
+                  新しく登録する商品情報を入力してください。
+                %div.col-md-6
+                  &nbsp;
+              %div.row
+                %div.col-md-3
+                  %div.input-group
+                    %span.input-group-addon
+                      商品ID
+                    %input.form-control#txtItemId(type="text", maxlength="3" oninput="fncNumOnly();")
+                %div.col-md-3
+                  %div.input-group
+                    %span.input-group-addon
+                      単　価
+                    %input.form-control#txtItemTanka(type="text", maxlength="4" oninput="fncNumOnly()" onblur="$(event.srcElement).val(Comma(value));" style="text-align:right" placeholder="必須")
+                %div.col-md-6
+                  ccc
+              %div.row
+                %div.col-md-3
+                  %div.input-group
+                    %span.input-group-addon
+                      コード
+                    %input.form-control#txtItemCode(type="text", maxlength="4" oninput="fncNumOnly();" placeholder="必須")
+                %div.col-md-3
+                  %div.input-group
+                    %span.input-group-addon
+                      仕入値
+                    %input.form-control#txtItemSiire(type="text", maxlength="4" oninput="fncNumOnly()" onblur="$(event.srcElement).val(Comma(value));" style="text-align:right")
+                %div.col-md-6
+                  ccc
+              %div.row
+                %div.col-md-3
+                  &nbsp;
+                %div.col-md-3
+                  %div.input-group
+                    %span.input-group-addon
+                      卸　値
+                    %input.form-control#txtItemOrosi(type="text", maxlength="4" oninput="fncNumOnly()" onblur="$(event.srcElement).val(Comma(value));" style="text-align:right")
+                %div.col-md-6
+                  ccc
+              %div.row
+                &nbsp;
+
+              %div.row
+                %div.col-md-6
+                  %div.input-group
+                    %span.input-group-addon
+                      商品名
+                    %input.form-control#txtItemName1(type="text" placeholder="必須")
+                %div.col-md-6
+                  bbb
+
+              %div.row
+                &nbsp;
+
+              %div.row
+                %div.col-md-1
+                  %a.btn.btn-primary#btnItemToroku
+                    登録
+                %div.col-md-11.text-left#itemTorokuMessageArea(style="color:red")
         %div.row
-          %div.col-md-12
-            %h4
+          %div.col-md-4
+            &nbsp;
+          %div.col-md-8
+            %h4#hLblYoubiGotoTakuhaiHonsu
               曜日ごとの宅配本数を入力してください。
         %div.row
-          %div.col-md-12
+          %div.col-md-2
+            %a.btn.btn-primary#btnNewItem
+              新しい商品を登録
+          %div.col-md-2
+            &nbsp;
+          %div.col-md-8#txtYoubiGotoTakuhaiHonsu
             %div.form-group.form-inline
               %div.input-group
                 %span.input-group-addon

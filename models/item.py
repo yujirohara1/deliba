@@ -5,7 +5,11 @@ class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True) 
     code = db.Column(db.String(), nullable=False) 
     name1 = db.Column(db.String(), nullable=False) 
+    name2 = db.Column(db.String(), nullable=False) 
     tanka = db.Column(db.Integer, nullable=True) 
+    orosine = db.Column(db.Integer, nullable=True) 
+    zei_kb = db.Column(db.Integer, nullable=True) 
+    del_flg = db.Column(db.Integer, nullable=True) 
 
 class ItemSchema(ma.SQLAlchemyAutoSchema):
       class Meta:

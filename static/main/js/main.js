@@ -352,17 +352,50 @@ $('#btnUpdateCustomer').on('click', function() {
   
   $.ajax({
       type: "GET",
-      url: "/updateCustomer/" + customerid + "/" + param + "",
-      success: function(data) {
+      url: "/updateCustomer/" + customerid + "/" + param + ""
+    }).done(function(data) {
         $("#mainUpdCustomerMessageArea").append("<p style='color:red'>更新しました。</p>");
         setTimeout('$("#mainUpdCustomerMessageArea")[0].innerText="";', 3000);
           createCustomerTables_Main();
-      },
-      error: function(data){
+    }).fail(function(data) {
           alert("エラー：" + data.statusText);
-      }
+    }).always(function(data) {
   });
 });
+
+// $.ajax({
+//     type: "GET",
+//     url: "/createSeikyu/" + customerid + "/" + nentuki + "/" + sakujonomi + ""
+// }).done(function(data) {
+//     if(customerid == -1 && sakujonomi == false){
+//         $('#btnSeikyuIkkatuCreate').text("作成しました！");
+//         setTimeout('$("#btnSeikyuIkkatuCreate").remove();', 3000);
+//         createSeikyuKanriTable_Sub();
+//     }else if(customerid == -1 && sakujonomi == true){
+//         $('#btnSeikyuIkkatuDelete').text("削除しました。");
+//         setTimeout('$("#btnSeikyuIkkatuDelete").remove();', 3000);
+//         createSeikyuKanriTable_Sub();
+//     }else{
+//         createSeikyuTables_Main(customerid,nentuki);
+//     }
+// }).fail(function(data) {
+//     alert("エラー：" + data.statusText);
+// }).always(function(data) {
+//     //何もしない
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 $('#btnListHenko').on('click', function() {
     $('#tableCustomerListHenko').hide();
@@ -1352,18 +1385,19 @@ $('#btnDaichoAdd').on('click', function() {
 
 
 
-function toNumber(val){
-  if(isNaN(parseInt(val))){
-      return 0;
-  }
+function toNumber(val){ 
+    var vala = (val+"").split(',').join('');
+    if(isNaN(parseInt(vala))){
+        return 0;
+    }
   
-  var ret = 0;
-  try{
-    ret = val * 1;
-  }catch(e){
-    ret = 0;
-  }
-  return ret;
+    var ret = 0;
+    try{
+        ret = vala * 1;
+    }catch(e){
+        ret = 0;
+    }
+    return ret;
 }
 
 
@@ -1701,8 +1735,7 @@ $("#chkMuko").change(function(){
 /*
 || 台帳追加サブ画面のテーブル作成
 */
-function createItemTables_DaichoSub(itemname1){
-    
+function createItemTables_DaichoSub(itemname1, updateAfter=false){
   $('#tableAddDaicho').DataTable({
       bInfo: false,
       bSort: true,
@@ -1714,10 +1747,12 @@ function createItemTables_DaichoSub(itemname1){
           dataSrc: function ( json ) {
               return JSON.parse(json.data);
           },
-          contentType:"application/json; charset=utf-8",
-          complete: function () {
-              return; 
-          }
+          contentType:"application/json; charset=utf-8"
+      },  
+      "initComplete": function(settings, json) {
+        if(updateAfter){
+            $('#btnNewItem').click();
+        }
       },
       columns: [
           { data: 'id'     ,width: '8%'},
@@ -1748,8 +1783,8 @@ function createItemTables_DaichoSub(itemname1){
       language: {
          url: "../static/main/js/japanese.json"
       },
-      "scrollY":$(window).height() * 30 / 100,
-      order: [[ 4, "desc" ],[ 1, "asc" ],[ 3, "asc" ]],
+      "scrollY":$(window).height() * 40 / 100,
+      order: [[ 4, "desc" ],[ 3, "asc" ]],
       "pageLength": 1000,
       paging: false,
       "lengthMenu": [100, 300, 500, 1000],
@@ -1768,6 +1803,89 @@ function createItemTables_DaichoSub(itemname1){
   });
 }
 
+$('#btnItemToroku').on('click', function() {
+    if($('#txtItemName1').val()==""){
+        $('#itemTorokuMessageArea').text("商品名を入力してください。");
+        $('#txtItemName1').focus()
+        $("#txtItemName1").css("background-color","#ffeff7");
+        //$('#txtItemName1').attr("placeholder","必須入力")
+        setTimeout('$("#itemTorokuMessageArea").text("");$("#txtItemName1").css("background-color","");', 3000);
+        return;
+    }
+    
+    if(toNumber($('#txtItemTanka').val())==0){
+        $('#itemTorokuMessageArea').text("単価を入力してください。");
+        $('#txtItemTanka').focus()
+        $("#txtItemTanka").css("background-color","#ffeff7");
+        setTimeout('$("#itemTorokuMessageArea").text("");$("#txtItemTanka").css("background-color","");', 3000);
+        return;
+    }
+    
+    if(toNumber($('#txtItemCode').val())==0){
+        $('#itemTorokuMessageArea').text("コードを入力してください。");
+        $('#txtItemCode').focus()
+        $("#txtItemCode").css("background-color","#ffeff7");
+        setTimeout('$("#itemTorokuMessageArea").text("");$("#txtItemCode").css("background-color","");', 3000);
+        return;
+    }
+    //$('#txtItemTanka').val("");
+    //$('#txtItemSiire').val("");
+    //$('#txtItemOrosi').val("");
+    //$('#txtItemCode').val("");
+
+    var param = 0 + DELIMIT + 
+                $('#txtItemCode').val() + DELIMIT + 
+                $('#txtItemName1').val() + DELIMIT + 
+                toNumber($('#txtItemSiire').val()) + DELIMIT + 
+                toNumber($('#txtItemTanka').val()) + DELIMIT + 
+                toNumber($('#txtItemOrosi').val()) + DELIMIT + 
+                "8" + DELIMIT + 
+                "0";
+    
+    $.ajax({
+        type: "GET",
+        url: "/DelInsertItem/" + param + ""
+      }).done(function(data) {
+          //alert(data);
+        $('#itemTorokuMessageArea').text("更新しました。");
+        setTimeout('$("#itemTorokuMessageArea").text("");', 3000);
+        createItemGroupTables_DaichoSub();
+        createItemTables_DaichoSub($('#txtItemName1').val(), true);
+        //$('#btnNewItem').click();
+
+    }).fail(function(data) {
+            alert("エラー：" + data.statusText);
+      }).always(function(data) {
+    });
+});
+
+/*
+|| 新しい商品を追加ボタンクリック
+|| btnNewItem
+*/
+$('#btnNewItem').on('click', function() {
+    $('#tableAddDaicho')[0].parentNode.style.maxHeight  = "130px";
+    $('#tableAddDaicho')[0].parentNode.style.height  = "130px";
+    $('#hLblYoubiGotoTakuhaiHonsu').hide();
+    $('#txtYoubiGotoTakuhaiHonsu').hide();
+    $('#btnDaichoAdd').hide();
+    $('#itemInputDiv').show();
+
+    var itemname = $(".row_selected.addDaichoGroup").find("td:eq(0)").text();
+    if(itemname != "すべて"){
+        $('#txtItemName1').val(itemname);
+    }
+    $('#txtItemTanka').val("");
+    $('#txtItemSiire').val("");
+    $('#txtItemOrosi').val("");
+    $('#txtItemCode').val("");
+
+    $('#txtItemId').attr("disabled","disabled");
+
+    var table = $('#tableAddDaicho').DataTable();
+    table.columns.adjust().draw();
+    
+});
 
 /*
 || 台帳追加サブ画面のテーブル作成
@@ -1794,17 +1912,20 @@ function createItemGroupTables_DaichoSub(){
         columns: [
             { data: 'name1'  ,width: '60%'},
             { data: 'kensu'  ,width: '15%' ,className: 'dt-body-center' },
-            { data: null     ,width: '25%' ,render: 
-                function (data, type, row) { 
-                    return (row.min_tanka*1).toLocaleString() + " ～ " + (row.max_tanka*1).toLocaleString();
-                    //(data*1).toLocaleString()
+            { data: null     ,width: '25%' ,className: 'dt-body-right' ,render: 
+                function (data, type, row) {
+                    if(row.kensu==1){
+                        return (row.min_tanka*1).toLocaleString();
+                    }else{
+                        return (row.min_tanka*1).toLocaleString() + " ～ " + (row.max_tanka*1).toLocaleString();
+                    }
                 }
             }
         ],
         language: {
            url: "../static/main/js/japanese.json"
         },
-        "scrollY":$(window).height() * 30 / 100,
+        "scrollY":$(window).height() * 40 / 100,
         "pageLength": 1000,
         order: [[ 1, "desc" ],[ 0, "asc" ]],
         paging: false,
@@ -1827,14 +1948,20 @@ function createItemGroupTables_DaichoSub(){
 || 台帳サブ画面起動[直後]イベント
 */
 $('#modalAddDaicho').on("shown.bs.modal", function (e) {
+    //$('#tableAddDaichoDiv').show()
+    $('#hLblYoubiGotoTakuhaiHonsu').show();
+    $('#txtYoubiGotoTakuhaiHonsu').show();
+    $('#btnDaichoAdd').show();
+    $('#itemInputDiv').hide();
     
-   $("#inpDaichoAddMon").val("");
-   $("#inpDaichoAddTue").val("");
-   $("#inpDaichoAddWed").val("");
-   $("#inpDaichoAddThu").val("");
-   $("#inpDaichoAddFri").val("");
-   $("#inpDaichoAddSat").val("");
-   $("#inpDaichoAddSun").val("");
+    
+    $("#inpDaichoAddMon").val("");
+    $("#inpDaichoAddTue").val("");
+    $("#inpDaichoAddWed").val("");
+    $("#inpDaichoAddThu").val("");
+    $("#inpDaichoAddFri").val("");
+    $("#inpDaichoAddSat").val("");
+    $("#inpDaichoAddSun").val("");
 
     //createItemTables_DaichoSub();
     createItemGroupTables_DaichoSub();
@@ -1917,6 +2044,17 @@ function createDaichoTables_Main(customerId){
     }
 }
 
+function Comma(txt){
+    if(txt == ""){
+        return;
+    }
+    txt = txt.replace(",","");
+
+    var num = toNumber(txt)*1;
+    return num.toLocaleString();
+
+}
+
 function fncNumOnly(){
     var inp = $(event.srcElement).val();
     inp = inp.replace("０","0");
@@ -1929,7 +2067,9 @@ function fncNumOnly(){
     inp = inp.replace("７","7");
     inp = inp.replace("８","8");
     inp = inp.replace("９","9");
-    $(event.srcElement).val(inp.replace(/[^0-9]+/i,''));
+    var ret = inp.replace(/[^0-9]+/i,'')*1;
+    $(event.srcElement).val(ret);
+    // $(event.srcElement).val(ret.toLocaleString());
 }
 
 /*
@@ -1998,8 +2138,12 @@ function createCustomerTables_Main(){
   });
 }
 $('#tableAddDaichoGroup tbody').on( 'click', 'tr', function () {
+    $('#hLblYoubiGotoTakuhaiHonsu').show();
+    $('#txtYoubiGotoTakuhaiHonsu').show();
+    $('#btnDaichoAdd').show();
+    $('#itemInputDiv').hide();
     var row =   $('#tableAddDaichoGroup').DataTable().row( this ).data(); // 選択データ
-    //alert(row.name1);
+    //alert(row.name1);aaaaaaaa
     createItemTables_DaichoSub(row.name1);
 });
 
