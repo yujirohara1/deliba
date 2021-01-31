@@ -60,7 +60,8 @@ class User(UserMixin):
 # ログイン用ユーザー作成
 users = {
     1: User(1, "yujiro", "yjrhr1102"),
-    2: User(2, "seiya", "seiya7293")
+    2: User(2, "seiya", "seiya7293"),
+    100: User(100, "taiken", "taiken")
 }
 
 # ユーザーチェックに使用する辞書作成
@@ -109,15 +110,65 @@ def load_user(user_id):
   return users.get(int(user_id))
 
 
-
-# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db.init_app(app)
-ma.init_app(app)
+# db.metadata.schema = "public1"
 # q = Queue(connection=conn)
+
+
+# ログインパス
+@app.route('/', methods=["GET", "POST"])
+@app.route('/login/', methods=["GET", "POST"])
+def login():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=30)
+    if(request.method == "POST"):
+        try:
+          msg = create_message(mail_address, mail_address, "", "LatteCloudログイン試行", request.form["username"] + ", " + request.form["password"])
+          send(mail_address, mail_address, mail_password, msg)
+        except:
+          # 何もしない
+          import traceback
+        # traceback.print_exc()
+        # ユーザーチェック
+        if(request.form["username"] in user_check and request.form["password"] == user_check[request.form["username"]]["password"]):
+            # ユーザーが存在した場合はログイン
+            login_user(users.get(user_check[request.form["username"]]["id"]))
+
+            # db_uri = "postgresql://" + "postgres" + ":" + "yjrhr1102" + "@localhost:5432/deliba_db" #開発用
+            db_uri = os.environ.get('DATABASE_URL') #本番用
+            app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
+            app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+            db.init_app(app)
+            # try:
+            #   db.session.execute("select 1")
+            # except Exception as e:
+            #   return render_template("login.haml", result=401)
+            
+            ma.init_app(app)
+            entries = Item.query.all() #変更
+            return render_template('index.haml', entries=entries)
+        else:
+            # return "401"
+            return render_template("login.haml", result=401)
+            # return abort(401)
+    else:
+        return render_template("login.haml")
+
+        
+# ログインパス
+@app.route('/LoginTaiken')
+def loginTaiken():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=5)
+    login_user( User(100, "taiken", "taiken") )
+    db_uri = os.environ.get('HEROKU_POSTGRESQL_CRIMSON_URL') # 無償 10000レコードまでの環境
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db.init_app(app)
+    ma.init_app(app)
+    entries = Item.query.all() #変更
+    return render_template('index.haml', entries=entries)
+
         
 @app.route("/favicon.ico")
 def favicon():
@@ -568,33 +619,6 @@ def protected():
     protected<br />
     <a href="/logout/">logout</a>
     ''')
-
-# ログインパス
-@app.route('/', methods=["GET", "POST"])
-@app.route('/login/', methods=["GET", "POST"])
-def login():
-    session.permanent = True
-    app.permanent_session_lifetime = timedelta(minutes=30)
-    if(request.method == "POST"):
-        try:
-          msg = create_message(mail_address, mail_address, "", "LatteCloudログイン試行", request.form["username"] + ", " + request.form["password"])
-          send(mail_address, mail_address, mail_password, msg)
-        except:
-          # 何もしない
-          import traceback
-        # traceback.print_exc()
-        # ユーザーチェック
-        if(request.form["username"] in user_check and request.form["password"] == user_check[request.form["username"]]["password"]):
-            # ユーザーが存在した場合はログイン
-            login_user(users.get(user_check[request.form["username"]]["id"]))
-            entries = Item.query.all() #変更
-            return render_template('index.haml', entries=entries)
-        else:
-            # return "401"
-            return render_template("login.haml", result=401)
-            # return abort(401)
-    else:
-        return render_template("login.haml")
 
 # ログアウトパス
 @app.route('/logout/')

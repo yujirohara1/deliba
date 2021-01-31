@@ -35,6 +35,20 @@
 -- Name: customer; Type: TABLE; Schema: public; Owner: lgnucurqlirpyu
 --
 
+drop VIEW v_daicho_a ;
+drop VIEW v_seikyu_a ;
+drop VIEW v_seikyu_b ;
+drop VIEW v_seikyu_c ;
+drop VIEW v_item_group ;
+
+drop table customer cascade;
+drop table item cascade;
+drop table daicho cascade;
+drop table seikyu cascade;
+drop table mst_setting cascade;
+
+
+
 CREATE TABLE customer (
     id integer NOT NULL,
     name1 character varying(80),

@@ -1359,3 +1359,50 @@ update item set name1 =   '塚田ホワイトバター225g'          where id = 
 update item set name1 =   '塚田プリン70g'                   where id =    337  ;
 
 commit;
+
+
+
+
+
+update item a
+set
+    name1 = (
+            select
+                CASE (id*123)%5 
+                   WHEN 0 THEN '北海道'
+                   WHEN 1 THEN '栃木'
+                   WHEN 2 THEN '新潟'
+                   ELSE '' END ||
+                CASE (id)%10
+                   WHEN 0 THEN 'おいしい'
+                   WHEN 1 THEN 'コーヒー'
+                   WHEN 2 THEN 'フルーツ'
+                   WHEN 3 THEN '低脂肪'
+                   ELSE '' END ||
+                CASE (id)%10
+                   WHEN 0 THEN '牛乳'
+                   WHEN 1 THEN '牛乳'
+                   WHEN 2 THEN '牛乳'
+                   WHEN 3 THEN '牛乳'
+                   WHEN 4 THEN 'ヨーグルト'
+                   WHEN 5 THEN 'ヨーグルト'
+                   WHEN 6 THEN 'チーズ'
+                   WHEN 7 THEN 'プリン'
+                   WHEN 8 THEN 'ジュース'
+                   WHEN 9 THEN 'バター'
+                   ELSE '' END  ||
+                CASE (tanka)%10
+                   WHEN 0 THEN 'A'
+                   WHEN 1 THEN 'B'
+                   WHEN 2 THEN 'C'
+                   WHEN 3 THEN 'D'
+                   ELSE '' END name1
+            from
+                item b
+            where
+                a.id = b.id
+            )
+;
+
+update item set name1 = name1 || '6セット' where 399 < tanka and tanka < 800;
+update item set name1 = name1 || '12セット' where 799 < tanka and tanka < 10000;
