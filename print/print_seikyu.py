@@ -284,11 +284,11 @@ def print_string_sub(pdf_canvas, start_x, start_y, data):
       pdf_canvas.drawString(start_x+178+155+6, start_y+181, 'ご案内しております。ご相談ください。') 
       
       pdf_canvas.setFont(def_font_type, def_font_size+6)
-      pdf_canvas.drawString(start_x+178+155, start_y+213, 'は ら 牛 乳 販 売 店') 
+      pdf_canvas.drawString(start_x+178+155, start_y+213, 'デ モ 牛 乳 販 売 店') 
       pdf_canvas.setFont(def_font_type, def_font_size+1)
-      pdf_canvas.drawString(start_x+178+155, start_y+213+15, '新潟市 南区 下曲通 133 - 1') 
+      pdf_canvas.drawString(start_x+178+155, start_y+213+15, 'デモ市 南区 デモ通 123 - 4') 
       pdf_canvas.setFont(def_font_type, def_font_size)
-      pdf_canvas.drawString(start_x+178+155, start_y+213+15+15, '☎   0 2 5  -  3 7 5  -  3 0 1 8') 
+      pdf_canvas.drawString(start_x+178+155, start_y+213+15+15, '☎   1 1 1  -  2 2 2  -  3 3 3 3') 
 
       # カレンダー 1日～15日 見出し
       font_size = def_font_size-1
@@ -397,11 +397,11 @@ def print_string_sub(pdf_canvas, start_x, start_y, data):
   pdf_canvas.drawString(start_x+178,      start_y+106+14+10+30+20, '　　　　　年　　　月　　　日') 
 
   pdf_canvas.setFont(def_font_type, def_font_size+6)
-  pdf_canvas.drawString(start_x+178+10, start_y+213, 'はら牛乳販売店') 
+  pdf_canvas.drawString(start_x+178+10, start_y+213, 'デモ牛乳販売店') 
   pdf_canvas.setFont(def_font_type, def_font_size+1)
-  pdf_canvas.drawString(start_x+178+10, start_y+213+15, '新潟市南区下曲通133-1') 
+  pdf_canvas.drawString(start_x+178+10, start_y+213+15, 'デモ市南区デモ通123-4') 
   pdf_canvas.setFont(def_font_type, def_font_size)
-  pdf_canvas.drawString(start_x+178+10, start_y+213+15+15, '☎ 0 2 5 - 3 7 5 - 3 0 1 8') 
+  pdf_canvas.drawString(start_x+178+10, start_y+213+15+15, '☎ 1 1 1 - 2 2 2 - 3 3 3 3') 
 
 
 
