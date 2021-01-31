@@ -632,6 +632,23 @@ insert into mst_setting values('SIHARAI_KB','支払方法区分',2,'引落',null,null,'d
 insert into mst_setting values('CUSTOMER_ZEI_KB','内税外税区分',1,'外税',null,null,'demo');
 insert into mst_setting values('CUSTOMER_ZEI_KB','内税外税区分',2,'内税',null,null,'demo');
 
+
+
+
+
+insert into mst_setting values('START_YM','利用開始年月',1,'201908',null,null,'hara');
+insert into mst_setting values('GROUP_KB','グループ区分',100,'月水金','Aグループ',null,'hara');
+insert into mst_setting values('GROUP_KB','グループ区分',200,'火木土','Bグループ',null,'hara');
+insert into mst_setting values('SIHARAI_KB','支払方法区分',1,'現金',null,null,'hara');
+insert into mst_setting values('SIHARAI_KB','支払方法区分',2,'引落',null,null,'hara');
+insert into mst_setting values('CUSTOMER_ZEI_KB','内税外税区分',1,'外税',null,null,'hara');
+insert into mst_setting values('CUSTOMER_ZEI_KB','内税外税区分',2,'内税',null,null,'hara');
+
+--
+--
+
+
+
 --
 --
 --    param_id     |      param_nm      | param_no |                            param_val1                             |     param_val2     | param_val3

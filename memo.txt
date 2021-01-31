@@ -41,6 +41,15 @@ update customer set address3 = list;
 
 
 
-ユーザ作成
-heroku pg:credentials:create HEROKU_POSTGRESQL_SILVER_URL:  --name seiya --app deliba
-heroku pg:credentials:create DATABASE_URL --name seiya --app deliba
+update customer a set list = (select
+                              b.rowno
+                          from
+                              (select row_number() over(partition by group_id) rowno, id, tenant_id from customer) b
+                          where
+                              a.id = b.id and
+                              a.tenant_id = b.tenant_id
+                          )
+where group_id = 200;
+
+
+

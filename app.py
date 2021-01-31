@@ -153,7 +153,7 @@ def resJson_getItem_Daicho(itemname1):
 @app.route('/getItemGroup_Daicho/')
 @login_required
 def resJson_getItemGroup_Daicho():
-     itemgroup = VItemGroup.query.all()
+     itemgroup = VItemGroup.query.filter(VItemGroup.tenant_id==current_user.tenant_id).all()
      itemsgroup_schema = VItemGroupSchema(many=True)
      return jsonify({'data': itemsgroup_schema.dumps(itemgroup, ensure_ascii=False)})
 
@@ -198,7 +198,7 @@ def resJson_getDaicho_ByItemId(itemid):
 @app.route('/getSeikyuNengetuShukei_Main')
 @login_required
 def resJson_getSeikyuNengetuShukei_Main():
-      seikyu = VSeikyuC.query.all()
+      seikyu = VSeikyuC.query.filter(VSeikyuC.tenant_id==current_user.tenant_id).all()
       seikyu_schema = VSeikyuCSchema(many=True)
       return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
 
