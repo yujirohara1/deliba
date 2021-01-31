@@ -1,4 +1,30 @@
-//btnSendMail
+// $('#btnDemoLogin').on('click', function() {
+//     //
+//     $.ajax({
+//         type: "POST",
+//         data: JSON.stringify({"data":""}),
+//         url: "/demologin",
+//         contentType:'application/json'
+//     }).done(function(data) {
+//         //$('#btnSendMail').text("申請完了！");
+//         //$('#txtMailAddr').val("");
+//         //$('#txtOmise').val("");
+//         alert(1);
+//     }).fail(function(data) {
+//         alert("エラー：" + data.statusText);
+//     }).always(function(data) {
+//         //setTimeout('$("#btnSendMail").text("利用登録");$("#btnSendMail").removeAttr("disabled");', 2000);
+        
+//    });
+// });
+$(function(){
+    var userAgent = window.navigator.userAgent.toLowerCase();
+    if(userAgent.indexOf('msie') != -1 || userAgent.indexOf('trident') != -1) {
+        $('#lblBrowserCheckAlert').html("<div style='color:red; font-weight:bold'>インターネットエクスプローラでは動作しません。<br>グーグルクロームかマイクロソフトエッジを使って<br>再度アクセスしてください。</div>");
+        $('#btnLogin').attr("disabled","disabled");
+        $('#btnDemoLogin').attr("disabled","disabled");
+    }
+  });
 
 $('#btnSendMail').on('click', function() {
     //

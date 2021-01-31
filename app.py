@@ -585,6 +585,7 @@ def protected():
 # ログインパス
 @app.route('/', methods=["GET", "POST"])
 @app.route('/login/', methods=["GET", "POST"])
+@app.route('/demologin', methods=["GET", "POST"])
 def login():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=30)
@@ -597,27 +598,16 @@ def login():
           import traceback
         # traceback.print_exc()
         # ユーザーチェック
-        if(request.form["username"] in user_check and request.form["password"] == user_check[request.form["username"]]["password"]):
+        if(request.form["username"] in user_check and request.form["password"] == user_check[request.form["username"]]["password"] and request.form["username"] !="demo") or \
+          (request.form["username"] == "demo" and request.form["password"]=="demo" and 'demologin' in request.url) :
             # ユーザーが存在した場合はログイン
-            login_user(users.get(user_check[request.form["username"]]["id"]))
+          login_user(users.get(user_check[request.form["username"]]["id"]))
 
-            # db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
-            # # db_uri = os.environ.get('DATABASE_URL') #本番用
-            # app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
-            # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# 
-            # db.init_app(app)
-            # ma.init_app(app)
-            # # q = Queue(connection=conn)
+          if current_user.name=="demo":
+            app.permanent_session_lifetime = timedelta(minutes=30)
 
+          return render_template('index.haml')
 
-
-
-
-
-
-            entries = Item.query.all() #変更
-            return render_template('index.haml', entries=entries)
         else:
             # return "401"
             return render_template("login.haml", result=401)

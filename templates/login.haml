@@ -35,7 +35,7 @@
           %div.row.text-right
             %div.col-md-1
             %div.col-md-11
-              %input.btn.btn-default.btn-lg(type="submit" value="サインイン")
+              %input.btn.btn-default.btn-lg#btnLogin(type="submit" value="サインイン")
               {% if result == 401 %}
                 <p style="font-weight:bold; color:#4d4d4d; font-size:16px">ユーザー名またはパスワードが違います。</p>
               {% endif %}　
@@ -46,6 +46,19 @@
             <h1 style="font-size:52px">LatteCloud ラテクラウド</h1>
             <p>シンプル、速い、インストール不要</p>
             <p>牛乳宅配店向け、完全無料の請求管理システム</p>
+
+            %div.row
+              %div.col-md-4
+                %form(action="/demologin" method="POST")
+                  %input.form-control.input-sm(type="hidden" name="username" value="demo")
+                  %input.form-control.input-sm(type="hidden" name="password" value="demo")
+                  %input.btn.btn-success.btn-lg#btnDemoLogin(type="submit" value="体験版へログイン")
+              %div.col-md-8#lblBrowserCheckAlert
+                
+
+
+
+
           </div>
       %div.col-md-1
     %div.row
