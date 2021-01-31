@@ -10,6 +10,7 @@ class Item(db.Model):
     orosine = db.Column(db.Integer, nullable=True) 
     zei_kb = db.Column(db.Integer, nullable=True) 
     del_flg = db.Column(db.Integer, nullable=True) 
+    tenant_id   = db.Column(db.String(), primary_key=True) 
 
 class ItemSchema(ma.SQLAlchemyAutoSchema):
       class Meta:
@@ -23,6 +24,7 @@ class VItemGroup(db.Model):
     min_tanka = db.Column(db.Integer, primary_key=False) 
     max_tanka = db.Column(db.Integer, primary_key=False) 
     kensu = db.Column(db.Integer, primary_key=False) 
+    tenant_id   = db.Column(db.String(), primary_key=True) 
 
 class VItemGroupSchema(ma.SQLAlchemyAutoSchema):
       class Meta:

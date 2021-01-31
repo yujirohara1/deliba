@@ -22,6 +22,7 @@ class Customer(db.Model):
     biko1       = db.Column(db.String(), nullable=True) 
     biko2       = db.Column(db.String(), nullable=True) 
     biko3       = db.Column(db.String(), nullable=True) 
+    tenant_id   = db.Column(db.String(), primary_key=True) 
 
 class CustomerSchema(ma.SQLAlchemyAutoSchema):
       class Meta:

@@ -52,15 +52,17 @@ mail_address = os.environ.get('MAIL_ADDR')
 mail_password = os.environ.get('MAIL_PASS')
 
 class User(UserMixin):
-    def __init__(self, id, name, password):
+    def __init__(self, id, name, password, tenant_id):
         self.id = id
         self.name = name
         self.password = password
+        self.tenant_id = tenant_id
 
 # ログイン用ユーザー作成
 users = {
-    1: User(1, "yujiro", "yjrhr1102"),
-    2: User(2, "seiya", "seiya7293")
+    1: User(1, "yujiro", "yjrhr1102", "demo"),
+    2: User(2, "seiya", "seiya7293", "hara"),
+    100: User(100, "demo", "demo", "demo")
 }
 
 # ユーザーチェックに使用する辞書作成
@@ -127,11 +129,11 @@ def favicon():
 @login_required
 def resJson_getCustomer_Main(group_kb, yuko_muko):
       if yuko_muko == "2":
-        customers = Customer.query.filter(Customer.group_id==group_kb).all()
+        customers = Customer.query.filter(Customer.group_id==group_kb, Customer.tenant_id==current_user.tenant_id).all()
       elif yuko_muko == "1":
-        customers = Customer.query.filter(Customer.group_id==group_kb, Customer.list!=None).all()
+        customers = Customer.query.filter(Customer.group_id==group_kb, Customer.list!=None, Customer.tenant_id==current_user.tenant_id).all()
       else:
-        customers = Customer.query.filter(Customer.group_id==group_kb, Customer.list==None).all()
+        customers = Customer.query.filter(Customer.group_id==group_kb, Customer.list==None, Customer.tenant_id==current_user.tenant_id).all()
         
       customers_schema = CustomerSchema(many=True)
       return jsonify({'data': customers_schema.dumps(customers, ensure_ascii=False)})
@@ -140,9 +142,9 @@ def resJson_getCustomer_Main(group_kb, yuko_muko):
 @login_required
 def resJson_getItem_Daicho(itemname1):
     if itemname1=="すべて":
-      items = Item.query.filter(Item.del_flg==0).all()
+      items = Item.query.filter(Item.del_flg==0, Item.tenant_id==current_user.tenant_id).all()
     else:
-      items = Item.query.filter(Item.del_flg==0,Item.name1==itemname1).all()
+      items = Item.query.filter(Item.del_flg==0,Item.name1==itemname1, Item.tenant_id==current_user.tenant_id).all()
 
     items_schema = ItemSchema(many=True)
     return jsonify({'data': items_schema.dumps(items, ensure_ascii=False)})
@@ -160,21 +162,21 @@ def resJson_getItemGroup_Daicho():
 @app.route('/getVDaichoA_ByCusotmerId/<customerid>')
 @login_required
 def resJson_getVDaichoA_ByCusotmerId(customerid):
-      daicho = VDaichoA.query.filter(VDaichoA.customer_id==customerid).all()
+      daicho = VDaichoA.query.filter(VDaichoA.customer_id==customerid, VDaichoA.tenant_id==current_user.tenant_id).all()
       daicho_schema = VDaichoASchema(many=True)
       return jsonify({'data': daicho_schema.dumps(daicho, ensure_ascii=False)})
 
 @app.route('/getVSeikyuA_ByCusotmerIdAndTuki/<customerid>/<nentuki>')
 @login_required
 def resJson_getVSeikyuA_ByCusotmerId(customerid, nentuki):
-      seikyu = VSeikyuA.query.filter(VSeikyuA.customer_id==customerid, VSeikyuA.nen==nentuki[0:4], VSeikyuA.tuki==nentuki[4:6]).all()
+      seikyu = VSeikyuA.query.filter(VSeikyuA.customer_id==customerid, VSeikyuA.nen==nentuki[0:4], VSeikyuA.tuki==nentuki[4:6], VSeikyuA.tenant_id==current_user.tenant_id).all()
       seikyu_schema = VSeikyuASchema(many=True)
       return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
 
 @app.route('/getCustomer_ById/<customerid>')
 @login_required
 def resJson_getCustomer_ById(customerid):
-      customer = Customer.query.filter(Customer.id==customerid).all()
+      customer = Customer.query.filter(Customer.id==customerid, Customer.tenant_id==current_user.tenant_id).all()
       customer_schema = CustomerSchema(many=True)
       return jsonify({'data': customer_schema.dumps(customer, ensure_ascii=False)})
 
@@ -182,14 +184,14 @@ def resJson_getCustomer_ById(customerid):
 @app.route('/getItem_ById/<itemid>')
 @login_required
 def resJson_getItem_ById(itemid):
-      item = Item.query.filter(Item.id==itemid).all()
+      item = Item.query.filter(Item.id==itemid, Item.tenant_id==current_user.tenant_id).all()
       item_schema = ItemSchema(many=True)
       return jsonify({'data': item_schema.dumps(item, ensure_ascii=False)})
 
 @app.route('/getDaicho_ByItemId/<itemid>')
 @login_required
 def resJson_getDaicho_ByItemId(itemid):
-      daicho = VDaichoA.query.filter(VDaichoA.item_id==itemid).all()
+      daicho = VDaichoA.query.filter(VDaichoA.item_id==itemid, VDaichoA.tenant_id==current_user.tenant_id).all()
       daicho_schema = VDaichoASchema(many=True)
       return jsonify({'data': daicho_schema.dumps(daicho, ensure_ascii=False)})
 
@@ -204,7 +206,7 @@ def resJson_getSeikyuNengetuShukei_Main():
 @app.route('/getSeikyuNengetuCustomer_Main/<nen>/<tuki>')
 @login_required
 def resJson_getSeikyuNengetuCustomer_Main(nen, tuki):
-      seikyu = VSeikyuB.query.filter(VSeikyuB.nen==nen, VSeikyuB.tuki==tuki).all()
+      seikyu = VSeikyuB.query.filter(VSeikyuB.nen==nen, VSeikyuB.tuki==tuki, VSeikyuB.tenant_id==current_user.tenant_id).all()
       seikyu_schema = VSeikyuBSchema(many=True)
       return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
 
@@ -218,11 +220,12 @@ def dbUpdate_insSeikyu(customerid, nentuki, sakujonomi):
   
   sql = " "
   sql = sql + " delete from seikyu "
-  sql = sql + " where "
+  sql = sql + " where tenant_id = '" + current_user.tenant_id + "' "
   if customerid != '-1' :
-    sql = sql + "     customer_id = " + customerid + " and "
-  sql = sql + "     cast(to_char(deliver_ymd,'yyyy') as integer) = " + str(y) + " and "
-  sql = sql + "     cast(to_char(deliver_ymd,'mm') as integer) = " + str(m) + "  "
+    sql = sql + "     and customer_id = " + customerid + " "
+  
+  sql = sql + "     and cast(to_char(deliver_ymd,'yyyy') as integer) = " + str(y) + " "
+  sql = sql + "     and cast(to_char(deliver_ymd,'mm') as integer) = " + str(m) + " "
   db.session.execute(text(sql))
   
   if sakujonomi == 'true' :
@@ -246,13 +249,13 @@ def dbUpdate_insSeikyu(customerid, nentuki, sakujonomi):
       sql = sql + "     'dummy' user_id, "
       sql = sql + "     CURRENT_TIMESTAMP "
       sql = sql + " from "
-      sql = sql + "    daicho d "
+      sql = sql + "    " + TableWhereTenantId("daicho") + " d "
       sql = sql + " inner join "
-      sql = sql + "    customer c "
+      sql = sql + "    " + TableWhereTenantId("customer") + " c "
       sql = sql + " on "
       sql = sql + "     d.customer_id =  c.id "
       sql = sql + " inner join "
-      sql = sql + "    item i "
+      sql = sql + "    " + TableWhereTenantId("item") + " i "
       sql = sql + " on "
       sql = sql + "     d.item_id =  i.id "
       sql = sql + " where "
@@ -270,7 +273,7 @@ def dbUpdate_insSeikyu(customerid, nentuki, sakujonomi):
         blAri = True
         data_list = db.session.execute(text(sql))
         seikyus = [{'customer_id':d[0], 'deliver_ymd': d[1], 'item_id': d[2],
-                  'price': d[3], 'price_sub': d[4], 'quantity': d[5], 'user_id': current_user.name, 'ymdt': d[7]} for d in data_list]
+                  'price': d[3], 'price_sub': d[4], 'quantity': d[5], 'user_id': current_user.name, 'ymdt': d[7], 'tenant_id': current_user.tenant_id} for d in data_list]
                   
         db.session.execute(Seikyu.__table__.insert(), seikyus)
         db.session.commit()
@@ -287,6 +290,10 @@ def isDate(year,month,day):
         return True
     except ValueError:
         return False
+
+
+def TableWhereTenantId(table_nm):
+  return " (select * from " + table_nm + " where tenant_id = '" + current_user.tenant_id + "') "
 
 
 
@@ -312,11 +319,11 @@ def resPdf_printSeikyu(customerid, customeridB, nentuki, randnum):
   sql = sql + "         to_char(seikyu.deliver_ymd,'yyyy') || to_char(seikyu.deliver_ymd,'mm') || lpad(seikyu.customer_id::text,6,0::text) SEIKYU_KEY,  " 
   sql = sql + "         customer.harai_kb ,                                                                                                             " 
   sql = sql + "         customer.biko2 zei_kb                                                                                                           " 
-  sql = sql + "  FROM   seikyu                                                                                                                          " 
-  sql = sql + "  inner join item                                                                                                                        " 
+  sql = sql + "  FROM   " + TableWhereTenantId("seikyu") + " seikyu                                                                                     " 
+  sql = sql + "  inner join " + TableWhereTenantId("item") + " item                                                                                     " 
   sql = sql + "  on                                                                                                                                     " 
   sql = sql + "      seikyu.item_id = item.id                                                                                                           " 
-  sql = sql + "  inner join customer                                                                                                                    " 
+  sql = sql + "  inner join " + TableWhereTenantId("customer") + " customer                                                                             " 
   sql = sql + "  on                                                                                                                                     " 
   sql = sql + "      seikyu.customer_id = customer.id                                                                                                   " 
   sql = sql + "  where                                                                                                                                  " 
@@ -423,7 +430,7 @@ def makeWrapper():
 @app.route('/getMstSetting_Main/<param_id>')
 @login_required
 def resJson_getMstSetting_Main(param_id):
-  setting = MstSetting.query.filter(MstSetting.param_id==param_id).all() #変更
+  setting = MstSetting.query.filter(MstSetting.param_id==param_id, MstSetting.tenant_id==current_user.tenant_id).all() #変更
   setting_schema = MstSettingSchema(many=True)
   return jsonify({'data': setting_schema.dumps(setting, ensure_ascii=False)})
 
@@ -431,7 +438,7 @@ def resJson_getMstSetting_Main(param_id):
 @app.route('/getDaichoCustomer_SeikyuSub')
 @login_required
 def resJson_getDaichoCustomer_SeikyuSub():
-  customer = Customer.query.filter(Customer.list!=None).all()
+  customer = Customer.query.filter(Customer.list!=None, Customer.tenant_id==current_user.tenant_id).all()
   customer_schema = CustomerSchema(many=True)
   return jsonify({'data': customer_schema.dumps(customer, ensure_ascii=False)})
 
@@ -440,9 +447,9 @@ def resJson_getDaichoCustomer_SeikyuSub():
 def dbUpdate_updAddDaicho(param):
   vals = param.split(",")
   # print(vals)
-  Daicho.query.filter(Daicho.quantity==0).delete()
+  Daicho.query.filter(Daicho.quantity==0, Daicho.tenant_id==current_user.tenant_id).delete()
   for youbi in range(2, 9):
-    Daicho.query.filter(Daicho.customer_id==vals[0], Daicho.item_id==vals[1], Daicho.youbi==(youbi-1)).delete()
+    Daicho.query.filter(Daicho.customer_id==vals[0], Daicho.item_id==vals[1], Daicho.youbi==(youbi-1), Daicho.tenant_id==current_user.tenant_id).delete()
     if vals[youbi].isdecimal():
       if int(vals[youbi]) != 0 :
         daicho = Daicho()
@@ -450,6 +457,7 @@ def dbUpdate_updAddDaicho(param):
         daicho.item_id = vals[1]
         daicho.youbi = (youbi-1)
         daicho.quantity = vals[youbi]
+        daicho.tenant_id = current_user.tenant_id
         db.session.add(daicho)
         db.session.commit()
   return param
@@ -459,7 +467,7 @@ def dbUpdate_updAddDaicho(param):
 def dbUpdate_updTakuhaijun():
   vals = request.json["data"]
   for id_list in vals:
-    customer = Customer.query.filter(Customer.id==id_list[0]).first()
+    customer = Customer.query.filter(Customer.id==id_list[0], Customer.tenant_id==current_user.tenant_id).first()
     customer.list = id_list[1]
     if str(id_list[1]) == "None":
       customer.address3 = None
@@ -473,7 +481,7 @@ def dbUpdate_updTakuhaijun():
 @login_required
 def dbUpdate_updSeikyuQuantity(customerid, itemid, deliverymd, quantity, price, pricesub):
   
-  Seikyu.query.filter(Seikyu.customer_id==customerid, Seikyu.item_id==itemid, Seikyu.deliver_ymd==deliverymd).delete()
+  Seikyu.query.filter(Seikyu.customer_id==customerid, Seikyu.item_id==itemid, Seikyu.deliver_ymd==deliverymd, Seikyu.tenant_id==current_user.tenant_id).delete()
   if int(quantity) != 0:
     seikyu = Seikyu()
     seikyu.customer_id = customerid
@@ -484,6 +492,7 @@ def dbUpdate_updSeikyuQuantity(customerid, itemid, deliverymd, quantity, price, 
     seikyu.quantity = int(quantity)
     seikyu.user_id = current_user.name
     seikyu.ymdt = datetime.datetime.now()
+    seikyu.tenant_id = current_user.tenant_id
     db.session.add(seikyu)
 
   # データを確定
@@ -508,9 +517,10 @@ def dbUpdate_UpdateItem(param):
     item.orosine = vals[5]
     item.zei_kb = int(vals[6])
     item.del_flg = int(vals[7])
+    item.tenant_id = current_user.tenant_id
     db.session.add(item)
   else:
-    item = Item.query.filter(Item.id==itemid).first()
+    item = Item.query.filter(Item.id==itemid, Item.tenant_id==current_user.tenant_id).first()
     item.code = vals[1]
     item.name1 = vals[2]
     item.name2 = vals[3]
@@ -518,6 +528,7 @@ def dbUpdate_UpdateItem(param):
     item.orosine = vals[5]
     item.zei_kb = int(vals[6])
     item.del_flg = int(vals[7])
+    item.tenant_id = current_user.tenant_id
 
   # データを確定
   db.session.commit()
@@ -542,10 +553,11 @@ def dbUpdate_updCustomer(customerid, param):
     customer.biko3 = vals[7]
     customer.list = None
     customer.del_flg = 0
+    customer.tenant_id = current_user.tenant_id
     db.session.add(customer)
 
   else :
-    customer = Customer.query.filter(Customer.id==customerid).first()
+    customer = Customer.query.filter(Customer.id==customerid, Customer.tenant_id==current_user.tenant_id).first()
     customer.name1 = vals[0]
     customer.name2 = vals[1]
     customer.address1 = vals[2]
@@ -555,6 +567,7 @@ def dbUpdate_updCustomer(customerid, param):
     customer.biko2 = vals[6]
     customer.biko3 = vals[7]
     customer.list = vals[8]
+    customer.tenant_id = current_user.tenant_id
 
   # データを確定
   db.session.commit()

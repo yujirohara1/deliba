@@ -7,6 +7,7 @@ class Daicho(db.Model):
     item_id = db.Column(db.Integer, primary_key=True) 
     youbi = db.Column(db.Integer, primary_key=True) 
     quantity = db.Column(db.Integer, nullable=False) 
+    tenant_id   = db.Column(db.String(), primary_key=True) 
     
 
 class DaichoSchema(ma.SQLAlchemyAutoSchema):
@@ -42,6 +43,7 @@ class VDaichoA(db.Model):
     dou          = db.Column(db.Integer, nullable=True) 
     niti         = db.Column(db.Integer, nullable=True) 
     total        = db.Column(db.Integer, nullable=True) 
+    tenant_id   = db.Column(db.String(), primary_key=True) 
 
 class VDaichoASchema(ma.SQLAlchemyAutoSchema):
       class Meta:

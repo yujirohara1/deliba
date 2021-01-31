@@ -41,13 +41,13 @@ drop VIEW v_seikyu_b ;
 drop VIEW v_seikyu_c ;
 drop VIEW v_item_group ;
 
-drop table customer cascade;
-drop table item cascade;
-drop table daicho cascade;
-drop table seikyu cascade;
-drop table mst_setting cascade;
-
-
+--drop table customer cascade;
+--drop table item cascade;
+--drop table daicho cascade;
+--drop table seikyu cascade;
+--drop table mst_setting cascade;
+--
+--
 
 CREATE TABLE customer (
     id integer NOT NULL,
@@ -69,7 +69,8 @@ CREATE TABLE customer (
     del_flg integer,
     biko1 character varying(40),
     biko2 character varying(40),
-    biko3 character varying(40)
+    biko3 character varying(40),
+    tenant_id character varying(80) not null
 );
 
 --
@@ -96,7 +97,8 @@ CREATE TABLE daicho (
     customer_id integer NOT NULL,
     item_id integer NOT NULL,
     youbi integer NOT NULL,
-    quantity integer
+    quantity integer,
+    tenant_id character varying(80) not null
 );
 
 
@@ -112,7 +114,8 @@ CREATE TABLE item (
     tanka integer,
     orosine integer,
     zei_kb integer,
-    del_flg integer
+    del_flg integer,
+    tenant_id character varying(80) not null
 );
 
 --
@@ -141,7 +144,8 @@ CREATE TABLE mst_setting (
     param_no integer NOT NULL,
     param_val1 character varying(200) NOT NULL,
     param_val2 character varying(200),
-    param_val3 character varying(200)
+    param_val3 character varying(200),
+    tenant_id character varying(80) not null
 );
 
 --
@@ -156,12 +160,14 @@ CREATE TABLE seikyu (
     price_sub integer,
     quantity integer NOT NULL,
     user_id character varying(20) NOT NULL,
-    ymdt timestamp without time zone NOT NULL
+    ymdt timestamp without time zone NOT NULL,
+    tenant_id character varying(80) not null
 );
 
 --
 -- Name: v_daicho_a; Type: VIEW; Schema: public; Owner: lgnucurqlirpyu
 --
+
 
 CREATE VIEW v_daicho_a AS
  SELECT customer.group_id,
@@ -216,12 +222,13 @@ CREATE VIEW v_daicho_a AS
             WHEN (daicho.youbi = 7) THEN daicho.quantity
             ELSE 0
         END) AS niti,
-    sum(daicho.quantity) AS total
+    sum(daicho.quantity) AS total,
+    daicho.tenant_id
    FROM ((daicho
-     LEFT JOIN customer ON ((daicho.customer_id = customer.id)))
-     LEFT JOIN item ON ((daicho.item_id = item.id)))
+     LEFT JOIN customer ON ((daicho.customer_id = customer.id and daicho.tenant_id = customer.tenant_id)))
+     LEFT JOIN item ON ((daicho.item_id = item.id and daicho.tenant_id = item.tenant_id)))
   WHERE ((customer.list IS NOT NULL) AND (customer.del_flg = 0))
-  GROUP BY customer.group_id, customer.list, daicho.customer_id, customer.name1, customer.name2, customer.address1, customer.address2, customer.address3, customer.harai_kb, customer.del_flg, daicho.item_id, item.code, item.name1, item.name2, item.tanka, item.del_flg
+  GROUP BY customer.group_id, customer.list, daicho.customer_id, customer.name1, customer.name2, customer.address1, customer.address2, customer.address3, customer.harai_kb, customer.del_flg, daicho.item_id, item.code, item.name1, item.name2, item.tanka, item.del_flg, daicho.tenant_id
   ORDER BY customer.group_id, customer.list, item.code;
 
 --
@@ -391,16 +398,16 @@ CREATE VIEW v_seikyu_a AS
             WHEN (to_char((sei.deliver_ymd)::timestamp with time zone, 'dd'::text) = '31'::text) THEN sei.quantity
             ELSE NULL::integer
         END) AS quantity_d31,
-    item.name1 AS item_name1_end
+    item.name1 AS item_name1_end,
+    sei.tenant_id
    FROM seikyu sei,
     item
-  WHERE (sei.item_id = item.id)
-  GROUP BY sei.customer_id, sei.item_id, sei.price, sei.price_sub, item.name1, (to_char((sei.deliver_ymd)::timestamp with time zone, 'yyyy'::text)), (to_char((sei.deliver_ymd)::timestamp with time zone, 'mm'::text));
+  WHERE (sei.item_id = item.id and sei.tenant_id = item.tenant_id)
+  GROUP BY sei.customer_id, sei.item_id, sei.price, sei.price_sub, item.name1, (to_char((sei.deliver_ymd)::timestamp with time zone, 'yyyy'::text)), (to_char((sei.deliver_ymd)::timestamp with time zone, 'mm'::text)), sei.tenant_id;
 
 --
 -- Name: v_seikyu_b; Type: VIEW; Schema: public; Owner: lgnucurqlirpyu
 --
-
 CREATE VIEW v_seikyu_b AS
  SELECT to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) AS nen,
     to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text) AS tuki,
@@ -417,11 +424,12 @@ CREATE VIEW v_seikyu_b AS
             WHEN ((customer.biko2)::text = '2'::text) THEN 0
             ELSE (((sum((seikyu.price * seikyu.quantity)))::numeric * 0.08))::integer
         END AS zeigaku,
-    to_char(max(seikyu.ymdt), 'yyyy/mm/dd HH24:MI:SS'::text) AS max_ymdt
+    to_char(max(seikyu.ymdt), 'yyyy/mm/dd HH24:MI:SS'::text) AS max_ymdt,
+    seikyu.tenant_id
    FROM (seikyu
-     LEFT JOIN customer ON ((customer.id = seikyu.customer_id)))
+     LEFT JOIN customer ON ((customer.id = seikyu.customer_id and customer.tenant_id = seikyu.tenant_id)))
   WHERE (customer.list IS NOT NULL)
-  GROUP BY (to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text)), (to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)), customer.id, customer.name1, customer.name2, customer.list, customer.group_id, customer.harai_kb, customer.biko2
+  GROUP BY (to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text)), (to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)), customer.id, customer.name1, customer.name2, customer.list, customer.group_id, customer.harai_kb, customer.biko2, seikyu.tenant_id
   ORDER BY (to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text)), (to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)), customer.list, customer.id;
 
 --
@@ -433,37 +441,45 @@ CREATE VIEW v_seikyu_c AS
     sum(a.getugaku) AS getugaku,
     sum(a.zeigaku) AS zeigaku,
     max(a.max_ymdt) AS max_ymdt,
-    sum(a.ninzu) AS ninzu
+    sum(a.ninzu) AS ninzu,
+    tenant_id
    FROM ( SELECT v_seikyu_b.nen,
             v_seikyu_b.tuki,
             sum(v_seikyu_b.getugaku) AS getugaku,
             sum(v_seikyu_b.zeigaku) AS zeigaku,
             max(v_seikyu_b.max_ymdt) AS max_ymdt,
-            count(1) AS ninzu
+            count(1) AS ninzu,
+            v_seikyu_b.tenant_id
            FROM v_seikyu_b
-          GROUP BY v_seikyu_b.nen, v_seikyu_b.tuki
+          GROUP BY v_seikyu_b.nen, v_seikyu_b.tuki, v_seikyu_b.tenant_id
         UNION ALL
          SELECT to_char((date_trunc('month'::text, (CURRENT_DATE)::timestamp with time zone) + '00:00:00'::interval), 'yyyy'::text) AS nen,
             to_char((date_trunc('month'::text, (CURRENT_DATE)::timestamp with time zone) + '00:00:00'::interval), 'mm'::text) AS tuki,
             0,
             0,
             NULL::text,
-            0
+            0,
+            tenant_id
+        from (select distinct tenant_id from mst_setting) x
         UNION ALL
          SELECT to_char((date_trunc('month'::text, (CURRENT_DATE)::timestamp with time zone) + '1 mon'::interval), 'yyyy'::text) AS nen,
             to_char((date_trunc('month'::text, (CURRENT_DATE)::timestamp with time zone) + '1 mon'::interval), 'mm'::text) AS tuki,
             0,
             0,
             NULL::text,
-            0
+            0,
+            tenant_id
+        from (select distinct tenant_id from mst_setting) y
         UNION ALL
          SELECT to_char((date_trunc('month'::text, (CURRENT_DATE)::timestamp with time zone) + '2 mons'::interval), 'yyyy'::text) AS nen,
             to_char((date_trunc('month'::text, (CURRENT_DATE)::timestamp with time zone) + '2 mons'::interval), 'mm'::text) AS tuki,
             0,
             0,
             NULL::text,
-            0) a
-  GROUP BY a.nen, a.tuki
+            0,
+            tenant_id
+        from (select distinct tenant_id from mst_setting) z) a
+  GROUP BY a.nen, a.tuki,a.tenant_id
   ORDER BY a.nen, a.tuki;
 
 
@@ -474,24 +490,29 @@ select
     'すべて' name1,
     count(1) kensu,
     min(tanka) min_tanka,
-    max(tanka) max_tanka
+    max(tanka) max_tanka,
+    tenant_id
 from
     item
 where
     del_flg = 0
+group by
+    tenant_id
 union all
 select
     min(id) min_id,
     name1,
     count(1) kensu,
     min(tanka) min_tanka,
-    max(tanka) max_tanka
+    max(tanka) max_tanka,
+    tenant_id
 from
     item
 where
     del_flg = 0
 group by
-    name1
+    name1,
+    tenant_id
 ;
 
 
@@ -515,7 +536,7 @@ ALTER TABLE ONLY item ALTER COLUMN id SET DEFAULT nextval('item_id_seq'::regclas
 --
 
 ALTER TABLE ONLY customer
-    ADD CONSTRAINT customer_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT customer_pkey PRIMARY KEY (id, tenant_id);
 
 
 --
@@ -523,7 +544,7 @@ ALTER TABLE ONLY customer
 --
 
 ALTER TABLE ONLY daicho
-    ADD CONSTRAINT daicho_pkey PRIMARY KEY (customer_id, item_id, youbi);
+    ADD CONSTRAINT daicho_pkey PRIMARY KEY (customer_id, item_id, youbi, tenant_id);
 
 
 --
@@ -531,7 +552,7 @@ ALTER TABLE ONLY daicho
 --
 
 ALTER TABLE ONLY item
-    ADD CONSTRAINT item_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT item_pkey PRIMARY KEY (id, tenant_id);
 
 
 --
@@ -539,7 +560,7 @@ ALTER TABLE ONLY item
 --
 
 ALTER TABLE ONLY mst_setting
-    ADD CONSTRAINT mst_setting_pkey PRIMARY KEY (param_id, param_no);
+    ADD CONSTRAINT mst_setting_pkey PRIMARY KEY (param_id, param_no, tenant_id);
 
 
 --
@@ -603,13 +624,13 @@ CREATE INDEX item_id_idx1 ON item USING btree (id);
 --
 
 
-insert into mst_setting values('START_YM','利用開始年月',1,'201908',null,null);
-insert into mst_setting values('GROUP_KB','グループ区分',100,'月水金','Aグループ',null);
-insert into mst_setting values('GROUP_KB','グループ区分',200,'火木土','Aグループ',null);
-insert into mst_setting values('SIHARAI_KB','支払方法区分',1,'現金',null,null);
-insert into mst_setting values('SIHARAI_KB','支払方法区分',2,'引落',null,null);
-insert into mst_setting values('CUSTOMER_ZEI_KB','内税外税区分',1,'外税',null,null);
-insert into mst_setting values('CUSTOMER_ZEI_KB','内税外税区分',2,'内税',null,null);
+insert into mst_setting values('START_YM','利用開始年月',1,'201908',null,null,'demo');
+insert into mst_setting values('GROUP_KB','グループ区分',100,'月水金','Aグループ',null,'demo');
+insert into mst_setting values('GROUP_KB','グループ区分',200,'火木土','Bグループ',null,'demo');
+insert into mst_setting values('SIHARAI_KB','支払方法区分',1,'現金',null,null,'demo');
+insert into mst_setting values('SIHARAI_KB','支払方法区分',2,'引落',null,null,'demo');
+insert into mst_setting values('CUSTOMER_ZEI_KB','内税外税区分',1,'外税',null,null,'demo');
+insert into mst_setting values('CUSTOMER_ZEI_KB','内税外税区分',2,'内税',null,null,'demo');
 
 --
 --
@@ -648,3 +669,21 @@ insert into mst_setting values('CUSTOMER_ZEI_KB','内税外税区分',2,'内税',null,nu
 -- ZEI_KB          | 税区分             |        1 | 10                                                                | 10%                |
 -- ZEI_KB          | 税区分             |        2 | 8                                                                 | 8%（軽減税率対象） |
 --(32 行)
+
+
+
+
+
+
+-- ALTER TABLE customer DROP COLUMN tenant_id;
+
+ALTER TABLE customer     ADD COLUMN tenant_id character varying(80) not null default 'demo';
+ALTER TABLE item         ADD COLUMN tenant_id character varying(80) not null default 'demo';
+ALTER TABLE daicho       ADD COLUMN tenant_id character varying(80) not null default 'demo';
+ALTER TABLE seikyu       ADD COLUMN tenant_id character varying(80) not null default 'demo';
+ALTER TABLE mst_setting  ADD COLUMN tenant_id character varying(80) not null default 'demo';
+
+
+
+
+

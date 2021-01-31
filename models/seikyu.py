@@ -15,6 +15,7 @@ class Seikyu(db.Model):
     ymdt        = db.Column(db.DATETIME, nullable=False,primary_key=False)
     # ymdt        = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     # ymdt        = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow, nullable=False,primary_key=False)
+    tenant_id   = db.Column(db.String(), primary_key=True) 
     
 
 class SeikyuSchema(ma.SQLAlchemyAutoSchema):
@@ -64,6 +65,7 @@ class VSeikyuA(db.Model):
     quantity_d30    = db.Column(db.Integer,  nullable=True ,primary_key=False)
     quantity_d31    = db.Column(db.Integer,  nullable=True ,primary_key=False)
     item_name1_end  = db.Column(db.String(), nullable=True ,primary_key=False)
+    tenant_id   = db.Column(db.String(), primary_key=True) 
 
 class VSeikyuASchema(ma.SQLAlchemyAutoSchema):
       class Meta:
@@ -145,6 +147,7 @@ class VSeikyuC(db.Model):
     zeigaku         = db.Column(db.Integer,   nullable=True,primary_key=False)
     max_ymdt        = db.Column(db.String(),  nullable=True,primary_key=False)
     ninzu           = db.Column(db.Integer,   nullable=True,primary_key=False)
+    tenant_id   = db.Column(db.String(), primary_key=True) 
 
 class VSeikyuCSchema(ma.SQLAlchemyAutoSchema):
       class Meta:
@@ -164,6 +167,7 @@ class VSeikyuB(db.Model):
     getugaku        = db.Column(db.Integer,   nullable=True,primary_key=False)
     zeigaku         = db.Column(db.Integer,   nullable=True,primary_key=False)
     max_ymdt        = db.Column(db.String(),  nullable=True,primary_key=False)
+    tenant_id   = db.Column(db.String(), primary_key=True) 
 
 class VSeikyuBSchema(ma.SQLAlchemyAutoSchema):
       class Meta:

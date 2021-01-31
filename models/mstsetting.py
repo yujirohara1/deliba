@@ -8,6 +8,7 @@ class MstSetting(db.Model):
     param_val1 = db.Column(db.String(), nullable=False) 
     param_val2 = db.Column(db.String(), nullable=False) 
     param_val3 = db.Column(db.String(), nullable=False) 
+    tenant_id   = db.Column(db.String(), primary_key=True) 
 
 class MstSettingSchema(ma.SQLAlchemyAutoSchema):
       class Meta:
