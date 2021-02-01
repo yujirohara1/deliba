@@ -42,7 +42,7 @@ $(document).ready(function() {
           ymFrom = ymFrom * 1;
       }
       var seldate = new Date();
-      $('#selNentuki').val(seldate.getFullYear() + "" + ("0"+seldate.getMonth()+1).slice(-2));
+      $('#selNentuki').val(seldate.getFullYear() + "" + ("0"+(seldate.getMonth()+1)).slice(-2));
       
     }else{
       alert("エラー：START_YMがありません");
