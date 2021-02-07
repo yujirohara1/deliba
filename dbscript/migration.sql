@@ -633,6 +633,13 @@ insert into mst_setting values('CUSTOMER_ZEI_KB','“àÅŠOÅ‹æ•ª',1,'ŠOÅ',null,nu
 insert into mst_setting values('CUSTOMER_ZEI_KB','“àÅŠOÅ‹æ•ª',2,'“àÅ',null,null,'demo');
 
 
+insert into mst_setting values('TENPO_SEIKYUSHO','¿‹‘‚Ì“X•Üî•ñ',1,'‚ ‚ ‚ ‚ ‚ ',null,null,'demo');
+insert into mst_setting values('TENPO_SEIKYUSHO','¿‹‘‚Ì“X•Üî•ñ',2,'‚ ‚ ‚ ‚ ‚ ',null,null,'demo');
+insert into mst_setting values('TENPO_SEIKYUSHO','¿‹‘‚Ì“X•Üî•ñ',3,'‚ ‚ ‚ ‚ ‚ ',null,null,'demo');
+
+insert into mst_setting values('TENPO_RYOSYUSHO','—Ìû‘‚Ì“X•Üî•ñ',1,'‚ ‚ ‚ ‚ ‚ ',null,null,'demo');
+insert into mst_setting values('TENPO_RYOSYUSHO','—Ìû‘‚Ì“X•Üî•ñ',2,'‚ ‚ ‚ ‚ ‚ ',null,null,'demo');
+insert into mst_setting values('TENPO_RYOSYUSHO','—Ìû‘‚Ì“X•Üî•ñ',3,'‚ ‚ ‚ ‚ ‚ ',null,null,'demo');
 
 
 
@@ -645,9 +652,13 @@ insert into mst_setting values('CUSTOMER_ZEI_KB','“àÅŠOÅ‹æ•ª',1,'ŠOÅ',null,nu
 insert into mst_setting values('CUSTOMER_ZEI_KB','“àÅŠOÅ‹æ•ª',2,'“àÅ',null,null,'hara');
 
 
-insert into mst_setting values('TENPO_SEIKYUSHO','¿‹‘‚Ì“X•Üî•ñ',1,'‚ ‚ ‚ ‚ ‚ ',null,null,'demo');
-insert into mst_setting values('TENPO_SEIKYUSHO','¿‹‘‚Ì“X•Üî•ñ',2,'‚ ‚ ‚ ‚ ‚ ',null,null,'demo');
-insert into mst_setting values('TENPO_SEIKYUSHO','¿‹‘‚Ì“X•Üî•ñ',3,'‚ ‚ ‚ ‚ ‚ ',null,null,'demo');
+insert into mst_setting values('TENPO_SEIKYUSHO','¿‹‘‚Ì“X•Üî•ñ',1,'‚ ‚ ‚ ‚ ‚ ',null,null,'hara');
+insert into mst_setting values('TENPO_SEIKYUSHO','¿‹‘‚Ì“X•Üî•ñ',2,'‚ ‚ ‚ ‚ ‚ ',null,null,'hara');
+insert into mst_setting values('TENPO_SEIKYUSHO','¿‹‘‚Ì“X•Üî•ñ',3,'‚ ‚ ‚ ‚ ‚ ',null,null,'hara');
+
+insert into mst_setting values('TENPO_RYOSYUSHO','—Ìû‘‚Ì“X•Üî•ñ',1,'‚ ‚ ‚ ‚ ‚ ',null,null,'hara');
+insert into mst_setting values('TENPO_RYOSYUSHO','—Ìû‘‚Ì“X•Üî•ñ',2,'‚ ‚ ‚ ‚ ‚ ',null,null,'hara');
+insert into mst_setting values('TENPO_RYOSYUSHO','—Ìû‘‚Ì“X•Üî•ñ',3,'‚ ‚ ‚ ‚ ‚ ',null,null,'hara');
 
 --
 --

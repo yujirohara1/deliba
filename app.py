@@ -112,6 +112,7 @@ def load_user(user_id):
 
 
 
+# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
 db_uri = os.environ.get('DATABASE_URL') #本番用
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -341,6 +342,8 @@ def resPdf_printSeikyu(customerid, customeridB, nentuki, randnum):
   sqlB = sql.replace("V_CUSTOMER_ID_V",customeridB)
   # sql = " select * from v_seikyu_b where nen = '2021' and tuki = '02' and customer_id = " + customerid
 
+  param_list = MstSetting.query.filter(MstSetting.tenant_id==current_user.tenant_id).all()
+
   if db.session.execute(text(sqlA)).fetchone() is not None:
     data_listA = db.session.execute(text(sqlA))
 
@@ -352,7 +355,7 @@ def resPdf_printSeikyu(customerid, customeridB, nentuki, randnum):
     timestamp = datetime.datetime.now()
     timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
     filename = "file_" + customerid + "_" + customeridB + "_" + timestampStr + "_" + current_user.name
-    make(filename, data_listA, data_listB)
+    make(filename, data_listA, data_listB, param_list)
 
     response = make_response()
     response.data = open("tmp/" + filename + ".pdf", "rb").read()
@@ -407,23 +410,23 @@ def print_pdfMergeSeikyusho():
         
 
 
-# def makeWrapper(data_list):
-def makeWrapper():
+# # def makeWrapper(data_list):
+# def makeWrapper():
 
-  timestamp = datetime.datetime.now()
-  timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+#   timestamp = datetime.datetime.now()
+#   timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
 
 
-  # make("file" + timestampStr, data_list)
-  # with app.app_context():
-  make("file" + timestampStr)
+#   # make("file" + timestampStr, data_list)
+#   # with app.app_context():
+#   make("file" + timestampStr)
 
-  response = make_response()
-  response.data = open("tmp/" + "file" + timestampStr + ".pdf", "rb").read()
-  response.headers['Content-Disposition'] = "attachment; filename=unicode.pdf"
-  response.mimetype = 'application/pdf'
-  # return response
-  return send_file("tmp/" + "file" + timestampStr + ".pdf", as_attachment=True)
+#   response = make_response()
+#   response.data = open("tmp/" + "file" + timestampStr + ".pdf", "rb").read()
+#   response.headers['Content-Disposition'] = "attachment; filename=unicode.pdf"
+#   response.mimetype = 'application/pdf'
+#   # return response
+#   return send_file("tmp/" + "file" + timestampStr + ".pdf", as_attachment=True)
 
 
 @app.route('/getMstSetting_Main/<param_id>')

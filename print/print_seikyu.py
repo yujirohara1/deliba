@@ -16,7 +16,7 @@ import math
 
 font_type = 'HeiseiKakuGo-W5'
 
-def make(filename="resume", seikyulistA=None, seikyulistB=None): # ファイル名の設定
+def make(filename="resume", seikyulistA=None, seikyulistB=None, paramlist=None): # ファイル名の設定
 #def make(filename="resume"): # ファイル名の設定
 
 
@@ -28,10 +28,10 @@ def make(filename="resume", seikyulistA=None, seikyulistB=None): # ファイル�
     print_waku_kihon(pdf_canvas)
     print_waku_subA(pdf_canvas)
 
-    print_string_sub(pdf_canvas, 45, 45, seikyulistA)
+    print_string_sub(pdf_canvas, 45, 45, seikyulistA, paramlist)
 
     if seikyulistB!=None:
-      print_string_sub(pdf_canvas, 45, 342, seikyulistB)
+      print_string_sub(pdf_canvas, 45, 342, seikyulistB, paramlist)
 
     pdf_canvas.save() # pdfを保存
 
@@ -222,7 +222,17 @@ def print_waku_kihon(pdf_canvas):
 #     width += (len(string) - 1) * charspace
 #     return width
 
-def print_string_sub(pdf_canvas, start_x, start_y, data):
+def get_param_val(paramlist, id, no, colidx):
+  for row in paramlist:
+    if row.param_id == id and row.param_no == no:
+      if colidx == 1:
+        return row.param_val1
+      if colidx == 2:
+        return row.param_val2
+  return ""
+
+
+def print_string_sub(pdf_canvas, start_x, start_y, data, paramlist):
 
   def_font_size = 9
   def_font_type = 'HeiseiKakuGo-W5'
@@ -284,11 +294,11 @@ def print_string_sub(pdf_canvas, start_x, start_y, data):
       pdf_canvas.drawString(start_x+178+155+6, start_y+181, 'ご案内しております。ご相談ください。') 
       
       pdf_canvas.setFont(def_font_type, def_font_size+6)
-      pdf_canvas.drawString(start_x+178+155, start_y+213, 'デ モ 牛 乳 販 売 店') 
+      pdf_canvas.drawString(start_x+178+155, start_y+213, get_param_val(paramlist, "TENPO_SEIKYUSHO", 1, 1) ) 
       pdf_canvas.setFont(def_font_type, def_font_size+1)
-      pdf_canvas.drawString(start_x+178+155, start_y+213+15, 'デモ市 南区 デモ通 123 - 4') 
+      pdf_canvas.drawString(start_x+178+155, start_y+213+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 2, 1) ) 
       pdf_canvas.setFont(def_font_type, def_font_size)
-      pdf_canvas.drawString(start_x+178+155, start_y+213+15+15, '☎   1 1 1  -  2 2 2  -  3 3 3 3') 
+      pdf_canvas.drawString(start_x+178+155, start_y+213+15+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 3, 1) ) 
 
       # カレンダー 1日～15日 見出し
       font_size = def_font_size-1
@@ -397,11 +407,11 @@ def print_string_sub(pdf_canvas, start_x, start_y, data):
   pdf_canvas.drawString(start_x+178,      start_y+106+14+10+30+20, '　　　　　年　　　月　　　日') 
 
   pdf_canvas.setFont(def_font_type, def_font_size+6)
-  pdf_canvas.drawString(start_x+178+10, start_y+213, 'デモ牛乳販売店') 
+  pdf_canvas.drawString(start_x+178+10, start_y+213, get_param_val(paramlist, "TENPO_RYOSYUSHO", 1, 1) ) #'デモ牛乳販売店') 
   pdf_canvas.setFont(def_font_type, def_font_size+1)
-  pdf_canvas.drawString(start_x+178+10, start_y+213+15, 'デモ市南区デモ通123-4') 
+  pdf_canvas.drawString(start_x+178+10, start_y+213+15, get_param_val(paramlist, "TENPO_RYOSYUSHO", 2, 1) ) 
   pdf_canvas.setFont(def_font_type, def_font_size)
-  pdf_canvas.drawString(start_x+178+10, start_y+213+15+15, '☎ 1 1 1 - 2 2 2 - 3 3 3 3') 
+  pdf_canvas.drawString(start_x+178+10, start_y+213+15+15, get_param_val(paramlist, "TENPO_RYOSYUSHO", 3, 1) ) 
 
 
 

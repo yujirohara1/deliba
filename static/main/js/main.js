@@ -2437,7 +2437,7 @@ $('#tableKihonSetteiDetail tbody').on( 'click', 'td', function () {
     var inputtag = inputtag + '  \'' + row.param_val2 + '\', ';
     var inputtag = inputtag + '  \'' + this.cellIndex + '\' ';
     var inputtag = inputtag + ' );" ';
-    var inputtag = inputtag + 'value=' + this.innerText + '>';
+    var inputtag = inputtag + 'value=\'' + this.innerText + '\'>';
     //this.html(inputtag);
     $(this).html(inputtag);
 
