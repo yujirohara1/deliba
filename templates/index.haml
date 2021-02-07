@@ -33,7 +33,11 @@
               %div.input-group
                 %button.btn.btn-primary.btn-sm#btnNewCustomerToroku(type="button")
                   新規顧客登録
-            %div.col-md-3
+            %div.col-md-2
+              %div.input-group
+                %button.btn.btn-primary.btn-sm(type="button" data-toggle="modal" data-target="#modalKihonSettei")
+                  基本設定
+            %div.col-md-1
               %div.input-group.pull-right
                 %a.btn.btn-warning(href="/logout/" role="button")
                   サインアウト
@@ -711,6 +715,55 @@
           %div.col-md-1
             %button#btnSeikyuAdd.btn.btn-primary(type="button")
               決定
+
+
+
+<!-- 基本設定モーダル -->
+%div.modal.fade#modalKihonSettei(tabindex="-1")
+  %div.modal-dialog.modal-lg
+    %div.modal-content
+      %div.modal-header
+        %button.close(type="button" data-dismiss="modal")
+          %span
+            ×
+        %h4.modal-title#subFtitle
+          システムの基本設定を管理します。
+      %div.modal-body
+        %div.row
+          %div.col-md-3
+            %table.table-bordered.row.hover#tableKihonSettei
+              %thead
+                %tr
+                  %th 
+                    設定内容
+              %tbody
+          %div.col-md-9
+            %div.row
+              %div.col-md-12
+                %table.table-bordered.row.hover#tableKihonSetteiDetail
+                  %thead
+                    %tr
+                      %th 
+                        No
+                      %th
+                        管理情報
+                      %th
+                        補足情報
+                  %tbody
+      %div.modal-footer#modalKihonSetteiFooter
+        %div.row
+          %div.col-md-2.text-left
+            a
+          %div.col-md-2.text-left
+            b
+          %div.col-md-7.text-left
+            %div.row
+              %div.col-md-5.text-right
+              %div.col-md-7.text-left
+                d
+          %div.col-md-1
+            %button.btn.btn-default(type="button" data-dismiss="modal")
+              閉じる
 
 
 

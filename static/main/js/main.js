@@ -313,6 +313,8 @@ $('#btnSeikyuDeleteKobetu').on('click', function() {
   || 顧客情報　新規登録
   */
 $('#btnNewCustomerToroku').on('click', function() {
+    $('.nav-tabs a[href="#tab1primary"]').tab('show')
+
     //行選択を解除
     $("#mainUpdCustomerMessageArea").html("");
     $("#mainUpdCustomerMessageArea").append("<p style='color:red'>上の各項目を入力して、更新ボタンで登録してください。</p>");
@@ -2384,6 +2386,191 @@ function fncUpdateSeikyuQuantity(customerid, itemid, nen, tuki, niti, price, pri
     
 
 
+$('#modalKihonSettei').on("shown.bs.modal", function (e) {
+    createKihonSetteiTable_Main();
+    createKihonSetteiTable_Shosai("a");
+  
+});
+
+
+$('#tableKihonSetteiDetail tbody').on( 'click', 'td', function () {
+    if(this.firstChild != null){
+        if(this.firstChild.id=="inputTextTmp"){
+            return;
+        }
+    }
+    //事前に子要素（インプットタグ）を削除
+    var rowCnt = $('#tableKihonSetteiDetail')[0].rows.length;
+    for(var r=1; r<rowCnt; r++){ //r=0, r=1 はヘッダ
+        for(var c=1; c<=2; c++){
+            var elCount = $('#tableKihonSetteiDetail')[0].rows[r].cells[c].childElementCount;
+            for(var el=0; el<elCount; el++){
+                var chil = $('#tableKihonSetteiDetail')[0].rows[r].cells[c].children[el];
+                var qua;
+                if(chil.id == "inputTextTmp"){
+                    qua = $('#inputTextTmp').val();
+                } else if(chil.tagName=="SPAN"){
+                    qua = chil.innerText;
+                }
+                $('#tableKihonSetteiDetail')[0].rows[r].cells[c].removeChild(chil);
+                $('#tableKihonSetteiDetail')[0].rows[r].cells[c].innerText = qua;
+                $('#tableKihonSetteiDetail')[0].rows[r].cells[c].innerHTML = qua;
+            }
+        }
+    }
+    
+    var row = $('#tableKihonSetteiDetail').DataTable().row( this ).data();
+    if(!(1<=this.cellIndex && this.cellIndex <=2)){
+        return;
+    }
+    var inputtag = "";
+    var inputtag = inputtag + '<input id="inputTextTmp" ';
+    var inputtag = inputtag + 'class="form-control input-sm" ';
+    var inputtag = inputtag + 'type="text" ';
+    var inputtag = inputtag + 'style="width:95%" ';
+    var inputtag = inputtag + 'maxlength="50" ';
+    var inputtag = inputtag + 'onchange="fncUpdateSetteiText( ';
+    var inputtag = inputtag + '  \'' + row.param_id + '\', ';
+    var inputtag = inputtag + '  \'' + row.param_nm + '\', ';
+    var inputtag = inputtag + '  \'' + row.param_no + '\', ';
+    var inputtag = inputtag + '  \'' + row.param_val1 + '\', ';
+    var inputtag = inputtag + '  \'' + row.param_val2 + '\', ';
+    var inputtag = inputtag + '  \'' + this.cellIndex + '\' ';
+    var inputtag = inputtag + ' );" ';
+    var inputtag = inputtag + 'value=' + this.innerText + '>';
+    //this.html(inputtag);
+    $(this).html(inputtag);
+
+    var table = $('#tableKihonSetteiDetail').DataTable();
+ 
+    //$('#container').css( 'display', 'block' );
+    table.columns.adjust().draw();
+    $('#inputTextTmp').focus()
+    $('#inputTextTmp').select()
+
+} );
+  
+function fncUpdateSetteiText(param_id, param_nm, param_no, param_val1, param_val2, colIndex){
+    //var deliverymd = nen + "-" + tuki + "-" + niti;
+    var val = $("#inputTextTmp").val();
+    $.ajax({
+        type: "GET",
+        url: "/updateSetteiText/" + param_id + "," + param_nm + "," + param_no + "," + param_val1 + "," + param_val2 + "," + colIndex + "," + val + ""
+    }).done(function(data) {
+        createKihonSetteiTable_Shosai(param_id);
+
+    }).fail(function(data) {
+        alert("エラー：" + data.statusText);
+    }).always(function(data) {
+        //何もしない
+    });
+}
+
+function ByteSpace(val){
+    if(val==""){
+        return " ";
+    }else{
+        return val;
+    }
+}
+function Null2Blank(val){
+    if(val=="null"){
+        return "";
+    }else{
+        return val;
+    }
+
+}
+  
+    
+/*
+|| 基本設定テーブルを作成
+*/
+function createKihonSetteiTable_Main(){
+    
+    $('#tableKihonSettei').DataTable({
+        bInfo: false,
+        searching: false,
+        bSort: true,
+        destroy: true,
+        "processing": true,
+        ajax: {
+            url: "/getMstSetting_Full",
+            dataType: "json",
+            dataSrc: function ( json ) {
+                return JSON.parse(json.data);
+            },
+            contentType:"application/json; charset=utf-8",
+            complete: function () {
+                return; 
+            }
+        },
+        columns: [
+            { data: 'param_nm'  ,width: '100%'}
+        ],
+        language: {
+           url: "../static/main/js/japanese.json"
+        },
+        "scrollY":        $(window).height() * 35 / 100,
+        "pageLength": 1000,
+        paging:false,
+        "order": [ 0, "asc" ],
+        "lengthMenu": [100, 300, 500, 1000],
+        dom:"<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+    });
+}
+
+$('#tableKihonSettei tbody').on( 'click', 'tr', function () {
+    var rowData =   $('#tableKihonSettei').DataTable().row( this ).data();
+    createKihonSetteiTable_Shosai(rowData.param_id);
+});
+  
+/*
+|| 基本設定テーブル２を作成
+*/
+function createKihonSetteiTable_Shosai(paramid){
+    $('#tableKihonSetteiDetail').DataTable({
+        bInfo: false,
+        searching: false,
+        bSort: true,
+        destroy: true,
+        "processing": true,
+        ajax: {
+            url: "/getMstSetting_Main/" + paramid + "",
+            dataType: "json",
+            dataSrc: function ( json ) {
+                return JSON.parse(json.data);
+            },
+            contentType:"application/json; charset=utf-8",
+            complete: function () {
+                return; 
+            }
+        },
+        columns: [
+            { data: 'param_no'    ,width: '5%'},
+            { data: 'param_val1'  ,width: '70%'},
+            { data: 'param_val2'  ,width: '25%'}
+        ],
+        aoColumnDefs: [
+            { 'bSortable': false, 'aTargets': [ 1 ] },
+            { 'bSortable': false, 'aTargets': [ 2 ] }
+         ],
+        language: {
+           url: "../static/main/js/japanese.json"
+        },
+        "scrollY":        $(window).height() * 35 / 100,
+        "pageLength": 1000,
+        paging:false,
+        "order": [ 0, "asc" ],
+        "lengthMenu": [100, 300, 500, 1000],
+        dom:"<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+    });
+}
+
 
 $("#tableCustomer tbody").on('click',function(event) {
     $("#tableCustomer").removeClass('row_selected customer');        
@@ -2424,6 +2611,21 @@ $("#tableAddSeikyu tbody").on('click',function(event) {
     $("#tableAddSeikyu tbody td").removeClass('row_selected addSeikyu');        
     $(event.target.parentNode).addClass('row_selected addSeikyu');
     
+});
+
+$("#tableKihonSettei tbody").on('click',function(event) {
+    $("#tableKihonSettei").removeClass('row_selected kihonSettei');        
+    $("#tableKihonSettei tbody tr").removeClass('row_selected kihonSettei');        
+    $("#tableKihonSettei tbody td").removeClass('row_selected kihonSettei');        
+    $(event.target.parentNode).addClass('row_selected kihonSettei');
+});
+
+
+$("#tableKihonSetteiDetail tbody").on('click',function(event) {
+    $("#tableKihonSetteiDetail").removeClass('row_selected kihonSetteiDetail');        
+    $("#tableKihonSetteiDetail tbody tr").removeClass('row_selected kihonSetteiDetail');        
+    $("#tableKihonSetteiDetail tbody td").removeClass('row_selected kihonSetteiDetail');        
+    $(event.target.parentNode).addClass('row_selected kihonSetteiDetail');
 });
 
 

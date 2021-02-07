@@ -112,7 +112,6 @@ def load_user(user_id):
 
 
 
-# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
 db_uri = os.environ.get('DATABASE_URL') #本番用
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -433,6 +432,49 @@ def resJson_getMstSetting_Main(param_id):
   setting = MstSetting.query.filter(MstSetting.param_id==param_id, MstSetting.tenant_id==current_user.tenant_id).all() #変更
   setting_schema = MstSettingSchema(many=True)
   return jsonify({'data': setting_schema.dumps(setting, ensure_ascii=False)})
+
+
+@app.route('/getMstSetting_Full')
+@login_required
+def resJson_getMstSetting_Full():
+  setting = MstSetting.query.distinct(MstSetting.param_id, MstSetting.param_nm).filter(MstSetting.tenant_id==current_user.tenant_id).all()
+  setting_schema = MstSettingSchema(many=True)
+  return jsonify({'data': setting_schema.dumps(setting, ensure_ascii=False)})
+
+
+
+
+@app.route('/updateSetteiText/<params>')
+@login_required
+def dbUpdate_updateSetteiText(params):
+  vals = params.split(",")
+  # param_id, param_nm, param_no, param_val1, param_val2, colIndex, val
+  MstSetting.query.filter( \
+    MstSetting.param_id==vals[0], \
+    MstSetting.param_no==vals[2], \
+    MstSetting.tenant_id==current_user.tenant_id).delete()
+
+  mstsetting = MstSetting()
+  mstsetting.param_id = vals[0]
+  mstsetting.param_nm = vals[1]
+  mstsetting.param_no = vals[2]
+  mstsetting.param_val1 = null2blank(vals[6]) if int(vals[5])==1 else null2blank(vals[3])  #param_val1 #"OK" if n == 10 else "NG"
+  mstsetting.param_val2 = null2blank(vals[6]) if int(vals[5])==2 else null2blank(vals[4])  #param_val2
+  mstsetting.param_val3 = ""
+  mstsetting.tenant_id = current_user.tenant_id
+  db.session.add(mstsetting)
+
+  # データを確定
+  db.session.commit()
+  return "1"
+
+
+
+def null2blank(val):
+  if val == "null":
+    return ""
+  else:
+    return val
 
 
 @app.route('/getDaichoCustomer_SeikyuSub')
