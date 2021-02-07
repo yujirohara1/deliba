@@ -41,19 +41,19 @@
               {% endif %}　
           
       %div.col-md-7
-          <div class="jumbotron" style="background-color:#fff4f9; opacity:0.9">
-            <h1>宅配システムの新常識</h1>
-            <h1 style="font-size:52px">LatteCloud ラテクラウド</h1>
-            <p>シンプル、速い、インストール不要</p>
-            <p>牛乳宅配店向け、完全無料の請求管理システム</p>
+        <div class="jumbotron" style="background-color:#fff4f9; opacity:0.9">
+          <h1>宅配システムの新常識</h1>
+          <h1 style="font-size:52px">LatteCloud ラテクラウド</h1>
+          <p>シンプル、速い、インストール不要</p>
+          <p>牛乳宅配店向け、完全無料の請求管理システム</p>
 
-            %div.row
-              %div.col-md-4
-                %form(action="/demologin" method="POST")
-                  %input.form-control.input-sm(type="hidden" name="username" value="demo")
-                  %input.form-control.input-sm(type="hidden" name="password" value="demo")
-                  %input.btn.btn-success.btn-lg#btnDemoLogin(type="submit" value="体験版へログイン")
-              %div.col-md-8#lblBrowserCheckAlert
+          %div.row
+            %div.col-md-4
+              %form(action="/demologin" method="POST")
+                %input.form-control.input-sm(type="hidden" name="username" value="demo")
+                %input.form-control.input-sm(type="hidden" name="password" value="demo")
+                %input.btn.btn-success.btn-lg#btnDemoLogin(type="submit" value="体験版へログイン")
+            %div.col-md-8#lblBrowserCheckAlert
                 
 
 
@@ -95,17 +95,16 @@
     %div.row
       &nbsp;
     %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
-    %div.row
-      &nbsp;
+      %div.col-md-4
+      %div.col-md-7
+        <div class="panel panel-primary">
+          <div class="panel-heading" style="font-size:16px">改訂履歴</div>
+          <div class="panel-body" style="height: 100px;overflow-y: scroll;">
+            <p class="kaitei">2021 / 2 / 7　請求書に印字するコメントを支払方法区分ごとにマスタ管理とする対応 </p>
+            <p class="kaitei">2021 / 1 / 31　祝サービスローンチ </p>
+          </div>
+        </div>
+      %div.col-md-1
     %div.row
       &nbsp;
     %div.row

@@ -42,7 +42,7 @@ $(document).ready(function() {
           ymFrom = ymFrom * 1;
       }
       var seldate = new Date();
-      $('#selNentuki').val(seldate.getFullYear() + "" + ("0"+(seldate.getMonth()+1)).slice(-2));
+      $('#selNentuki').val(NowNenTuki());
       
     }else{
       alert("エラー：START_YMがありません");
@@ -83,7 +83,7 @@ $(document).ready(function() {
   
   createCustomerTables_Main();
   createDaichoTables_Main(0);
-  createSeikyuTables_Main(0,$('#selNentuki').val());
+  createSeikyuTables_Main(0,NowNenTuki());
   
   
   //var domTableCustomer = $('#tableCustomer').DataTable();
@@ -94,7 +94,10 @@ $(document).ready(function() {
 
 
 
-
+function NowNenTuki(){
+    var seldate = new Date();
+    return seldate.getFullYear() + "" + ("0"+(seldate.getMonth()+1)).slice(-2);
+}
 
 
 

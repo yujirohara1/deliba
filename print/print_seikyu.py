@@ -290,8 +290,11 @@ def print_string_sub(pdf_canvas, start_x, start_y, data, paramlist):
 
       font_size = def_font_size
       pdf_canvas.setFont(def_font_type, font_size)
-      pdf_canvas.drawString(start_x+178+155+6, start_y+170, 'ご希望の方には、口座引落しを') 
-      pdf_canvas.drawString(start_x+178+155+6, start_y+181, 'ご案内しております。ご相談ください。') 
+      comment = get_param_val(paramlist, "COMMENT_SEIKYU", int(row["harai_kb"]), 1).split(";br")
+
+      pdf_canvas.drawString(start_x+178+155+6, start_y+170, comment[0])
+      if len(comment)==2: 
+        pdf_canvas.drawString(start_x+178+155+6, start_y+181, comment[1]) 
       
       pdf_canvas.setFont(def_font_type, def_font_size+6)
       pdf_canvas.drawString(start_x+178+155, start_y+213, get_param_val(paramlist, "TENPO_SEIKYUSHO", 1, 1) ) 
