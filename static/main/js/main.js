@@ -66,6 +66,14 @@ $(document).ready(function() {
     });
   });
   
+  $.getJSON("/getMstSetting_Main/HONTEN_KB", function(json) {
+    list = JSON.parse(json.data);
+    $.each(list, function(i, item) {
+        var option = $('<option>').text(item.param_val1).val(item.param_no);
+        $('#selTantoName').append(option);
+    });
+  });
+  
 
   $.getJSON("/getMstSetting_Main/ZEI_KB", function(json) {
     list = JSON.parse(json.data);
@@ -338,7 +346,7 @@ $('#btnNewCustomerToroku').on('click', function() {
     $('#selHaraiKb').val();
     $('#selCustomerGroupKb').val();
     $('#selCustomerZeiKb').val();
-    $('#txtTantoName').val("");
+    $('#selTantoName').val("");
     $('#txtList').val("");
 
     $('#txtCustomerName').focus();
@@ -362,7 +370,7 @@ $('#btnUpdateCustomer').on('click', function() {
               $('#selHaraiKb').val() + DELIMIT + 
               $('#selCustomerGroupKb').val() + DELIMIT + 
               $('#selCustomerZeiKb').val() + DELIMIT + 
-              $('#txtTantoName').val() + DELIMIT + 
+              $('#selTantoName').val() + DELIMIT + 
               $('#txtList').val();
   //alert(param);
   
@@ -2291,7 +2299,7 @@ $('#tableCustomer tbody').on( 'click', 'tr', function () {
     $('#selHaraiKb').val(rowData.harai_kb);
     $('#selCustomerGroupKb').val(rowData.group_id);
     $('#selCustomerZeiKb').val(rowData.biko2);
-    $('#txtTantoName').val(rowData.biko3);
+    $('#selTantoName').val(rowData.biko3);
     $('#txtList').val(rowData.list);
     
   } );
