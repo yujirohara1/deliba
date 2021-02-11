@@ -2551,7 +2551,15 @@ function getCsvData(viewnm){
         type: "GET",
         url: "/getCsvData/" + viewnm + ""
     }).done(function(data) {
-        var blob=new Blob([data], {type: "text/csv"});//
+        let bom  = new Uint8Array([0xEF, 0xBB, 0xBF]);
+        //let blob = new Blob([bom, data], {type: 'text/csv'});
+        // encoding.js
+        // var str_array = Encoding.stringToCode(data);
+        // var sjis_array = Encoding.convert(str_array, "SJIS", "UTF8");
+        // var uint8_array = new Uint8Array(sjis_array);
+        //var blob = new Blob([uint8_array], { type: "text/csv;" });
+
+        var blob=new Blob([bom, data], {type: "text/csv"});//
         var link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
         link.download = "" + Math.random().toString(32).substring(2) + ".csv";
