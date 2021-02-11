@@ -660,8 +660,392 @@ insert into mst_setting values('TENPO_RYOSYUSHO','—Ìû‘‚Ì“X•Üî•ñ',1,'‚ ‚ ‚ ‚ ‚
 insert into mst_setting values('TENPO_RYOSYUSHO','—Ìû‘‚Ì“X•Üî•ñ',2,'‚ ‚ ‚ ‚ ‚ ',null,null,'hara');
 insert into mst_setting values('TENPO_RYOSYUSHO','—Ìû‘‚Ì“X•Üî•ñ',3,'‚ ‚ ‚ ‚ ‚ ',null,null,'hara');
 
+
+delete from mst_setting where param_id = 'CSV_FILE_NAME';
+insert into mst_setting values('CSV_FILE_NAME','CSVo—Íƒtƒ@ƒCƒ‹–¼',1,'”„ãWŒv•\_’S“–•Ê'     ,'v_csv_uriage_tantobetu'    ,null,'demo');
+insert into mst_setting values('CSV_FILE_NAME','CSVo—Íƒtƒ@ƒCƒ‹–¼',2,'”„ãWŒv•\_ƒOƒ‹[ƒv•Ê' ,'v_csv_uriage_groupbetu'    ,null,'demo');
+insert into mst_setting values('CSV_FILE_NAME','CSVo—Íƒtƒ@ƒCƒ‹–¼',3,'”„ãWŒv•\_ŒÚ‹q•Ê'     ,'v_csv_uriage_kokyakubetu'  ,null,'demo');
+insert into mst_setting values('CSV_FILE_NAME','CSVo—Íƒtƒ@ƒCƒ‹–¼',4,'ˆø—ƒf[ƒ^WŒv'        ,'v_csv_hikiotosi'           ,null,'demo');
+insert into mst_setting values('CSV_FILE_NAME','CSVo—Íƒtƒ@ƒCƒ‹–¼',5,'‘î”zƒpƒ^[ƒ“‘ä’ '      ,'v_csv_takuhai'             ,null,'demo');
+
 --
 --
+
+CREATE VIEW v_csv_uriage_tantobetu AS
+SELECT
+    Substr(
+        seikyu.deliver_ymd,
+        1,
+        4
+    ) nen,
+    Substr(
+        seikyu.deliver_ymd,
+        6,
+        2
+    ) tuki,
+    ht_kb.param_val1 tenpo,
+    customer.list customer_id,
+    customer.name1 customer_name1,
+    seikyu.item_id item_id,
+    item.code item_code,
+    item.name1 item_name1,
+    Sum(
+        seikyu.quantity
+    ) honsu,
+    item.tanka item_tanka,
+    Sum(
+        seikyu.price * seikyu.quantity
+    ) kei,
+    item.orosine item_orosine,
+    Sum(
+        item.orosine * seikyu.quantity
+    ) orosikei
+FROM
+    seikyu,
+    customer,
+    (
+        SELECT
+            *
+        FROM
+            mst_setting
+        WHERE
+            param_id = 'HONTEN_KB'
+    ) ht_kb,
+    item
+WHERE
+    seikyu.customer_id = customer.id
+AND customer.list IS NOT NULL
+AND customer.biko1 = ht_kb.param_no
+AND seikyu.item_id = item.id
+GROUP BY
+    Substr(
+        seikyu.deliver_ymd,
+        1,
+        4
+    ),
+    Substr(
+        seikyu.deliver_ymd,
+        6,
+        2
+    ),
+    customer.list,
+    customer.name1,
+    seikyu.item_id,
+    item.code,
+    item.name1,
+    item.tanka,
+    item.orosine
+ORDER BY
+    Substr(
+        seikyu.deliver_ymd,
+        1,
+        4
+    ),
+    Substr(
+        seikyu.deliver_ymd,
+        6,
+        2
+    ),
+    seikyu.customer_id
+;
+
+
+
+
+
+CREATE VIEW v_csv_uriage_groupbetu as
+select
+    nen,
+    tuki,
+    group_nm1,
+    biko1,
+    sum(
+        shokei
+    ) gokei,
+    count(*) kensu
+from
+    (
+        select
+            substr(seikyu.deliver_ymd, 1, 4) nen,
+            substr(seikyu.deliver_ymd, 6, 2) tuki,
+            mst_group.group_nm1,
+            customer.id,
+            cast(sum(seikyu.price * seikyu.quantity) * 1.08 as int) shokei,
+            customer.group_id,
+            customer.biko1
+        from
+            seikyu,
+            customer,
+            mst_group
+        where
+            seikyu.customer_id = customer.id
+        and customer.group_id = mst_group.group_id
+        and customer.list is not null
+        group by
+            nen,
+            tuki,
+            customer.group_id,
+            customer.id,
+            customer.biko1
+        order by
+            nen,
+            tuki,
+            customer.group_id,
+            customer.id,
+            customer.biko1
+    )
+group by
+    nen,
+    tuki,
+    group_id,
+    biko1
+order by
+    nen,
+    tuki,
+    group_id
+;
+
+
+
+
+
+
+
+
+CREATE VIEW v_csv_uriage_kokyakubetu AS
+SELECT
+    Substr(
+        seikyu.deliver_ymd,
+        1,
+        4
+    ) nen,
+    Substr(
+        seikyu.deliver_ymd,
+        6,
+        2
+    ) tuki,
+    customer.group_id,
+    mst_group.group_nm1,
+    customer.list customer_id,
+    customer.name1 customer_name1,
+    sum(
+        seikyu.price * seikyu.quantity
+    ) kei
+FROM
+    seikyu,
+    customer,
+    mst_group
+WHERE
+    seikyu.customer_id = customer.id
+AND customer.group_id = mst_group.group_id
+AND customer.list IS NOT NULL
+group by
+    Substr(
+        seikyu.deliver_ymd,
+        1,
+        4
+    ),
+    Substr(
+        seikyu.deliver_ymd,
+        6,
+        2
+    ),
+    customer.group_id,
+    mst_group.group_nm1,
+    customer.list,
+    customer.name1
+ORDER BY
+    Substr(
+        seikyu.deliver_ymd,
+        1,
+        4
+    ),
+    Substr(
+        seikyu.deliver_ymd,
+        6,
+        2
+    ),
+    seikyu.customer_id
+;
+
+
+
+
+
+
+CREATE VIEW v_csv_hikiotosi AS
+SELECT
+    Substr(
+        seikyu.deliver_ymd,
+        1,
+        4
+    ) nen,
+    Substr(
+        seikyu.deliver_ymd,
+        6,
+        2
+    ) tuki,
+    customer.list,
+    customer.name1,
+    customer.name2,
+    customer.harai_kb,
+    kb.param_val1,
+    SUM(
+        seikyu.price * seikyu.quantity
+    ) gokei,
+    case
+        when biko2 = '1' then Cast(
+            SUM(seikyu.price * seikyu.quantity) * 1.08 AS INT
+        )
+        when biko2 = '2' then SUM(
+            seikyu.price * seikyu.quantity
+        )
+        else 0
+    end zeikomi,
+    case
+        when biko2 = '1' then 'ŠOÅ'
+        when biko2 = '2' then '“àÅ'
+        else 'ƒGƒ‰['
+    end zei_kb
+FROM
+    seikyu,
+    customer,
+    (
+        SELECT
+            *
+        FROM
+            mst_setting
+        WHERE
+            param_id = 'SIHARAI_KB'
+    ) kb
+WHERE
+    seikyu.customer_id = customer.id
+AND customer.harai_kb IN(
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10
+    )
+AND customer.list IS NOT NULL
+AND customer.harai_kb = kb.param_no
+GROUP BY
+    nen,
+    tuki,
+    harai_kb,
+    list,
+    customer_id
+ORDER BY
+    nen,
+    tuki,
+    harai_kb,
+    list,
+    customer_id
+;
+
+
+
+
+
+
+CREATE VIEW v_csv_takuhai AS
+SELECT
+    customer.group_id,
+    customer.list,
+    daicho.customer_id,
+    p2.param_val1 tenpo,
+    customer.name1 cname1,
+    customer.name2 cname2,
+    customer.address1,
+    customer.address2,
+    customer.address3,
+    customer.harai_kb,
+    customer.del_flg,
+    daicho.item_id,
+    item.code icode,
+    item.name1 iname1,
+    item.name2 iname2,
+    item.tanka,
+    item.del_flg,
+    Sum(
+        CASE
+            WHEN daicho.youbi = 1 THEN quantity
+            ELSE 0
+        end
+    ) getu,
+    Sum(
+        CASE
+            WHEN daicho.youbi = 2 THEN quantity
+            ELSE 0
+        end
+    ) ka,
+    Sum(
+        CASE
+            WHEN daicho.youbi = 3 THEN quantity
+            ELSE 0
+        end
+    ) sui,
+    Sum(
+        CASE
+            WHEN daicho.youbi = 4 THEN quantity
+            ELSE 0
+        end
+    ) moku,
+    Sum(
+        CASE
+            WHEN daicho.youbi = 5 THEN quantity
+            ELSE 0
+        end
+    ) kin,
+    Sum(
+        CASE
+            WHEN daicho.youbi = 6 THEN quantity
+            ELSE 0
+        end
+    ) do,
+    Sum(
+        CASE
+            WHEN daicho.youbi = 7 THEN quantity
+            ELSE 0
+        end
+    ) niti,
+    Sum(
+        quantity
+    ) total
+FROM
+    daicho
+    left outer join
+        customer
+    on  daicho.customer_id = customer.id
+    left outer join
+        item
+    on  daicho.item_id = item.id
+    left outer join
+        (
+            select
+                param_no,
+                param_val1
+            from
+                mst_setting
+            where
+                param_id = 'HONTEN_KB'
+        ) p2
+    on  biko1 = p2.param_no
+WHERE
+    customer.list IS NOT NULL
+AND customer.del_flg = 0
+GROUP BY
+    daicho.customer_id,
+    daicho.item_id
+ORDER BY
+    customer.group_id,
+    customer.list,
+    item.code
+;
+
 
 
 

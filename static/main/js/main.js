@@ -2299,7 +2299,7 @@ $('#tableCustomer tbody').on( 'click', 'tr', function () {
     $('#selHaraiKb').val(rowData.harai_kb);
     $('#selCustomerGroupKb').val(rowData.group_id);
     $('#selCustomerZeiKb').val(rowData.biko2);
-    $('#selTantoName').val(rowData.biko3);
+    $('#selTantoName').val(rowData.biko1);
     $('#txtList').val(rowData.list);
     
   } );
@@ -2400,6 +2400,12 @@ function fncUpdateSeikyuQuantity(customerid, itemid, nen, tuki, niti, price, pri
 $('#modalKihonSettei').on("shown.bs.modal", function (e) {
     createKihonSetteiTable_Main();
     createKihonSetteiTable_Shosai("a");
+  
+});
+
+$('#modalKatuyo').on("shown.bs.modal", function (e) {
+    createKatuyoTable_Main();
+    //createKihonSetteiTable_Shosai("a");
   
 });
 
@@ -2533,6 +2539,68 @@ function createKihonSetteiTable_Main(){
     });
 }
 
+    
+$('#tableKatuyo tbody').on( 'click', 'tr', function () {
+    var rowData =   $('#tableKatuyo').DataTable().row( this ).data();
+    getCsvData(rowData.param_val2);
+    //createKihonSetteiTable_Shosai(rowData.param_id);
+});
+
+function getCsvData(viewnm){
+    $.ajax({
+        type: "GET",
+        url: "/getCsvData/" + viewnm + ""
+    }).done(function(data) {
+        var blob=new Blob([data], {type: "text/csv"});//
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "" + Math.random().toString(32).substring(2) + ".csv";
+        link.click();
+    }).fail(function(data) {
+        alert("エラー：" + data.statusText);
+    }).always(function(data) {
+    });
+}
+
+/*
+|| データ抽出　ファイル種別名テーブルを作成
+*/
+function createKatuyoTable_Main(){
+    
+    $('#tableKatuyo').DataTable({
+        bInfo: false,
+        searching: false,
+        bSort: true,
+        destroy: true,
+        "processing": true,
+        ajax: {
+            url: "/getMstSetting_Main/CSV_FILE_NAME",
+            dataType: "json",
+            dataSrc: function ( json ) {
+                return JSON.parse(json.data);
+            },
+            contentType:"application/json; charset=utf-8",
+            complete: function () {
+                return; 
+            }
+        },
+        columns: [
+            { data: 'param_val1'  ,width: '100%'}
+        ],
+        language: {
+           url: "../static/main/js/japanese.json"
+        },
+        "scrollY":        $(window).height() * 35 / 100,
+        "pageLength": 1000,
+        paging:false,
+        "order": [ 0, "asc" ],
+        "lengthMenu": [100, 300, 500, 1000],
+        dom:"<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+    });
+}
+
 $('#tableKihonSettei tbody').on( 'click', 'tr', function () {
     var rowData =   $('#tableKihonSettei').DataTable().row( this ).data();
     createKihonSetteiTable_Shosai(rowData.param_id);
@@ -2637,6 +2705,14 @@ $("#tableKihonSetteiDetail tbody").on('click',function(event) {
     $("#tableKihonSetteiDetail tbody tr").removeClass('row_selected kihonSetteiDetail');        
     $("#tableKihonSetteiDetail tbody td").removeClass('row_selected kihonSetteiDetail');        
     $(event.target.parentNode).addClass('row_selected kihonSetteiDetail');
+});
+
+
+$("#tableKatuyo tbody").on('click',function(event) {
+    $("#tableKatuyo").removeClass('row_selected katuyo');        
+    $("#tableKatuyo tbody tr").removeClass('row_selected katuyo');        
+    $("#tableKatuyo tbody td").removeClass('row_selected katuyo');        
+    $(event.target.parentNode).addClass('row_selected katuyo');
 });
 
 

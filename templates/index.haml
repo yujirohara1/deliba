@@ -755,18 +755,44 @@
       %div.modal-footer#modalKihonSetteiFooter
         %div.row
           %div.col-md-2.text-left
-            a
           %div.col-md-2.text-left
-            b
           %div.col-md-7.text-left
-            %div.row
-              %div.col-md-5.text-right
-              %div.col-md-7.text-left
-                d
           %div.col-md-1
             %button.btn.btn-default(type="button" data-dismiss="modal")
               閉じる
 
+
+
+
+<!-- データ抽出モーダル -->
+%div.modal.fade#modalKatuyo(tabindex="-1")
+  %div.modal-dialog.modal-lg
+    %div.modal-content
+      %div.modal-header
+        %button.close(type="button" data-dismiss="modal")
+          %span
+            ×
+        %h4.modal-title#subGtitle
+          データをCSV出力します。
+      %div.modal-body
+        %div.row
+          %div.col-md-3
+            %table.table-bordered.row.hover#tableKatuyo
+              %thead
+                %tr
+                  %th 
+                    出力ファイル種別
+              %tbody
+          %div.col-md-9
+            %div.row
+      %div.modal-footer#modalKatuyoFooter
+        %div.row
+          %div.col-md-2.text-left
+          %div.col-md-2.text-left
+          %div.col-md-7.text-left
+          %div.col-md-1
+            %button.btn.btn-default(type="button" data-dismiss="modal")
+              閉じる
 
 
 

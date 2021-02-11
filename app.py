@@ -32,6 +32,7 @@ import PyPDF2
 import smtplib
 from email.mime.text import MIMEText
 from email.utils import formatdate
+import csv
 
 
 DELIMIT = "@|@|@"
@@ -580,6 +581,36 @@ def dbUpdate_UpdateItem(param):
 
 
 
+@app.route('/getCsvData/<viewnm>')
+@login_required
+def resJson_getCsvData(viewnm):
+  sqlA = "select * from " + "customer" + ""
+
+  if db.session.execute(text(sqlA)).fetchone() is not None:
+    csvdata = db.session.execute(text(sqlA))
+
+  resultset=[]
+  for row in csvdata:
+    resultset.append(row)
+
+  timestamp = datetime.datetime.now()
+  timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+  filename = "file_" + viewnm + "_" + timestampStr + "_" + current_user.name
+  
+  export_list_csv(resultset, "tmp/" + filename + ".csv")
+
+  # response = make_response()
+  # response.data = open("tmp/" + filename + ".pdf", "rb").read()
+
+  # make_list()
+
+  return send_file("tmp/" + filename + ".csv", as_attachment=True)
+
+def export_list_csv(export_list, csv_dir):
+  with open(csv_dir, "w", encoding='utf8') as f:
+    writer = csv.writer(f, lineterminator='\n')
+    writer.writerows(export_list)
+
 @app.route('/updateCustomer/<customerid>/<param>')
 @login_required
 def dbUpdate_updCustomer(customerid, param):
@@ -594,7 +625,7 @@ def dbUpdate_updCustomer(customerid, param):
     customer.harai_kb = vals[4]
     customer.group_id = vals[5]
     customer.biko2 = vals[6]
-    customer.biko3 = vals[7]
+    customer.biko1 = vals[7]
     customer.list = None
     customer.del_flg = 0
     customer.tenant_id = current_user.tenant_id
@@ -609,7 +640,7 @@ def dbUpdate_updCustomer(customerid, param):
     customer.harai_kb = vals[4]
     customer.group_id = vals[5]
     customer.biko2 = vals[6]
-    customer.biko3 = vals[7]
+    customer.biko1 = vals[7]
     customer.list = vals[8]
     customer.tenant_id = current_user.tenant_id
 
