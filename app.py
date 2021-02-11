@@ -584,7 +584,7 @@ def dbUpdate_UpdateItem(param):
 @app.route('/getCsvData/<viewnm>')
 @login_required
 def resJson_getCsvData(viewnm):
-  sqlA = "select * from " + "customer" + ""
+  sqlA = "select * from " + viewnm + ""
 
   if db.session.execute(text(sqlA)).fetchone() is not None:
     csvdata = db.session.execute(text(sqlA))

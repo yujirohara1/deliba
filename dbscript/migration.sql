@@ -673,16 +673,8 @@ insert into mst_setting values('CSV_FILE_NAME','CSV出力ファイル名',5,'宅配パター
 
 CREATE VIEW v_csv_uriage_tantobetu AS
 SELECT
-    Substr(
-        seikyu.deliver_ymd,
-        1,
-        4
-    ) nen,
-    Substr(
-        seikyu.deliver_ymd,
-        6,
-        2
-    ) tuki,
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) AS nen,
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   AS tuki,
     ht_kb.param_val1 tenpo,
     customer.list customer_id,
     customer.name1 customer_name1,
@@ -715,19 +707,12 @@ FROM
 WHERE
     seikyu.customer_id = customer.id
 AND customer.list IS NOT NULL
-AND customer.biko1 = ht_kb.param_no
+AND customer.biko1 = ht_kb.param_no::text
 AND seikyu.item_id = item.id
 GROUP BY
-    Substr(
-        seikyu.deliver_ymd,
-        1,
-        4
-    ),
-    Substr(
-        seikyu.deliver_ymd,
-        6,
-        2
-    ),
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) ,
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   ,
+    ht_kb.param_val1 ,
     customer.list,
     customer.name1,
     seikyu.item_id,
@@ -736,17 +721,8 @@ GROUP BY
     item.tanka,
     item.orosine
 ORDER BY
-    Substr(
-        seikyu.deliver_ymd,
-        1,
-        4
-    ),
-    Substr(
-        seikyu.deliver_ymd,
-        6,
-        2
-    ),
-    seikyu.customer_id
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) ,
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   
 ;
 
 
@@ -766,8 +742,8 @@ select
 from
     (
         select
-            substr(seikyu.deliver_ymd, 1, 4) nen,
-            substr(seikyu.deliver_ymd, 6, 2) tuki,
+            to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) nen,
+            to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   tuki,
             mst_group.group_nm1,
             customer.id,
             cast(sum(seikyu.price * seikyu.quantity) * 1.08 as int) shokei,
@@ -776,7 +752,7 @@ from
         from
             seikyu,
             customer,
-            mst_group
+            (select param_no group_id, param_val1 group_nm1 from mst_setting where param_id = 'GROUP_KB') mst_group
         where
             seikyu.customer_id = customer.id
         and customer.group_id = mst_group.group_id
@@ -785,6 +761,7 @@ from
             nen,
             tuki,
             customer.group_id,
+            mst_group.group_nm1,
             customer.id,
             customer.biko1
         order by
@@ -793,11 +770,12 @@ from
             customer.group_id,
             customer.id,
             customer.biko1
-    )
+    ) a
 group by
     nen,
     tuki,
     group_id,
+    group_nm1,
     biko1
 order by
     nen,
@@ -814,16 +792,8 @@ order by
 
 CREATE VIEW v_csv_uriage_kokyakubetu AS
 SELECT
-    Substr(
-        seikyu.deliver_ymd,
-        1,
-        4
-    ) nen,
-    Substr(
-        seikyu.deliver_ymd,
-        6,
-        2
-    ) tuki,
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) nen,
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   tuki,
     customer.group_id,
     mst_group.group_nm1,
     customer.list customer_id,
@@ -834,38 +804,21 @@ SELECT
 FROM
     seikyu,
     customer,
-    mst_group
+    (select param_no group_id, param_val1 group_nm1 from mst_setting where param_id = 'GROUP_KB') mst_group
 WHERE
     seikyu.customer_id = customer.id
 AND customer.group_id = mst_group.group_id
 AND customer.list IS NOT NULL
 group by
-    Substr(
-        seikyu.deliver_ymd,
-        1,
-        4
-    ),
-    Substr(
-        seikyu.deliver_ymd,
-        6,
-        2
-    ),
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) ,
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   ,
     customer.group_id,
     mst_group.group_nm1,
     customer.list,
     customer.name1
 ORDER BY
-    Substr(
-        seikyu.deliver_ymd,
-        1,
-        4
-    ),
-    Substr(
-        seikyu.deliver_ymd,
-        6,
-        2
-    ),
-    seikyu.customer_id
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) ,
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   
 ;
 
 
@@ -875,16 +828,8 @@ ORDER BY
 
 CREATE VIEW v_csv_hikiotosi AS
 SELECT
-    Substr(
-        seikyu.deliver_ymd,
-        1,
-        4
-    ) nen,
-    Substr(
-        seikyu.deliver_ymd,
-        6,
-        2
-    ) tuki,
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) nen,
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   tuki,
     customer.list,
     customer.name1,
     customer.name2,
@@ -937,7 +882,12 @@ GROUP BY
     tuki,
     harai_kb,
     list,
-    customer_id
+    customer_id,
+    customer.name1,
+    customer.name2,
+    customer.harai_kb,
+    kb.param_val1,
+    biko2
 ORDER BY
     nen,
     tuki,
@@ -963,13 +913,13 @@ SELECT
     customer.address2,
     customer.address3,
     customer.harai_kb,
-    customer.del_flg,
+    customer.del_flg cdel_flg,
     daicho.item_id,
     item.code icode,
     item.name1 iname1,
     item.name2 iname2,
     item.tanka,
-    item.del_flg,
+    item.del_flg idel_flg,
     Sum(
         CASE
             WHEN daicho.youbi = 1 THEN quantity
@@ -1005,7 +955,7 @@ SELECT
             WHEN daicho.youbi = 6 THEN quantity
             ELSE 0
         end
-    ) do,
+    ) dou,
     Sum(
         CASE
             WHEN daicho.youbi = 7 THEN quantity
@@ -1033,13 +983,28 @@ FROM
             where
                 param_id = 'HONTEN_KB'
         ) p2
-    on  biko1 = p2.param_no
+    on  biko1 = p2.param_no::text
 WHERE
     customer.list IS NOT NULL
 AND customer.del_flg = 0
 GROUP BY
+    customer.group_id,
+    customer.list,
     daicho.customer_id,
-    daicho.item_id
+    p2.param_val1 ,
+    customer.name1 ,
+    customer.name2 ,
+    customer.address1,
+    customer.address2,
+    customer.address3,
+    customer.harai_kb,
+    customer.del_flg,
+    daicho.item_id,
+    item.code ,
+    item.name1 ,
+    item.name2 ,
+    item.tanka,
+    item.del_flg
 ORDER BY
     customer.group_id,
     customer.list,
