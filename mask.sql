@@ -1364,7 +1364,7 @@ commit;
 
 
 
-update item a
+update test a
 set
     name1 = (
             select
@@ -1398,11 +1398,11 @@ set
                    WHEN 3 THEN 'D'
                    ELSE '' END name1
             from
-                item b
+                test b
             where
                 a.id = b.id
             )
 ;
 
-update item set name1 = name1 || '6セット' where 399 < tanka and tanka < 800;
-update item set name1 = name1 || '12セット' where 799 < tanka and tanka < 10000;
+update test set name1 = name1 || '6セット' where 399 < tanka and tanka < 800;
+update test set name1 = name1 || '12セット' where 799 < tanka and tanka < 10000;
