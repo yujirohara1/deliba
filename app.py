@@ -584,12 +584,20 @@ def dbUpdate_UpdateItem(param):
 @app.route('/getCsvData/<viewnm>')
 @login_required
 def resJson_getCsvData(viewnm):
-  sqlA = "select * from " + viewnm + ""
+  sqlA = "select * from " + viewnm + " where tenant_id = '" + current_user.tenant_id + "'"
+  sqlB = "select * from mst_setting where param_id = 'VIEW_COLUMN_NAME' and param_val1 = '" + viewnm + "' and tenant_id = '"+ current_user.tenant_id +"'"
 
   if db.session.execute(text(sqlA)).fetchone() is not None:
     csvdata = db.session.execute(text(sqlA))
 
+  if db.session.execute(text(sqlB)).fetchone() is not None:
+    coldata = db.session.execute(text(sqlB))
+
   resultset=[]
+
+  for row in coldata:
+    resultset.append(row.param_val2.split(","))
+
   for row in csvdata:
     resultset.append(row)
 
