@@ -112,7 +112,7 @@ CREATE TABLE item (
     name1 character varying(80) NOT NULL,
     name2 character varying(80),
     tanka integer,
-    orosine integer,
+    orosine numeric(10,3),
     zei_kb integer,
     del_flg integer,
     tenant_id character varying(80) not null
@@ -408,6 +408,7 @@ CREATE VIEW v_seikyu_a AS
 --
 -- Name: v_seikyu_b; Type: VIEW; Schema: public; Owner: lgnucurqlirpyu
 --
+drop view v_seikyu_b cascade;
 CREATE VIEW v_seikyu_b AS
  SELECT to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) AS nen,
     to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text) AS tuki,
@@ -418,11 +419,11 @@ CREATE VIEW v_seikyu_b AS
     customer.biko2 AS zei_kb,
         CASE
             WHEN ((customer.biko2)::text = '2'::text) THEN sum((seikyu.price * seikyu.quantity))
-            ELSE ((((sum((seikyu.price * seikyu.quantity)))::numeric * 1.08))::integer)::bigint
+            ELSE trunc(sum(seikyu.price * seikyu.quantity) * 1.08) ::bigint
         END AS getugaku,
         CASE
             WHEN ((customer.biko2)::text = '2'::text) THEN 0
-            ELSE (((sum((seikyu.price * seikyu.quantity)))::numeric * 0.08))::integer
+            ELSE trunc(sum(seikyu.price * seikyu.quantity) * 0.08) ::bigint
         END AS zeigaku,
     to_char(max(seikyu.ymdt), 'yyyy/mm/dd HH24:MI:SS'::text) AS max_ymdt,
     seikyu.tenant_id
@@ -684,7 +685,7 @@ insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',3,  'v_csv_ur
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',4,  'v_csv_hikiotosi'           ,'年,月,宅配順,氏名１,氏名２,支払方法区分,支払方法区分名,請求額,税込額,税区分',null,'demo');
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',5,  'v_csv_takuhai'             ,'グループID,宅配順,顧客ID,担当者,顧客名１,顧客名２,住所１,住所２,住所３,支払方法区分,削除フラグ,商品ID,商品コード,商品名１,商品名２,単価,削除フラグ,月,火,水,木,金,土,日,計',null,'demo');
 
-insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',1,  'v_csv_uriage_tantobetu'    ,'年,月,担当,顧客ID,顧客名,商品ID,商品コード,商品名,本数_a,単価_b,計_a×b,卸値_c, 計_a×c',null,'hara');
+insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',1,  'v_csv_uriage_tantobetu'    ,'年,月,担当,宅配順,顧客名,商品ID,商品コード,商品名,本数_a,単価_b,計_a×b,卸値_c, 計_a×c',null,'hara');
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',2,  'v_csv_uriage_groupbetu'    ,'年,月,グループ名,担当ID,売上合計,件数',null,'hara');
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',3,  'v_csv_uriage_kokyakubetu'  ,'年,月,グループID,グループ名,顧客ID,顧客名,請求額',null,'hara');
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',4,  'v_csv_hikiotosi'           ,'年,月,宅配順,氏名１,氏名２,支払方法区分,支払方法区分名,請求額,税込額,税区分',null,'hara');
@@ -692,6 +693,8 @@ insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',5,  'v_csv_ta
 
 --
 --
+
+
 
 drop view v_csv_uriage_tantobetu;
 CREATE VIEW v_csv_uriage_tantobetu AS
@@ -733,6 +736,9 @@ WHERE
 AND customer.list IS NOT NULL
 AND customer.biko1 = ht_kb.param_no::text
 AND seikyu.item_id = item.id
+AND seikyu.tenant_id = customer.tenant_id
+AND seikyu.tenant_id = item.tenant_id
+AND seikyu.tenant_id = ht_kb.tenant_id
 GROUP BY
     to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) ,
     to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   ,
@@ -746,8 +752,11 @@ GROUP BY
     item.orosine,
     seikyu.tenant_id
 ORDER BY
-    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) ,
-    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) desc,
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   desc,
+    ht_kb.param_val1,
+    customer.list,
+    item.code
 ;
 
 
@@ -773,18 +782,20 @@ from
             to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   tuki,
             mst_group.group_nm1,
             customer.id,
-            cast(sum(seikyu.price * seikyu.quantity) * 1.08 as int) shokei,
+            trunc(sum(seikyu.price * seikyu.quantity) * 1.08) shokei,
             customer.group_id,
             customer.biko1,
             seikyu.tenant_id
         from
             seikyu,
             customer,
-            (select param_no group_id, param_val1 group_nm1 from mst_setting where param_id = 'GROUP_KB') mst_group
+            (select tenant_id, param_no group_id, param_val1 group_nm1 from mst_setting where param_id = 'GROUP_KB') mst_group
         where
             seikyu.customer_id = customer.id
         and customer.group_id = mst_group.group_id
         and customer.list is not null
+        and seikyu.tenant_id = customer.tenant_id 
+        and mst_group.tenant_id = seikyu.tenant_id 
         group by
             nen,
             tuki,
@@ -808,9 +819,10 @@ group by
     biko1,
     tenant_id
 order by
-    nen,
-    tuki,
-    group_id
+    nen desc,
+    tuki desc,
+    group_id,
+    biko1
 ;
 
 
@@ -836,11 +848,13 @@ SELECT
 FROM
     seikyu,
     customer,
-    (select param_no group_id, param_val1 group_nm1 from mst_setting where param_id = 'GROUP_KB') mst_group
+    (select tenant_id, param_no group_id, param_val1 group_nm1 from mst_setting where param_id = 'GROUP_KB') mst_group
 WHERE
     seikyu.customer_id = customer.id
 AND customer.group_id = mst_group.group_id
 AND customer.list IS NOT NULL
+and seikyu.tenant_id = customer.tenant_id
+and mst_group.tenant_id = seikyu.tenant_id
 group by
     to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) ,
     to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   ,
@@ -850,8 +864,8 @@ group by
     customer.name1,
     seikyu.tenant_id
 ORDER BY
-    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) ,
-    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) desc,
+    to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   desc
 ;
 
 
@@ -873,8 +887,8 @@ SELECT
         seikyu.price * seikyu.quantity
     ) gokei,
     case
-        when biko2 = '1' then Cast(
-            SUM(seikyu.price * seikyu.quantity) * 1.08 AS INT
+        when biko2 = '1' then trunc(
+            SUM(seikyu.price * seikyu.quantity) * 1.08
         )
         when biko2 = '2' then SUM(
             seikyu.price * seikyu.quantity
@@ -912,6 +926,8 @@ AND customer.harai_kb IN(
     )
 AND customer.list IS NOT NULL
 AND customer.harai_kb = kb.param_no
+and seikyu.tenant_id = customer.tenant_id
+and seikyu.tenant_id = kb.tenant_id
 GROUP BY
     nen,
     tuki,
@@ -925,9 +941,10 @@ GROUP BY
     biko2,
     seikyu.tenant_id
 ORDER BY
-    nen,
-    tuki,
+    nen desc,
+    tuki desc,
     harai_kb,
+    customer.name2,
     list,
     customer_id
 ;
@@ -1008,12 +1025,15 @@ FROM
     left outer join
         customer
     on  daicho.customer_id = customer.id
+    and daicho.tenant_id = customer.tenant_id
     left outer join
         item
     on  daicho.item_id = item.id
+    and daicho.tenant_id = item.tenant_id
     left outer join
         (
             select
+                tenant_id,
                 param_no,
                 param_val1
             from
@@ -1021,7 +1041,8 @@ FROM
             where
                 param_id = 'HONTEN_KB'
         ) p2
-    on  biko1 = p2.param_no::text
+    on  customer.biko1 = p2.param_no::text
+    and customer.tenant_id = p2.tenant_id
 WHERE
     customer.list IS NOT NULL
 AND customer.del_flg = 0
