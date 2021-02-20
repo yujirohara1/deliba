@@ -161,6 +161,7 @@ class VSeikyuB(db.Model):
     nen             = db.Column(db.String(),  nullable=False,primary_key=True)
     tuki            = db.Column(db.String(),  nullable=False,primary_key=True)
     customer_id     = db.Column(db.Integer,   nullable=True,primary_key=True)
+    list            = db.Column(db.Integer,   nullable=True,primary_key=True)
     group_id        = db.Column(db.Integer,   nullable=True,primary_key=False)
     name1           = db.Column(db.String(),  nullable=True,primary_key=False)
     zei_kb          = db.Column(db.String(),  nullable=True,primary_key=False)

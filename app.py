@@ -63,6 +63,7 @@ class User(UserMixin):
 users = {
     1: User(1, "yujiro", "yjrhr1102", "demo"),
     2: User(2, "seiya", "seiya7293", "hara"),
+    3: User(3, "yasu", "3021", "hara"),
     100: User(100, "demo", "demo", "demo")
 }
 
@@ -203,10 +204,10 @@ def resJson_getSeikyuNengetuShukei_Main():
       return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
 
 
-@app.route('/getSeikyuNengetuCustomer_Main/<nen>/<tuki>')
+@app.route('/getSeikyuNengetuCustomer_Main/<nen>/<tuki>/<groupkb>')
 @login_required
-def resJson_getSeikyuNengetuCustomer_Main(nen, tuki):
-      seikyu = VSeikyuB.query.filter(VSeikyuB.nen==nen, VSeikyuB.tuki==tuki, VSeikyuB.tenant_id==current_user.tenant_id).all()
+def resJson_getSeikyuNengetuCustomer_Main(nen, tuki, groupkb):
+      seikyu = VSeikyuB.query.filter(VSeikyuB.nen==nen, VSeikyuB.tuki==tuki, VSeikyuB.group_id==groupkb, VSeikyuB.tenant_id==current_user.tenant_id).all()
       seikyu_schema = VSeikyuBSchema(many=True)
       return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
 

@@ -904,13 +904,18 @@ function CreateSeikyuData(customerid, nentuki, sakujonomi){
 */
 function createSeikyuKanriCsutomerTable_Sub(nen, tuki){
   
+    var groupkb = $("#selGroupKb").val();
+    if(groupkb == undefined) {
+      groupkb = 100;
+    }
+
     $('#tableSeikyuKanriCustomer').DataTable({
         bInfo: false,
         bSort: true,
         destroy: true,
         "processing": true,
         ajax: {
-            url: "/getSeikyuNengetuCustomer_Main/" + nen + "/" + tuki + "",
+            url: "/getSeikyuNengetuCustomer_Main/" + nen + "/" + tuki + "/" + groupkb,
             dataType: "json",
             dataSrc: function ( json ) {
                 return JSON.parse(json.data);
@@ -922,10 +927,11 @@ function createSeikyuKanriCsutomerTable_Sub(nen, tuki){
         },
         columns: [
               { data: 'customer_id'    ,width: '10%',  className: 'dt-body-left'},
+              { data: 'list'           ,width: '10%',  className: 'dt-body-left'},
               { data: 'name1'          ,width: '25%',  className: 'dt-body-left'},
               { data: 'getugaku'       ,width: '15%'   ,className: 'dt-body-right'  ,render: function (data, type, row) { return (data*1).toLocaleString();} },
               { data: 'zeigaku'        ,width: '15%'   ,className: 'dt-body-right'  ,render: function (data, type, row) { return (data*1).toLocaleString();} },
-              { data: 'max_ymdt'       ,width: '35%',  className: 'dt-body-left',render: function (data, type, row) 
+              { data: 'max_ymdt'       ,width: '25%',  className: 'dt-body-left',render: function (data, type, row) 
                 { 
                   if(data==null){
                       return "未作成";
@@ -940,7 +946,8 @@ function createSeikyuKanriCsutomerTable_Sub(nen, tuki){
             { 'bSortable': false, 'aTargets': [ 1 ] },
             { 'bSortable': false, 'aTargets': [ 2 ] },
             { 'bSortable': false, 'aTargets': [ 3 ] },
-            { 'bSortable': false, 'aTargets': [ 4 ] }
+            { 'bSortable': false, 'aTargets': [ 4 ] },
+            { 'bSortable': false, 'aTargets': [ 5 ] }
          ],
         language: {
            url: "../static/main/js/japanese.json"
@@ -949,7 +956,7 @@ function createSeikyuKanriCsutomerTable_Sub(nen, tuki){
         searching: true,
         "pageLength": 1000,
         paging:false,
-        "order": [ 0, "desc" ],
+        "order": [ 1, "asc" ],
         "lengthMenu": [100, 300, 500, 1000],
         dom:"<'row'<'col-sm-12'tr>>" +
             "<'row'<'col-sm-6'l><'col-sm-6'f>>"+

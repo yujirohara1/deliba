@@ -647,6 +647,7 @@ insert into mst_setting values('TENPO_RYOSYUSHO','—Ìû‘‚Ì“X•Üî•ñ',3,'‚ ‚ ‚ ‚ ‚
 insert into mst_setting values('START_YM','—˜—pŠJn”NŒ',1,'201908',null,null,'hara');
 insert into mst_setting values('GROUP_KB','ƒOƒ‹[ƒv‹æ•ª',100,'Œ…‹à','AƒOƒ‹[ƒv',null,'hara');
 insert into mst_setting values('GROUP_KB','ƒOƒ‹[ƒv‹æ•ª',200,'‰Î–Ø“y','BƒOƒ‹[ƒv',null,'hara');
+insert into mst_setting values('GROUP_KB','ƒOƒ‹[ƒv‹æ•ª',300,'Œ…‹à[²“¡]','CƒOƒ‹[ƒv',null,'hara');
 insert into mst_setting values('SIHARAI_KB','x•¥•û–@‹æ•ª',1,'Œ»‹à',null,null,'hara');
 insert into mst_setting values('SIHARAI_KB','x•¥•û–@‹æ•ª',2,'ˆø—',null,null,'hara');
 insert into mst_setting values('CUSTOMER_ZEI_KB','“àÅŠOÅ‹æ•ª',1,'ŠOÅ',null,null,'hara');
@@ -1129,3 +1130,13 @@ ALTER TABLE mst_setting  ADD COLUMN tenant_id character varying(80) not null def
 
 
 
+
+
+/*
+|| ”õl‚P‚ª"3"‚Ìƒf[ƒ^‚É‚Â‚¢‚ÄAgroup_id‚ğ300‚ÖXV
+|| ƒeƒiƒ“ƒgID:hara‚Ì‚İ
+*/
+create table customer_bk20210218 as select * from customer;
+begin;
+update customer set group_id = 300 where biko1 = '3' and tenant_id = 'hara' and list is not null;
+rollback;
