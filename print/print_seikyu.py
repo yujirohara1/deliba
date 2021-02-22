@@ -359,12 +359,11 @@ def print_string_sub(pdf_canvas, start_x, start_y, data, paramlist):
 
     d = int(row["deliver_ymd"].strftime("%d"))
     if 1 <= d and d <= 15 :
-      pdf_canvas.drawString(start_x+517+((d)*16.8),         (start_y+55)+(itemCnt*13), str(row["quantity"]).rjust(2)) 
+      pdf_canvas.drawString(start_x+517+((d)*16.8),         (start_y+55)+(itemCnt*13), str(ZeroToYasumi(row["quantity"])).rjust(2)) 
       itemQuantity[itemCnt] = tonum(itemQuantity.get(itemCnt)) +  row["quantity"]
     if 16 <= d and d <= 31 :
-      pdf_canvas.drawString(start_x+500+((d-15)*16.9),         (start_y+159)+(itemCnt*13), str(row["quantity"]).rjust(2)) 
+      pdf_canvas.drawString(start_x+500+((d-15)*16.9),         (start_y+159)+(itemCnt*13), str(ZeroToYasumi(row["quantity"])).rjust(2)) 
       itemQuantity[itemCnt] = tonum(itemQuantity.get(itemCnt)) +  row["quantity"]
-
   
   font_size = def_font_size-2
   pdf_canvas.setFont(def_font_type, font_size)
@@ -426,6 +425,12 @@ def tonum(val):
   
 def kingakuFormat(val):
   return "{:,}".format(val).rjust(5)
+
+def ZeroToYasumi(val):
+  if val==0:
+    return "休"
+  else:
+    return val
 
 def quantityFormat(val):
   return str(val).rjust(3)

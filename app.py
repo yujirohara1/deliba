@@ -112,9 +112,8 @@ def SendMail_AccountToroku():
 def load_user(user_id):
   return users.get(int(user_id))
 
-
-# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用
+db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
+# db_uri = os.environ.get('DATABASE_URL') #本番用
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -528,7 +527,14 @@ def dbUpdate_updTakuhaijun():
 def dbUpdate_updSeikyuQuantity(customerid, itemid, deliverymd, quantity, price, pricesub):
   
   Seikyu.query.filter(Seikyu.customer_id==customerid, Seikyu.item_id==itemid, Seikyu.deliver_ymd==deliverymd, Seikyu.tenant_id==current_user.tenant_id).delete()
-  if int(quantity) != 0:
+  
+  tstr = deliverymd #'2012-12-29 13:49:37'
+  tdatetime = datetime.datetime.strptime(tstr, '%Y-%m-%d')
+  tdate = datetime.date(tdatetime.year, tdatetime.month, tdatetime.day)
+
+  d = Daicho.query.filter(Daicho.customer_id==customerid, Daicho.item_id==itemid, Daicho.youbi==str(tdate.weekday()+1), Seikyu.tenant_id==current_user.tenant_id).all()
+  
+  if int(quantity) != 0  or len(d) != 0:
     seikyu = Seikyu()
     seikyu.customer_id = customerid
     seikyu.item_id = itemid
