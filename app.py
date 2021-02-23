@@ -504,7 +504,7 @@ def dbUpdate_updAddDaicho(param):
         daicho.quantity = vals[youbi]
         daicho.tenant_id = current_user.tenant_id
         db.session.add(daicho)
-        db.session.commit()
+    db.session.commit()
   return param
 
 @app.route('/updTakuhaijun',methods=["GET", "POST"])
