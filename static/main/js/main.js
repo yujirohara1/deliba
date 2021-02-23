@@ -6,17 +6,21 @@ $(document).ready(function() {
     list = JSON.parse(json.data);
     $.each(list, function(i, item) {
         var option = $('<option>').text(item.param_val1).val(item.param_no);
+        var option2 = $('<option>').text(item.param_val1).val(item.param_no);
+        var option3 = $('<option>').text(item.param_val1).val(item.param_no);
         $('#selGroupKb').append(option);
+        $('#selCsvGroupKb').append(option2);
+        $('#selCustomerGroupKb').append(option3);
     });
   });
   
-  $.getJSON("/getMstSetting_Main/GROUP_KB", function(json) {
-    list = JSON.parse(json.data);
-    $.each(list, function(i, item) {
-        var option = $('<option>').text(item.param_val1).val(item.param_no);
-        $('#selCustomerGroupKb').append(option);
-    });
-  });
+//   $.getJSON("/getMstSetting_Main/GROUP_KB", function(json) {
+//     list = JSON.parse(json.data);
+//     $.each(list, function(i, item) {
+//         var option = $('<option>').text(item.param_val1).val(item.param_no);
+//         $('#selCustomerGroupKb').append(option);
+//     });
+//   });
   
   
   $.getJSON("/getMstSetting_Main/START_YM", function(json) {
@@ -35,7 +39,9 @@ $(document).ready(function() {
       
       while (ymFrom <= ymTo) {
           var option = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
+          var option2 = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
           $('#selNentuki').append(option);
+          $('#selCsvNentuki').append(option);
           
           dt.setMonth(dt.getMonth() + 1);
           ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
@@ -43,6 +49,7 @@ $(document).ready(function() {
       }
       var seldate = new Date();
       $('#selNentuki').val(NowNenTuki());
+      $('#selCsvNentuki').val(NowNenTuki());
       
     }else{
       alert("エラー：START_YMがありません");
@@ -70,9 +77,12 @@ $(document).ready(function() {
     list = JSON.parse(json.data);
     $.each(list, function(i, item) {
         var option = $('<option>').text(item.param_val1).val(item.param_no);
+        var option2 = $('<option>').text(item.param_val1).val(item.param_no);
         $('#selTantoName').append(option);
+        $('#selCsvTanto').append(option2);
     });
   });
+  
   
 
   $.getJSON("/getMstSetting_Main/ZEI_KB", function(json) {

@@ -1145,21 +1145,21 @@ rollback;
 
 
 
-
-/*
-|| 曜日変換ファンクション
-*/
-DROP FUNCTION IF EXISTS date_to_youbi(date);
-
-CREATE OR REPLACE FUNCTION date_to_youbi(ymd date)
-RETURNS INTEGER AS $$
-  begin
-    IF to_char(ymd,'D') = '1' THEN 
-        return 7;
-    ELSE
-        return to_char(ymd,'D')::INTEGER - 1;
-    END IF;
-  end;
-$$ LANGUAGE plpgsql;
-
-select deliver_ymd, date_to_youbi(deliver_ymd) from seikyu;
+--
+--/*
+--|| 曜日変換ファンクション
+--*/
+--DROP FUNCTION IF EXISTS date_to_youbi(date);
+--
+--CREATE OR REPLACE FUNCTION date_to_youbi(ymd date)
+--RETURNS INTEGER AS $$
+--  begin
+--    IF to_char(ymd,'D') = '1' THEN 
+--        return 7;
+--    ELSE
+--        return to_char(ymd,'D')::INTEGER - 1;
+--    END IF;
+--  end;
+--$$ LANGUAGE plpgsql;
+--
+--select deliver_ymd, date_to_youbi(deliver_ymd) from seikyu;
