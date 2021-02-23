@@ -588,9 +588,9 @@ def dbUpdate_UpdateItem(param):
 
 
 
-@app.route('/getCsvData/<viewnm>')
+@app.route('/getCsvData/<viewnm>/<nentuki>/<groupkb>/<tanto>')
 @login_required
-def resJson_getCsvData(viewnm):
+def resJson_getCsvData(viewnm, nentuki, groupkb, tanto):
   sqlA = "select * from " + viewnm + " where tenant_id = '" + current_user.tenant_id + "'"
   sqlB = "select * from mst_setting where param_id = 'VIEW_COLUMN_NAME' and param_val1 = '" + viewnm + "' and tenant_id = '"+ current_user.tenant_id +"'"
 

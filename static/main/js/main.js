@@ -41,7 +41,7 @@ $(document).ready(function() {
           var option = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
           var option2 = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
           $('#selNentuki').append(option);
-          $('#selCsvNentuki').append(option);
+          $('#selCsvNentuki').append(option2);
           
           dt.setMonth(dt.getMonth() + 1);
           ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
@@ -2564,9 +2564,15 @@ $('#tableKatuyo tbody').on( 'click', 'tr', function () {
 });
 
 function getCsvData(viewnm){
+
+    var groupkb = $("#selCsvGroupKb").val();
+    var nentuki = $('#selCsvNentuki').val();
+    var tanto = $('#selCsvTanto').val();
+
+    
     $.ajax({
         type: "GET",
-        url: "/getCsvData/" + viewnm + ""
+        url: "/getCsvData/" + viewnm + "/"  + nentuki + "/" + groupkb + "/" + tanto + ""
     }).done(function(data) {
         let bom  = new Uint8Array([0xEF, 0xBB, 0xBF]);
         //let blob = new Blob([bom, data], {type: 'text/csv'});
