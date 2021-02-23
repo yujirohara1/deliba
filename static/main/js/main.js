@@ -313,6 +313,23 @@ $('#btnSeikyuCreateKobetu').on('click', function() {
  });
 
 /*
+|| 請求データ印刷　個別
+*/
+$('#btnSeikyuPrintKobetu').on('click', function() {
+    var customerid = toNumber($(".row_selected.customer").find("td:eq(0)").text());
+    if(customerid==0){
+        $("#mainSeikyuKobetuPrintMessageArea").html("顧客を選択してください。");
+        setTimeout('$("#mainSeikyuKobetuPrintMessageArea")[0].innerText="";', 3000);
+        return;
+    }
+    var nentuki = $('#selNentuki').val();
+    var nen = (nentuki+"").substr(0,4);
+    var tuki = (nentuki+"").substr(4,2);
+    funcSeikyuIkkatuPrint(customerid, nen, tuki);
+
+ });
+
+/*
 || 請求データ削除　個別
 */
 $('#btnSeikyuDeleteKobetu').on('click', function() {
@@ -657,7 +674,7 @@ $('#tableSeikyuKanri tbody').on( 'click', 'tr', function () {
   var files = [];
   var index = 0;
   var blReady = false;
-  function funcSeikyuIkkatuPrint(customerid,nen, tuki){
+  function funcSeikyuIkkatuPrint(customerid, nen, tuki){
     if (confirm("請求書をプレビューします。よろしいですか？")) {
         $('#btnSeikyuIkkatuPrint').attr("disabled","disabled");
         //$('#progressSeikyuPrint').show();

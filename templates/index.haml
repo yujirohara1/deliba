@@ -129,92 +129,100 @@
             %div.col-md-4.text-left#mainSeikyuKobetuDeleteMessageArea(style="font-size:12px; color:red")
               &nbsp;
         %div.col-md-4
-          %div.panel.with-nav-tabs.panel-primary
-              %div.panel-heading
-                %ul.nav.nav-tabs
-                  %li.active
-                    %a(href="#tab1primary" data-toggle="tab")
-                      顧客情報
-                  %li
-                    %a(href="#tab2primary" data-toggle="tab")
-                      請求履歴
-                  %li
-                    %a(href="#tab3primary" data-toggle="tab")
-                      連絡事項
-              %div.panel-body
-                %div.tab-content
-                  %div.tab-pane.fade.in.active#tab1primary
-                    %div.row
-                      %div.col-md-6
-                        %div.input-group
+          %div.row
+            %div.panel.with-nav-tabs.panel-primary
+                %div.panel-heading
+                  %ul.nav.nav-tabs
+                    %li.active
+                      %a(href="#tab1primary" data-toggle="tab")
+                        顧客情報
+                    %li
+                      %a(href="#tab2primary" data-toggle="tab")
+                        請求履歴
+                    %li
+                      %a(href="#tab3primary" data-toggle="tab")
+                        連絡事項
+                %div.panel-body
+                  %div.tab-content
+                    %div.tab-pane.fade.in.active#tab1primary
+                      %div.row
+                        %div.col-md-6
+                          %div.input-group
+                              %span.input-group-addon
+                                氏名
+                              %input.form-control#txtCustomerName(type="text")
+                        %div.col-md-6
+                          %div.input-group
+                              %span.input-group-addon
+                                カナ
+                              %input.form-control#txtCustomerKana(type="text")
+                      %div.row
+                        %div.col-md-12
+                          %div.input-group
+                              %span.input-group-addon
+                                住所
+                              %input.form-control#txtAddress1(type="text")
+                              %span.input-group-btn
+                                %button#btnMap.btn.btn-default(type="button")
+                                  map
+                      %br
+                      %div.row
+                        %div.col-md-6
+                          %div.input-group
+                              %span.input-group-addon
+                                電話
+                              %input.form-control#txtTel1(type="text")
+                        %div.col-md-6
+                          %div.input-group
+                              %span.input-group-addon
+                                支払
+                              %select.form-control.input-sm#selHaraiKb
+
+                      %div.row
+                        %div.col-md-6
+                          %div.input-group
                             %span.input-group-addon
-                              氏名
-                            %input.form-control#txtCustomerName(type="text")
-                      %div.col-md-6
-                        %div.input-group
-                            %span.input-group-addon
-                              カナ
-                            %input.form-control#txtCustomerKana(type="text")
-                    %div.row
-                      %div.col-md-12
-                        %div.input-group
-                            %span.input-group-addon
-                              住所
-                            %input.form-control#txtAddress1(type="text")
+                              経路
+                            %input.form-control#txtList(type="text" disabled)
                             %span.input-group-btn
-                              %button#btnMap.btn.btn-default(type="button")
-                                map
-                    %br
-                    %div.row
-                      %div.col-md-6
-                        %div.input-group
-                            %span.input-group-addon
-                              電話
-                            %input.form-control#txtTel1(type="text")
-                      %div.col-md-6
-                        %div.input-group
-                            %span.input-group-addon
-                              支払
-                            %select.form-control.input-sm#selHaraiKb
-                            
-                    %div.row
-                      %div.col-md-6
-                        %div.input-group
-                          %span.input-group-addon
-                            経路
-                          %input.form-control#txtList(type="text" disabled)
-                          %span.input-group-btn
-                            %button#btnListHenko.btn.btn-default(type="button")
-                              変更
-                      %div.col-md-6
-                        %div.input-group
-                            %span.input-group-addon
-                              消税
-                            %select.form-control.input-sm#selCustomerZeiKb
-                    %br
-                    %div.row
-                      %div.col-md-6
-                        %div.input-group
-                            %span.input-group-addon
-                              担当
-                            %select.form-control.input-sm#selTantoName
-                      %div.col-md-6
-                        %div.input-group
-                            %span.input-group-addon
-                              分類
-                            %select.form-control.input-sm#selCustomerGroupKb
-                    %br
-                    %div.row
-                      %div.col-md-10.text-left#mainUpdCustomerMessageArea
-                      %div.col-md-2
-                        %div.input-group
-                          %button.btn.btn-primary.btn-sm#btnUpdateCustomer(type="button")
-                            更新
-                      
-                  %div.tab-pane.fade#tab2primary
-                    Primary 2
-                  %div.tab-pane.fade#tab3primary
-                    Primary 3
+                              %button#btnListHenko.btn.btn-default(type="button")
+                                変更
+                        %div.col-md-6
+                          %div.input-group
+                              %span.input-group-addon
+                                消税
+                              %select.form-control.input-sm#selCustomerZeiKb
+                      %br
+                      %div.row
+                        %div.col-md-6
+                          %div.input-group
+                              %span.input-group-addon
+                                担当
+                              %select.form-control.input-sm#selTantoName
+                        %div.col-md-6
+                          %div.input-group
+                              %span.input-group-addon
+                                分類
+                              %select.form-control.input-sm#selCustomerGroupKb
+                      %br
+                      %div.row
+                        %div.col-md-10.text-left#mainUpdCustomerMessageArea
+                        %div.col-md-2
+                          %div.input-group
+                            %button.btn.btn-primary.btn-sm#btnUpdateCustomer(type="button")
+                              更新
+
+                    %div.tab-pane.fade#tab2primary
+                      Primary 2
+                    %div.tab-pane.fade#tab3primary
+                      Primary 3
+          %div.row
+            %div.col-md-3
+              %div.input-group
+                  %button.btn.btn-success.btn-sm#btnSeikyuPrintKobetu(type="button")
+                    個別印刷
+            %div.col-md-9.text-left#mainSeikyuKobetuPrintMessageArea(style="font-size:12px; color:red")
+              &nbsp;
 
     %div.container-fluid
       %div.row
