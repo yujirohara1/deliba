@@ -112,8 +112,8 @@ def SendMail_AccountToroku():
 def load_user(user_id):
   return users.get(int(user_id))
 
-# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用
+db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
+# db_uri = os.environ.get('DATABASE_URL') #本番用
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -591,7 +591,22 @@ def dbUpdate_UpdateItem(param):
 @app.route('/getCsvData/<viewnm>/<nentuki>/<groupkb>/<tanto>')
 @login_required
 def resJson_getCsvData(viewnm, nentuki, groupkb, tanto):
-  sqlA = "select * from " + viewnm + " where tenant_id = '" + current_user.tenant_id + "'"
+
+  sqlwhere=" tenant_id = '" + current_user.tenant_id + "' "
+  if viewnm == "v_csv_uriage_tantobetu":
+    sqlwhere = sqlwhere + " and nen = '" + nentuki[0:4] + "' and tuki = '" + nentuki[4:6] + "' and group_id = " + groupkb + " and tanto_id = '" + tanto + "' " 
+  elif viewnm == "v_csv_uriage_groupbetu":
+    sqlwhere = sqlwhere + " and nen = '" + nentuki[0:4] + "' and tuki = '" + nentuki[4:6] + "' and group_id = " + groupkb + " and tanto_id = '" + tanto + "' " 
+  elif viewnm == "v_csv_uriage_kokyakubetu":
+    sqlwhere = sqlwhere + " and nen = '" + nentuki[0:4] + "' and tuki = '" + nentuki[4:6] + "' and group_id = " + groupkb + " and tanto_id = '" + tanto + "' " 
+  elif viewnm == "v_csv_hikiotosi":
+    sqlwhere = sqlwhere + " and nen = '" + nentuki[0:4] + "' and tuki = '" + nentuki[4:6] + "' and group_id = " + groupkb + " and tanto_id = '" + tanto + "' " 
+  elif viewnm == "v_csv_takuhai":
+    sqlwhere = sqlwhere + " and group_id = " + groupkb + " and tanto_id = '" + tanto + "' " 
+  else:
+    None
+
+  sqlA = "select * from " + viewnm + " where " + sqlwhere
   sqlB = "select * from mst_setting where param_id = 'VIEW_COLUMN_NAME' and param_val1 = '" + viewnm + "' and tenant_id = '"+ current_user.tenant_id +"'"
 
   if db.session.execute(text(sqlA)).fetchone() is not None:
