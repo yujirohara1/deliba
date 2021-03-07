@@ -164,6 +164,17 @@ CREATE TABLE seikyu (
     tenant_id character varying(80) not null
 );
 
+
+
+CREATE TABLE kakute (
+    nen integer NOT NULL,
+    tuki integer NOT NULL,
+    customer_id integer NOT NULL,
+    kakute_ymdt timestamp without time zone ,
+    nyukin_ymdt timestamp without time zone ,
+    tenant_id character varying(80) not null
+);
+
 --
 -- Name: v_daicho_a; Type: VIEW; Schema: public; Owner: lgnucurqlirpyu
 --

@@ -21,6 +21,7 @@ from models.customer import Customer, CustomerSchema
 from models.mstsetting import MstSetting, MstSettingSchema
 from models.daicho import Daicho, DaichoSchema, VDaichoA, VDaichoASchema
 from models.seikyu import Seikyu, SeikyuSchema, VSeikyuA, VSeikyuASchema, VSeikyuB, VSeikyuBSchema, VSeikyuC, VSeikyuCSchema
+from models.kakute import Kakute, KakuteSchema
 from print.print_seikyu import *
 from sqlalchemy.sql import text
 from sqlalchemy import distinct
@@ -468,6 +469,30 @@ def dbUpdate_updateSetteiText(params):
   db.session.add(mstsetting)
 
   # データを確定
+  db.session.commit()
+  return "1"
+
+
+
+
+@app.route('/updateKakute/<nen>/<tuki>/<customerid>')
+@login_required
+def dbUpdate_updateKakute(nen, tuki, customerid):
+  Kakute.query.filter( \
+    Kakute.nen == nen, \
+    Kakute.tuki == tuki, \
+    Kakute.customer_id == customerid, \
+    Kakute.tenant_id==current_user.tenant_id).delete()
+  
+  kakute = Kakute()
+  kakute.nen = nen
+  kakute.tuki = tuki
+  kakute.customer_id = customerid
+  kakute.tenant_id = current_user.tenant_id
+  kakute.kakute_ymdt = datetime.datetime.now()
+  db.session.add(kakute)
+# 
+  # # データを確定
   db.session.commit()
   return "1"
 

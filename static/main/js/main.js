@@ -1496,11 +1496,13 @@ function createSeikyuTables_Main(customerId, nentuki){
             var customerName = list[0].name1;
             var nentukiMoji = (nentuki+"").substr(0,4) + "年 " + (nentuki+"").substr(4,2) + " 月 ";
             var customerNameTag = "<span id='spnCustomerLabel' style='font-size:18px'>" + nentukiMoji + "<br>" + customerName + "</span>";
-            var customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-            var customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-            var customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-            var customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-            var customerNameTag = customerNameTag + '<a id="btnAddSeikyuItem" onclick="funcOpenSeikyuItemDialog(' + (nentuki+"").substr(0,4) + ',' + (nentuki+"").substr(4,2) + ',' + customerId + ');" class="btn btn-default btn-sm" role="button" style="top:-14px;position:relative">商品追加</a>';
+            customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+            customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+            customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+            customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+            customerNameTag = customerNameTag + '<a id="btnAddSeikyuItem" onclick="funcOpenSeikyuItemDialog(' + (nentuki+"").substr(0,4) + ',' + (nentuki+"").substr(4,2) + ',' + customerId + ');" class="btn btn-default btn-sm" role="button" style="top:-14px;position:relative">商品追加</a>';
+            customerNameTag = customerNameTag + '&nbsp;&nbsp;';
+            customerNameTag = customerNameTag + '<a id="btnKakute" onclick="updKakute(' + (nentuki+"").substr(0,4) + ',' + (nentuki+"").substr(4,2) + ',' + customerId + ');" class="btn btn-default btn-sm" role="button" style="top:-14px;position:relative">確定</a>';
         } else {
             var customerNameTag = "";
         }
@@ -1584,6 +1586,22 @@ function createSeikyuTables_Main(customerId, nentuki){
 function funcOpenSeikyuItemDialog(nen, tuki, customerid){
     //alert(nen + "," + tuki + "," + customerid);
     $('#modalAddSeikyu').modal();
+}
+
+function updKakute(nen, tuki, customerid){
+    //alert(nen + "," + tuki + "," + customerid);
+    //$('#modalAddSeikyu').modal();
+    //var deliverymd = nen + "-" + tuki + "-" + niti;
+    $.ajax({
+        type: "GET",
+        url: "/updateKakute/" + nen + "/" + tuki + "/" + customerid + "",
+    }).done(function(data) {
+        createKihonSetteiTable_Shosai(param_id);
+        }).fail(function(data) {
+        alert("エラー：" + data.statusText);
+    }).always(function(data) {
+        //何もしない
+    });
 }
 
 
