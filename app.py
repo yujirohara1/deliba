@@ -17,7 +17,7 @@ from reportlab.lib.units import mm
 from reportlab.lib import colors
 from api.database import db, ma
 from models.item import Item, ItemSchema, VItemGroup, VItemGroupSchema
-from models.customer import Customer, CustomerSchema
+from models.customer import Customer, CustomerSchema, CustomerNentuki, CustomerNentukiSchema
 from models.mstsetting import MstSetting, MstSettingSchema
 from models.daicho import Daicho, DaichoSchema, VDaichoA, VDaichoASchema
 from models.seikyu import Seikyu, SeikyuSchema, VSeikyuA, VSeikyuASchema, VSeikyuB, VSeikyuBSchema, VSeikyuC, VSeikyuCSchema
@@ -114,7 +114,9 @@ def load_user(user_id):
   return users.get(int(user_id))
 
 # db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/deliba_db" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用
+db_uri = "postgres://lgnucurqlirpyu:af26960f97b67ee87d5921cff52307e989c597d9980e027e2a1ecbd2bef3a85c@ec2-3-215-76-208.compute-1.amazonaws.com:5432/davspdb27n5dmm" #開発用
+# postgres://lgnucurqlirpyu:af26960f97b67ee87d5921cff52307e989c597d9980e027e2a1ecbd2bef3a85c@ec2-3-215-76-208.compute-1.amazonaws.com:5432/davspdb27n5dmm
+# db_uri = os.environ.get('DATABASE_URL') #本番用
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -129,15 +131,35 @@ def favicon():
 @app.route('/getCustomer_Main/<group_kb>/<yuko_muko>')
 @login_required
 def resJson_getCustomer_Main(group_kb, yuko_muko):
+      # if yuko_muko == "2":
+      #   customers = Customer.query.filter(Customer.group_id==group_kb, Customer.tenant_id==current_user.tenant_id).all()
+      # elif yuko_muko == "1":
+      #   customers = Customer.query.outerjoin(Kakute, Kakute.customer_id==Customer.id).filter(Customer.group_id==group_kb, Customer.list!=None, Customer.tenant_id==current_user.tenant_id, Kakute.nen==2020, Kakute.tuki==3).all()
+      # else:
+      #   customers = Customer.query.filter(Customer.group_id==group_kb, Customer.list==None, Customer.tenant_id==current_user.tenant_id).all()
+      
+      sql = " "
+      sql = sql + " SELECT "
+      sql = sql + "     c.*, "
+      sql = sql + "     k.kakute_ymdt "
+      sql = sql + " from "
+      sql = sql + "    " + TableWhereTenantId("customer") + " c "
+      sql = sql + " left join "
+      sql = sql + "    (select * from " + TableWhereTenantId("kakute") + " A where nen = 2021 and tuki = 3) k "
+      sql = sql + " on "
+      sql = sql + "     c.id = k.customer_id "
+      sql = sql + " where "
+      sql = sql + "     c.group_id = " + group_kb + " "
       if yuko_muko == "2":
-        customers = Customer.query.filter(Customer.group_id==group_kb, Customer.tenant_id==current_user.tenant_id).all()
+        sql = sql + "     "
       elif yuko_muko == "1":
-        customers = Customer.query.filter(Customer.group_id==group_kb, Customer.list!=None, Customer.tenant_id==current_user.tenant_id).all()
+        sql = sql + "  and   c.list is not null "
       else:
-        customers = Customer.query.filter(Customer.group_id==group_kb, Customer.list==None, Customer.tenant_id==current_user.tenant_id).all()
-        
-      customers_schema = CustomerSchema(many=True)
-      return jsonify({'data': customers_schema.dumps(customers, ensure_ascii=False)})
+        sql = sql + "  and   c.list is null "
+      
+      customernentuki = db.session.execute(text(sql))
+      customernentuki_schema = CustomerNentukiSchema(many=True)
+      return jsonify({'data': customernentuki_schema.dumps(customernentuki, ensure_ascii=False)})
 
 @app.route('/getItem_Daicho/<itemname1>')
 @login_required
@@ -494,7 +516,7 @@ def dbUpdate_updateKakute(nen, tuki, customerid):
 # 
   # # データを確定
   db.session.commit()
-  return "1"
+  return customerid
 
 
 

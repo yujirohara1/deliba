@@ -1596,8 +1596,28 @@ function updKakute(nen, tuki, customerid){
         type: "GET",
         url: "/updateKakute/" + nen + "/" + tuki + "/" + customerid + "",
     }).done(function(data) {
-        createKihonSetteiTable_Shosai(param_id);
-        }).fail(function(data) {
+        //createKihonSetteiTable_Shosai(param_id);
+        //
+        var table = $("#tableCustomer").DataTable();
+        $.each(table.rows().data(), function(i, row){
+            if(row.id==data){
+                var idx = table.row(row).index();
+                table.row(idx).remove().draw();
+                //row.kakute_ymdt = "a!";
+                //table.row.add(row).draw();
+                //table.draw();
+            }
+
+            // var table = $(tableId).DataTable();
+            // var row = table.row(eventObj)
+            // var data = table.row(eventObj).data();
+            // var idx = table.row( eventObj ).index();
+            // table.row(idx).remove().draw();
+
+
+        });
+        //alert(data);
+    }).fail(function(data) {
         alert("エラー：" + data.statusText);
     }).always(function(data) {
         //何もしない
@@ -2244,6 +2264,10 @@ function createCustomerTables_Main(){
     yukomuko = 0;
   }
   
+  var nentuki = $('#selNentuki').val();
+  var nen = (nentuki+"").substr(0,4);
+  var tuki = (nentuki+"").substr(4,2);
+
   pageScrollPos = $('#tableCustomer')[0].parentElement.scrollTop;
   
   $('#tableCustomer').DataTable({
@@ -2263,10 +2287,21 @@ function createCustomerTables_Main(){
           }
       },
       columns: [
-          { data: 'id'     ,width: '25%'},
-          { data: 'list'   ,width: '30%' ,  className: 'dt-body-center'},
-          { data: 'name1'  ,width: '45%'}
+          { data: 'id'     ,width: '20%'},
+          { data: 'list'   ,width: '25%' ,  className: 'dt-body-center'},
+          { data: 'name1'  ,width: '40%'},
+          { data: 'kakute_ymdt'     ,width: '15%',render: 
+          function (data, type, row) { 
+              if(row.kakute_ymdt == null){
+                return "";
+              }else{
+                return "<span class='label label-default'>確定</span>";
+              }
+          } }
       ],
+      aoColumnDefs: [
+          { 'bSortable': false, 'aTargets': [ 3 ] }
+       ],
       language: {
          url: "../static/main/js/japanese.json"
       },
