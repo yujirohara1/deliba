@@ -1598,24 +1598,40 @@ function updKakute(nen, tuki, customerid){
     }).done(function(data) {
         //createKihonSetteiTable_Shosai(param_id);
         //
-        var table = $("#tableCustomer").DataTable();
-        $.each(table.rows().data(), function(i, row){
-            if(row.id==data){
-                var idx = table.row(row).index();
+        pageScrollPos = $('#tableCustomer')[0].parentElement.scrollTop;
+        $.each($("#tableCustomer").find("tr"), function(i, row){
+            if(row.cells[0].innerText==data){
+                var table = $("#tableCustomer").DataTable();
+                var newrow = row;//table.row(row)
+                var idx = table.row( row ).index();
                 table.row(idx).remove().draw();
-                //row.kakute_ymdt = "a!";
-                //table.row.add(row).draw();
+                //table.row(idx).kakute_ymdt = "a!";
+                newrow.kakute_ymdt = "a!";
+                table.row.add(newrow).draw();
                 //table.draw();
             }
-
-            // var table = $(tableId).DataTable();
-            // var row = table.row(eventObj)
-            // var data = table.row(eventObj).data();
-            // var idx = table.row( eventObj ).index();
-            // table.row(idx).remove().draw();
-
-
+            //var a = row;
+            //a = "";
         });
+        
+        // $.each(table.rows().data(), function(i, row){
+        //     if(row.id==data){
+        //         //var idx = table.row(row).index();
+        //         //table.row(idx).remove().draw();
+        //         //row.kakute_ymdt = "a!";
+        //         //table.row.add(row).draw();
+        //         table.row(row).remove().draw();
+        //         //table.draw();
+        //     }
+
+        //     // var table = $(tableId).DataTable();
+        //     // var row = table.row(eventObj)
+        //     // var data = table.row(eventObj).data();
+        //     // var idx = table.row( eventObj ).index();
+        //     // table.row(idx).remove().draw();
+
+
+        // });
         //alert(data);
     }).fail(function(data) {
         alert("エラー：" + data.statusText);
