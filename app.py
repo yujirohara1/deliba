@@ -126,9 +126,9 @@ ma.init_app(app)
 def favicon():
     return app.send_static_file("favicon.ico")
     
-@app.route('/getCustomer_Main/<group_kb>/<yuko_muko>')
+@app.route('/getCustomer_Main/<group_kb>/<yuko_muko>/<nen>/<tuki>')
 @login_required
-def resJson_getCustomer_Main(group_kb, yuko_muko):
+def resJson_getCustomer_Main(group_kb, yuko_muko, nen, tuki):
       # if yuko_muko == "2":
       #   customers = Customer.query.filter(Customer.group_id==group_kb, Customer.tenant_id==current_user.tenant_id).all()
       # elif yuko_muko == "1":
@@ -143,7 +143,7 @@ def resJson_getCustomer_Main(group_kb, yuko_muko):
       sql = sql + " from "
       sql = sql + "    " + TableWhereTenantId("customer") + " c "
       sql = sql + " left join "
-      sql = sql + "    (select * from " + TableWhereTenantId("kakute") + " A where nen = 2021 and tuki = 3) k "
+      sql = sql + "    (select * from " + TableWhereTenantId("kakute") + " A where nen = " + nen + " and tuki = " + tuki + ") k "
       sql = sql + " on "
       sql = sql + "     c.id = k.customer_id "
       sql = sql + " where "
@@ -498,19 +498,31 @@ def dbUpdate_updateSetteiText(params):
 @app.route('/updateKakute/<nen>/<tuki>/<customerid>')
 @login_required
 def dbUpdate_updateKakute(nen, tuki, customerid):
+  kakute = Kakute.query.filter( \
+    Kakute.nen == nen, \
+    Kakute.tuki == tuki, \
+    Kakute.customer_id == customerid, \
+    Kakute.tenant_id==current_user.tenant_id).all()
+  
+  delOnly=False
+  if len(kakute)==1:
+    if kakute[0].kakute_ymdt != None:
+      delOnly=True
+
   Kakute.query.filter( \
     Kakute.nen == nen, \
     Kakute.tuki == tuki, \
     Kakute.customer_id == customerid, \
     Kakute.tenant_id==current_user.tenant_id).delete()
   
-  kakute = Kakute()
-  kakute.nen = nen
-  kakute.tuki = tuki
-  kakute.customer_id = customerid
-  kakute.tenant_id = current_user.tenant_id
-  kakute.kakute_ymdt = datetime.datetime.now()
-  db.session.add(kakute)
+  if delOnly==False:
+    kakute = Kakute()
+    kakute.nen = nen
+    kakute.tuki = tuki
+    kakute.customer_id = customerid
+    kakute.tenant_id = current_user.tenant_id
+    kakute.kakute_ymdt = datetime.datetime.now()
+    db.session.add(kakute)
 # 
   # # データを確定
   db.session.commit()

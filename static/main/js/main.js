@@ -23,40 +23,6 @@ $(document).ready(function() {
 //   });
   
   
-  $.getJSON("/getMstSetting_Main/START_YM", function(json) {
-    list = JSON.parse(json.data);
-    if(list.length == 1){
-      var y = list[0].param_val1.substring(0,4)*1;
-      var m = list[0].param_val1.substring(4,6)*1-1;
-      var dt = new Date(y, m, 15);
-      var today = new Date(); 
-      today.setMonth(today.getMonth() + 2);
-      
-      var ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
-      var ymTo =  today.getFullYear() + "" + ("0"+today.getMonth()).slice(-2);
-      ymFrom = ymFrom * 1;
-      ymTo = ymTo * 1;
-      
-      while (ymFrom <= ymTo) {
-          var option = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
-          var option2 = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
-          $('#selNentuki').append(option);
-          $('#selCsvNentuki').append(option2);
-          
-          dt.setMonth(dt.getMonth() + 1);
-          ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
-          ymFrom = ymFrom * 1;
-      }
-      var seldate = new Date();
-      $('#selNentuki').val(NowNenTuki());
-      $('#selCsvNentuki').val(NowNenTuki());
-      
-    }else{
-      alert("エラー：START_YMがありません");
-    }
-  });
-  
-  
   $.getJSON("/getMstSetting_Main/SIHARAI_KB", function(json) {
     list = JSON.parse(json.data);
     $.each(list, function(i, item) {
@@ -96,12 +62,53 @@ $(document).ready(function() {
 
   //
   
+  $.getJSON("/getMstSetting_Main/START_YM", function(json) {
+    list = JSON.parse(json.data);
+    if(list.length == 1){
+      var y = list[0].param_val1.substring(0,4)*1;
+      var m = list[0].param_val1.substring(4,6)*1-1;
+      var dt = new Date(y, m, 15);
+      var today = new Date(); 
+      today.setMonth(today.getMonth() + 2);
+      
+      var ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
+      var ymTo =  today.getFullYear() + "" + ("0"+today.getMonth()).slice(-2);
+      ymFrom = ymFrom * 1;
+      ymTo = ymTo * 1;
+      
+      while (ymFrom <= ymTo) {
+          var option = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
+          var option2 = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
+          $('#selNentuki').append(option);
+          $('#selCsvNentuki').append(option2);
+          
+          dt.setMonth(dt.getMonth() + 1);
+          ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
+          ymFrom = ymFrom * 1;
+      }
+      var seldate = new Date();
+      $('#selNentuki').val(NowNenTuki());
+      $('#selCsvNentuki').val(NowNenTuki());
+      
+    }else{
+      alert("エラー：START_YMがありません");
+    }
+  }).done(function(json) {
+    console.log("成功");
+  }).fail(function(jqXHR, textStatus, errorThrown) {
+    console.log("エラー：" + textStatus);
+    console.log("テキスト：" + jqXHR.responseText);
+  }).always(function() {
+    console.log("完了");
+    createCustomerTables_Main();
+    createDaichoTables_Main(0);
+    createSeikyuTables_Main(0,NowNenTuki());
+  });
+  
+  
   
    
   
-  createCustomerTables_Main();
-  createDaichoTables_Main(0);
-  createSeikyuTables_Main(0,NowNenTuki());
   
   
   //var domTableCustomer = $('#tableCustomer').DataTable();
@@ -1495,9 +1502,7 @@ function createSeikyuTables_Main(customerId, nentuki){
         if (list.length==1){
             var customerName = list[0].name1;
             var nentukiMoji = (nentuki+"").substr(0,4) + "年 " + (nentuki+"").substr(4,2) + " 月 ";
-            var customerNameTag = "<span id='spnCustomerLabel' style='font-size:18px'>" + nentukiMoji + "<br>" + customerName + "</span>";
-            customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-            customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+            var customerNameTag = "<span id='spnCustomerLabel' style='font-size:18px'>" + nentukiMoji + "<br>" + customerName.substr(0,7); + "</span>";
             customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
             customerNameTag = customerNameTag + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
             customerNameTag = customerNameTag + '<a id="btnAddSeikyuItem" onclick="funcOpenSeikyuItemDialog(' + (nentuki+"").substr(0,4) + ',' + (nentuki+"").substr(4,2) + ',' + customerId + ');" class="btn btn-default btn-sm" role="button" style="top:-14px;position:relative">商品追加</a>';
@@ -1588,7 +1593,9 @@ function funcOpenSeikyuItemDialog(nen, tuki, customerid){
     $('#modalAddSeikyu').modal();
 }
 
+var selectCustomerId;
 function updKakute(nen, tuki, customerid){
+    selectCustomerId=customerid;
     //alert(nen + "," + tuki + "," + customerid);
     //$('#modalAddSeikyu').modal();
     //var deliverymd = nen + "-" + tuki + "-" + niti;
@@ -1604,35 +1611,25 @@ function updKakute(nen, tuki, customerid){
                 var table = $("#tableCustomer").DataTable();
                 var newrow = row;//table.row(row)
                 var idx = table.row( row ).index();
+                var data1 = table.row(idx).data();
                 table.row(idx).remove().draw();
-                //table.row(idx).kakute_ymdt = "a!";
-                newrow.kakute_ymdt = "a!";
-                table.row.add(newrow).draw();
-                //table.draw();
+                if(data1.kakute_ymdt==null){
+                    data1.kakute_ymdt = "a!";
+                }else{
+                    data1.kakute_ymdt = null;
+                }
+                
+                table.row.add(data1).draw();
+                //$(row).addClass('row_selected customer');
             }
-            //var a = row;
-            //a = "";
         });
         
-        // $.each(table.rows().data(), function(i, row){
-        //     if(row.id==data){
-        //         //var idx = table.row(row).index();
-        //         //table.row(idx).remove().draw();
-        //         //row.kakute_ymdt = "a!";
-        //         //table.row.add(row).draw();
-        //         table.row(row).remove().draw();
-        //         //table.draw();
-        //     }
-
-        //     // var table = $(tableId).DataTable();
-        //     // var row = table.row(eventObj)
-        //     // var data = table.row(eventObj).data();
-        //     // var idx = table.row( eventObj ).index();
-        //     // table.row(idx).remove().draw();
-
-
-        // });
-        //alert(data);
+        $.each($("#tableCustomer").find("tr"), function(i, row){
+            if(row.cells[0].innerText==data){
+                $(row).addClass('row_selected customer');
+            }
+        });
+        
     }).fail(function(data) {
         alert("エラー：" + data.statusText);
     }).always(function(data) {
@@ -1810,6 +1807,7 @@ function getSeikyuQuantityColorFlg(val, row, youbiwa){
 $("#selNentuki").change(function(){
   var customerid = $(".row_selected.customer").find("td:eq(0)").text();
   if(customerid!=0){
+    createCustomerTables_Main();
     createDaichoTables_Main(customerid);
     createSeikyuTables_Main(customerid,$('#selNentuki').val());
   }
@@ -2281,8 +2279,8 @@ function createCustomerTables_Main(){
   }
   
   var nentuki = $('#selNentuki').val();
-  var nen = (nentuki+"").substr(0,4);
-  var tuki = (nentuki+"").substr(4,2);
+  var nen = (nentuki+"").substr(0,4) * 1;
+  var tuki = (nentuki+"").substr(4,2) * 1;
 
   pageScrollPos = $('#tableCustomer')[0].parentElement.scrollTop;
   
@@ -2292,7 +2290,7 @@ function createCustomerTables_Main(){
       destroy: true,
       "processing": true,
       ajax: {
-          url: "/getCustomer_Main/" + groupkb + "/" + yukomuko + "",
+          url: "/getCustomer_Main/" + groupkb + "/" + yukomuko +  "/" + nen +  "/" + tuki + "",
           dataType: "json",
           dataSrc: function ( json ) {
               return JSON.parse(json.data);
@@ -2311,7 +2309,7 @@ function createCustomerTables_Main(){
               if(row.kakute_ymdt == null){
                 return "";
               }else{
-                return "<span class='label label-default'>確定</span>";
+                return "<span class='label label-default'>OK</span>";
               }
           } }
       ],
