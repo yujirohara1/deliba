@@ -64,29 +64,29 @@ def print_waku_subA(pdf_canvas):
     # 線幅を0.1へセット
     pdf_canvas.setLineWidth(0.5)
     
-    pdf_canvas.rect(60, 14, 98, 19, stroke=1, fill=0)
+    pdf_canvas.rect(60, 16, 98, 19, stroke=1, fill=0)
     pdf_canvas.setFont(font_type, 14)
-    pdf_canvas.drawString(68,28, '入  金  伝  票')
+    pdf_canvas.drawString(68,30, '入  金  伝  票')
     
-    pdf_canvas.rect(240, 14, 90, 19, stroke=1, fill=0)
+    pdf_canvas.rect(240, 16, 90, 19, stroke=1, fill=0)
     pdf_canvas.setFont(font_type, 14)
-    pdf_canvas.drawString(252,28, '領   収   証')
+    pdf_canvas.drawString(252,30, '領   収   証')
     
-    pdf_canvas.rect(540, 14, 100, 19, stroke=1, fill=0)
+    pdf_canvas.rect(540, 16, 100, 19, stroke=1, fill=0)
     pdf_canvas.setFont(font_type, 14)
-    pdf_canvas.drawString(554,28, '請    求    書')
+    pdf_canvas.drawString(554,30, '請    求    書')
 
-    pdf_canvas.rect(60, 14+297, 98, 19, stroke=1, fill=0)
+    pdf_canvas.rect(60, 16+297, 98, 19, stroke=1, fill=0)
     pdf_canvas.setFont(font_type, 14)
-    pdf_canvas.drawString(68,28+297, '入  金  伝  票')
+    pdf_canvas.drawString(68,30+297, '入  金  伝  票')
     
-    pdf_canvas.rect(240, 14+297, 90, 19, stroke=1, fill=0)
+    pdf_canvas.rect(240, 16+297, 90, 19, stroke=1, fill=0)
     pdf_canvas.setFont(font_type, 14)
-    pdf_canvas.drawString(252,28+297, '領   収   証')
+    pdf_canvas.drawString(252,30+297, '領   収   証')
     
-    pdf_canvas.rect(540, 14+297, 100, 19, stroke=1, fill=0)
+    pdf_canvas.rect(540, 16+297, 100, 19, stroke=1, fill=0)
     pdf_canvas.setFont(font_type, 14)
-    pdf_canvas.drawString(554,28+297, '請    求    書')
+    pdf_canvas.drawString(554,30+297, '請    求    書')
 
     kijunY = 79
 
