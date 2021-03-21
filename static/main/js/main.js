@@ -480,6 +480,9 @@ function createListHenkoTables_Main(){
       groupkb = 100;
     }
 
+    var nentuki = $('#selNentuki').val();
+    var nen = (nentuki+"").substr(0,4) * 1;
+    var tuki = (nentuki+"").substr(4,2) * 1;
     //pageScrollPos = $('#tableCustomerListHenko')[0].parentElement.scrollTop;
     
     var table = $('#tableCustomerListHenko').DataTable( {
@@ -487,7 +490,7 @@ function createListHenkoTables_Main(){
             bSort: true,
             destroy: true,
             ajax: {
-                url: "/getCustomer_Main/" + groupkb + "/" + 1 + "",
+                url: "/getCustomer_Main/" + groupkb + "/" + 1 +  "/" + nen +  "/" + tuki + "",
                 dataType: "json",
                 dataSrc: function ( json ) {
                     return JSON.parse(json.data);
@@ -551,12 +554,16 @@ function createListMukoTables_Main(){
       groupkb = 100;
     }
     
+    var nentuki = $('#selNentuki').val();
+    var nen = (nentuki+"").substr(0,4) * 1;
+    var tuki = (nentuki+"").substr(4,2) * 1;
+    
     var table = $('#tableCustomerListMuko').DataTable( {
             bInfo: false,
             bSort: true,
             destroy: true,
             ajax: {
-                url: "/getCustomer_Main/" + groupkb + "/" + 0 + "",
+                url: "/getCustomer_Main/" + groupkb + "/" + 0 +  "/" + nen +  "/" + tuki + "",
                 dataType: "json",
                 dataSrc: function ( json ) {
                     return JSON.parse(json.data);
