@@ -64,137 +64,139 @@ def print_waku_subA(pdf_canvas):
     # 線幅を0.1へセット
     pdf_canvas.setLineWidth(0.5)
     
-    pdf_canvas.rect(60, 10, 98, 22, stroke=1, fill=0)
+    pdf_canvas.rect(60, 12, 98, 20, stroke=1, fill=0)
     pdf_canvas.setFont(font_type, 14)
-    pdf_canvas.drawString(68,26, '入  金  伝  票')
+    pdf_canvas.drawString(68,27, '入  金  伝  票')
     
-    pdf_canvas.rect(240, 10, 90, 22, stroke=1, fill=0)
+    pdf_canvas.rect(240, 12, 90, 20, stroke=1, fill=0)
     pdf_canvas.setFont(font_type, 14)
-    pdf_canvas.drawString(252,26, '領   収   証')
+    pdf_canvas.drawString(252,27, '領   収   証')
     
-    pdf_canvas.rect(540, 10, 100, 22, stroke=1, fill=0)
+    pdf_canvas.rect(540, 12, 100, 20, stroke=1, fill=0)
     pdf_canvas.setFont(font_type, 14)
-    pdf_canvas.drawString(554,26, '請    求    書')
+    pdf_canvas.drawString(554,27, '請    求    書')
 
-    pdf_canvas.rect(60, 10+297, 98, 22, stroke=1, fill=0)
+    pdf_canvas.rect(60, 12+297, 98, 20, stroke=1, fill=0)
     pdf_canvas.setFont(font_type, 14)
-    pdf_canvas.drawString(68,26+297, '入  金  伝  票')
+    pdf_canvas.drawString(68,27+297, '入  金  伝  票')
     
-    pdf_canvas.rect(240, 10+297, 90, 22, stroke=1, fill=0)
+    pdf_canvas.rect(240, 12+297, 90, 20, stroke=1, fill=0)
     pdf_canvas.setFont(font_type, 14)
-    pdf_canvas.drawString(252,26+297, '領   収   証')
+    pdf_canvas.drawString(252,27+297, '領   収   証')
     
-    pdf_canvas.rect(540, 10+297, 100, 22, stroke=1, fill=0)
+    pdf_canvas.rect(540, 12+297, 100, 20, stroke=1, fill=0)
     pdf_canvas.setFont(font_type, 14)
-    pdf_canvas.drawString(554,26+297, '請    求    書')
+    pdf_canvas.drawString(554,27+297, '請    求    書')
 
-    # 【右】商品名等 見出し 上段
-    pdf_canvas.setFont(font_type, 9)
-    pdf_canvas.drawString(397,101, '商　　品　　名')
-    pdf_canvas.setFont(font_type, 8)
-    pdf_canvas.drawString(480,101, '数量')
-    pdf_canvas.setFont(font_type, 9)
-    pdf_canvas.drawString(502,101, '単価')
-    pdf_canvas.drawString(537,101, '小　計')
+    kijunX = 79
 
     # 【右】商品名等 見出し 上段
     pdf_canvas.setFont(font_type, 9)
-    pdf_canvas.drawString(397,101+298, '商　　品　　名')
+    pdf_canvas.drawString(397,kijunX+21, '商　　品　　名')
     pdf_canvas.setFont(font_type, 8)
-    pdf_canvas.drawString(480,101+298, '数量')
+    pdf_canvas.drawString(480,kijunX+21, '数量')
     pdf_canvas.setFont(font_type, 9)
-    pdf_canvas.drawString(502,101+298, '単価')
-    pdf_canvas.drawString(537,101+298, '小　計')
+    pdf_canvas.drawString(502,kijunX+21, '単価')
+    pdf_canvas.drawString(537,kijunX+21, '小　計')
+
+    # 【右】商品名等 見出し 上段
+    pdf_canvas.setFont(font_type, 9)
+    pdf_canvas.drawString(397,kijunX+21+298, '商　　品　　名')
+    pdf_canvas.setFont(font_type, 8)
+    pdf_canvas.drawString(480,kijunX+21+298, '数量')
+    pdf_canvas.setFont(font_type, 9)
+    pdf_canvas.drawString(502,kijunX+21+298, '単価')
+    pdf_canvas.drawString(537,kijunX+21+298, '小　計')
 
 
     # 上段
-    pdf_canvas.rect(375, 92, 200, 13, stroke=1, fill=0) # 商品名等 見出し
-    pdf_canvas.rect(375, 105, 453, 76, stroke=1, fill=0) # 1~15の大枠
-    pdf_canvas.rect(575, 80, 253, 12, stroke=1, fill=0) # 1～15の日付　1,2,3,4,5,,,
-    pdf_canvas.rect(575, 92, 253, 13, stroke=1, fill=0) # 1～15の曜日　月火水木金土,,,
-    pdf_canvas.rect(479, 92, 18, 89, stroke=1, fill=0) # 1~15の大枠　本数を囲う縦長の四角
-    pdf_canvas.rect(527, 92, 48, 89, stroke=1, fill=0) # 1~15の大枠　商品小計を囲う縦長の四角
+    pdf_canvas.rect(375, kijunX+12, 200, 13, stroke=1, fill=0) # 商品名等 見出し
+    pdf_canvas.rect(375, kijunX+25, 453, 76, stroke=1, fill=0) # 1~15の大枠
+    pdf_canvas.rect(575, kijunX+0, 253, 12, stroke=1, fill=0) # 1～15の日付　1,2,3,4,5,,,
+    pdf_canvas.rect(575, kijunX+12, 253, 13, stroke=1, fill=0) # 1～15の曜日　月火水木金土,,,
+    pdf_canvas.rect(479, kijunX+12, 18, 89, stroke=1, fill=0) # 1~15の大枠　本数を囲う縦長の四角
+    pdf_canvas.rect(527, kijunX+12, 48, 89, stroke=1, fill=0) # 1~15の大枠　商品小計を囲う縦長の四角
 
-    pdf_canvas.rect(558, 207, 270, 77, stroke=1, fill=0) # 16以降の大枠
-    pdf_canvas.rect(558, 181, 270, 13, stroke=1, fill=0) # 16以降の日付　1,2,3,4,5,,,
-    pdf_canvas.rect(558, 194, 270, 13, stroke=1, fill=0) # 16以降の曜日　月火水木金土,,,
+    pdf_canvas.rect(558, kijunX+127, 270, 77, stroke=1, fill=0) # 16以降の大枠
+    pdf_canvas.rect(558, kijunX+101, 270, 13, stroke=1, fill=0) # 16以降の日付　1,2,3,4,5,,,
+    pdf_canvas.rect(558, kijunX+114, 270, 13, stroke=1, fill=0) # 16以降の曜日　月火水木金土,,,
 
-    pdf_canvas.rect(592, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角1
-    pdf_canvas.rect(592+34, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
-    pdf_canvas.rect(592+34+33, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
-    pdf_canvas.rect(592+34+33+34, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
-    pdf_canvas.rect(592+34+33+34+33, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
-    pdf_canvas.rect(592+34+33+34+33+34, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
-    pdf_canvas.rect(592+34+33+34+33+34+33, 80, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592, kijunX, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角1
+    pdf_canvas.rect(592+34, kijunX, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33, kijunX, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34, kijunX, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34+33, kijunX, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34+33+34, kijunX, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34+33+34+33, kijunX, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
 
-    pdf_canvas.rect(558, 80+101, 17, 103, stroke=1, fill=0) # 16日分の縦四角（下枠のみ）
+    pdf_canvas.rect(558, kijunX+101, 17, 103, stroke=1, fill=0) # 16日分の縦四角（下枠のみ）
 
-    pdf_canvas.rect(375, 117, 453, 13, stroke=1, fill=0) # 商品２の横枠 上
-    pdf_canvas.rect(375, 117+26, 453, 13, stroke=1, fill=0) # 商品２の横枠 上
-    pdf_canvas.rect(375, 117+26+26, 453, 12, stroke=1, fill=0) # 商品２の横枠 上
+    pdf_canvas.rect(375, kijunX+37, 453, 13, stroke=1, fill=0) # 商品２の横枠 上
+    pdf_canvas.rect(375, kijunX+37+26, 453, 13, stroke=1, fill=0) # 商品２の横枠 上
+    pdf_canvas.rect(375, kijunX+37+26+26, 453, 12, stroke=1, fill=0) # 商品２の横枠 上
 
-    pdf_canvas.rect(558, 220, 270, 13, stroke=1, fill=0) # 商品２の横枠 下
-    pdf_canvas.rect(558, 220+26, 270, 13, stroke=1, fill=0) # 商品２の横枠 下
-    pdf_canvas.rect(558, 220+26+26, 270, 12, stroke=1, fill=0) # 商品２の横枠 下
+    pdf_canvas.rect(558, kijunX+140, 270, 13, stroke=1, fill=0) # 商品２の横枠 下
+    pdf_canvas.rect(558, kijunX+140+26, 270, 13, stroke=1, fill=0) # 商品２の横枠 下
+    pdf_canvas.rect(558, kijunX+140+26+26, 270, 12, stroke=1, fill=0) # 商品２の横枠 下
 
 
     # 下段
-    pdf_canvas.rect(375, 92+297, 200, 13, stroke=1, fill=0) # 商品名等 見出し
-    pdf_canvas.rect(375, 105+297, 453, 76, stroke=1, fill=0) # 1~15の大枠
-    pdf_canvas.rect(575, 80+297, 253, 12, stroke=1, fill=0) # 1～15の日付　1,2,3,4,5,,,
-    pdf_canvas.rect(575, 92+297, 253, 13, stroke=1, fill=0) # 1～15の曜日　月火水木金土,,,
-    pdf_canvas.rect(479, 92+297, 18, 89, stroke=1, fill=0) # 1~15の大枠　本数を囲う縦長の四角
-    pdf_canvas.rect(527, 92+297, 48, 89, stroke=1, fill=0) # 1~15の大枠　商品小計を囲う縦長の四角
+    pdf_canvas.rect(375, kijunX+12+297, 200, 13, stroke=1, fill=0) # 商品名等 見出し
+    pdf_canvas.rect(375, kijunX+25+297, 453, 76, stroke=1, fill=0) # 1~15の大枠
+    pdf_canvas.rect(575, kijunX+297, 253, 12, stroke=1, fill=0) # 1～15の日付　1,2,3,4,5,,,
+    pdf_canvas.rect(575, kijunX+12+297, 253, 13, stroke=1, fill=0) # 1～15の曜日　月火水木金土,,,
+    pdf_canvas.rect(479, kijunX+12+297, 18, 89, stroke=1, fill=0) # 1~15の大枠　本数を囲う縦長の四角
+    pdf_canvas.rect(527, kijunX+12+297, 48, 89, stroke=1, fill=0) # 1~15の大枠　商品小計を囲う縦長の四角
 
-    pdf_canvas.rect(558, 207+297, 270, 77, stroke=1, fill=0) # 16以降の大枠
-    pdf_canvas.rect(558, 181+297, 270, 13, stroke=1, fill=0) # 16以降の日付　1,2,3,4,5,,,
-    pdf_canvas.rect(558, 194+297, 270, 13, stroke=1, fill=0) # 16以降の曜日　月火水木金土,,,
+    pdf_canvas.rect(558, kijunX+127+297, 270, 77, stroke=1, fill=0) # 16以降の大枠
+    pdf_canvas.rect(558, kijunX+101+297, 270, 13, stroke=1, fill=0) # 16以降の日付　1,2,3,4,5,,,
+    pdf_canvas.rect(558, kijunX+114+297, 270, 13, stroke=1, fill=0) # 16以降の曜日　月火水木金土,,,
 
-    pdf_canvas.rect(592, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角1
-    pdf_canvas.rect(592+34, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
-    pdf_canvas.rect(592+34+33, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
-    pdf_canvas.rect(592+34+33+34, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
-    pdf_canvas.rect(592+34+33+34+33, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
-    pdf_canvas.rect(592+34+33+34+33+34, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
-    pdf_canvas.rect(592+34+33+34+33+34+33, 80+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592, kijunX+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角1
+    pdf_canvas.rect(592+34, kijunX+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33, kijunX+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34, kijunX+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34+33, kijunX+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34+33+34, kijunX+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
+    pdf_canvas.rect(592+34+33+34+33+34+33, kijunX+297, 17, 101+103, stroke=1, fill=0) # 偶数日の縦四角2
 
-    pdf_canvas.rect(558, 80+101+297, 17, 103, stroke=1, fill=0) # 16日分の縦四角（下枠のみ）
+    pdf_canvas.rect(558, kijunX+101+297, 17, 103, stroke=1, fill=0) # 16日分の縦四角（下枠のみ）
 
-    pdf_canvas.rect(375, 117+297, 453, 13, stroke=1, fill=0) # 商品２の横枠 上
-    pdf_canvas.rect(375, 117+26+297, 453, 13, stroke=1, fill=0) # 商品２の横枠 上
-    pdf_canvas.rect(375, 117+26+26+297, 453, 12, stroke=1, fill=0) # 商品２の横枠 上
+    pdf_canvas.rect(375, kijunX+37+297, 453, 13, stroke=1, fill=0) # 商品２の横枠 上
+    pdf_canvas.rect(375, kijunX+37+26+297, 453, 13, stroke=1, fill=0) # 商品２の横枠 上
+    pdf_canvas.rect(375, kijunX+37+26+26+297, 453, 12, stroke=1, fill=0) # 商品２の横枠 上
 
-    pdf_canvas.rect(558, 220+297, 270, 13, stroke=1, fill=0) # 商品２の横枠 下
-    pdf_canvas.rect(558, 220+26+297, 270, 13, stroke=1, fill=0) # 商品２の横枠 下
-    pdf_canvas.rect(558, 220+26+26+297, 270, 12, stroke=1, fill=0) # 商品２の横枠 下
+    pdf_canvas.rect(558, kijunX+140+297, 270, 13, stroke=1, fill=0) # 商品２の横枠 下
+    pdf_canvas.rect(558, kijunX+140+26+297, 270, 13, stroke=1, fill=0) # 商品２の横枠 下
+    pdf_canvas.rect(558, kijunX+140+26+26+297, 270, 12, stroke=1, fill=0) # 商品２の横枠 下
 
     #【入金伝票のグリッド作成】
     # 【右】商品名等 見出し 上段
     pdf_canvas.setFont(font_type, 8)
-    pdf_canvas.drawString(47,204, '商　品　名')
-    pdf_canvas.drawString(127,204, '数量')
-    pdf_canvas.drawString(145,204, '単価')
-    pdf_canvas.drawString(165,204, '小　計')
-    pdf_canvas.rect(45, 195, 150, 89, stroke=1, fill=0) #
-    pdf_canvas.rect(45, 195+12, 150, 12, stroke=1, fill=0) #
-    pdf_canvas.rect(45, 195+12+25, 150, 13, stroke=1, fill=0) #
-    pdf_canvas.rect(45, 195+12+25+26, 150, 13, stroke=1, fill=0) #
-    pdf_canvas.rect(126, 195, 18, 89, stroke=1, fill=0) #
-    pdf_canvas.rect(144, 195, 19, 89, stroke=1, fill=0) #
+    pdf_canvas.drawString(47,kijunX+124, '商　品　名')
+    pdf_canvas.drawString(127,kijunX+124, '数量')
+    pdf_canvas.drawString(145,kijunX+124, '単価')
+    pdf_canvas.drawString(165,kijunX+124, '小　計')
+    pdf_canvas.rect(45, kijunX+115, 150, 89, stroke=1, fill=0) #
+    pdf_canvas.rect(45, kijunX+115+12, 150, 12, stroke=1, fill=0) #
+    pdf_canvas.rect(45, kijunX+115+12+25, 150, 13, stroke=1, fill=0) #
+    pdf_canvas.rect(45, kijunX+115+12+25+26, 150, 13, stroke=1, fill=0) #
+    pdf_canvas.rect(126, kijunX+115, 18, 89, stroke=1, fill=0) #
+    pdf_canvas.rect(144, kijunX+115, 19, 89, stroke=1, fill=0) #
 
     #【入金伝票のグリッド作成】
     # 【右】商品名等 見出し 下段
     pdf_canvas.setFont(font_type, 8)
-    pdf_canvas.drawString(47,204+297, '商　品　名')
-    pdf_canvas.drawString(127,204+297, '数量')
-    pdf_canvas.drawString(145,204+297, '単価')
-    pdf_canvas.drawString(165,204+297, '小　計')
-    pdf_canvas.rect(45, 195+297, 150, 89, stroke=1, fill=0) #
-    pdf_canvas.rect(45, 195+12+297, 150, 12, stroke=1, fill=0) #
-    pdf_canvas.rect(45, 195+12+25+297, 150, 13, stroke=1, fill=0) #
-    pdf_canvas.rect(45, 195+12+25+26+297, 150, 13, stroke=1, fill=0) #
-    pdf_canvas.rect(126, 195+297, 18, 89, stroke=1, fill=0) #
-    pdf_canvas.rect(144, 195+297, 19, 89, stroke=1, fill=0) #
+    pdf_canvas.drawString(47,kijunX+124+297, '商　品　名')
+    pdf_canvas.drawString(127,kijunX+124+297, '数量')
+    pdf_canvas.drawString(145,kijunX+124+297, '単価')
+    pdf_canvas.drawString(165,kijunX+124+297, '小　計')
+    pdf_canvas.rect(45, kijunX+115+297, 150, 89, stroke=1, fill=0) #
+    pdf_canvas.rect(45, kijunX+115+12+297, 150, 12, stroke=1, fill=0) #
+    pdf_canvas.rect(45, kijunX+115+12+25+297, 150, 13, stroke=1, fill=0) #
+    pdf_canvas.rect(45, kijunX+115+12+25+26+297, 150, 13, stroke=1, fill=0) #
+    pdf_canvas.rect(126, kijunX+115+297, 18, 89, stroke=1, fill=0) #
+    pdf_canvas.rect(144, kijunX+115+297, 19, 89, stroke=1, fill=0) #
 
 # 縦横線のみ
 def print_waku_kihon(pdf_canvas):
@@ -297,11 +299,11 @@ def print_string_sub(pdf_canvas, start_x, start_y, data, paramlist):
         pdf_canvas.drawString(start_x+178+155+6, start_y+181, comment[1]) 
       
       pdf_canvas.setFont(def_font_type, def_font_size+6)
-      pdf_canvas.drawString(start_x+178+155, start_y+213, get_param_val(paramlist, "TENPO_SEIKYUSHO", 1, 1) ) 
+      pdf_canvas.drawString(start_x+178+155, start_y+206, get_param_val(paramlist, "TENPO_SEIKYUSHO", 1, 1) ) 
       pdf_canvas.setFont(def_font_type, def_font_size+1)
-      pdf_canvas.drawString(start_x+178+155, start_y+213+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 2, 1) ) 
+      pdf_canvas.drawString(start_x+178+155, start_y+206+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 2, 1) ) 
       pdf_canvas.setFont(def_font_type, def_font_size)
-      pdf_canvas.drawString(start_x+178+155, start_y+213+15+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 3, 1) ) 
+      pdf_canvas.drawString(start_x+178+155, start_y+206+15+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 3, 1) ) 
 
       # カレンダー 1日～15日 見出し
       font_size = def_font_size-1
@@ -409,11 +411,11 @@ def print_string_sub(pdf_canvas, start_x, start_y, data, paramlist):
   pdf_canvas.drawString(start_x+178,      start_y+106+14+10+30+20, '　　　　　年　　　月　　　日') 
 
   pdf_canvas.setFont(def_font_type, def_font_size+6)
-  pdf_canvas.drawString(start_x+178+10, start_y+213, get_param_val(paramlist, "TENPO_RYOSYUSHO", 1, 1) ) #'デモ牛乳販売店') 
+  pdf_canvas.drawString(start_x+178+2, start_y+206, get_param_val(paramlist, "TENPO_RYOSYUSHO", 1, 1) ) #'デモ牛乳販売店') 
   pdf_canvas.setFont(def_font_type, def_font_size+1)
-  pdf_canvas.drawString(start_x+178+10, start_y+213+15, get_param_val(paramlist, "TENPO_RYOSYUSHO", 2, 1) ) 
+  pdf_canvas.drawString(start_x+178+2, start_y+206+15, get_param_val(paramlist, "TENPO_RYOSYUSHO", 2, 1) ) 
   pdf_canvas.setFont(def_font_type, def_font_size)
-  pdf_canvas.drawString(start_x+178+10, start_y+213+15+15, get_param_val(paramlist, "TENPO_RYOSYUSHO", 3, 1) ) 
+  pdf_canvas.drawString(start_x+178+2, start_y+206+15+15, get_param_val(paramlist, "TENPO_RYOSYUSHO", 3, 1) ) 
 
 
 
