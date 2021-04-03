@@ -691,15 +691,15 @@ insert into mst_setting values('CSV_FILE_NAME','CSV出力ファイル名',5,'宅配パター
 
 delete from mst_setting where param_id = 'VIEW_COLUMN_NAME';
 
-insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',1,  'v_csv_uriage_tantobetu'    ,'年,月,担当,顧客ID,顧客名,商品ID,商品コード,商品名,本数_a,単価_b,計_a×b,卸値_c, 計_a×c,グループID,担当ID',null,'demo');
+insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',1,  'v_csv_uriage_tantobetu'    ,'年,月,担当,顧客ID,顧客名,商品ID,商品コード,商品名,本数_a,単価_b,計_a×b＋税,卸値_c, 計_a×c,グループID,税区分,担当ID',null,'demo');
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',2,  'v_csv_uriage_groupbetu'    ,'年,月,グループID,グループ名,担当ID,売上合計,件数',null,'demo');
-insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',3,  'v_csv_uriage_kokyakubetu'  ,'年,月,グループID,グループ名,顧客ID,顧客名,請求額,担当ID',null,'demo');
+insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',3,  'v_csv_uriage_kokyakubetu'  ,'年,月,グループID,グループ名,顧客ID,顧客名,請求額,税込請求額,消費税区分,担当ID',null,'demo');
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',4,  'v_csv_hikiotosi'           ,'年,月,宅配順,氏名１,氏名２,支払方法区分,支払方法区分名,請求額,税込額,税区分,グループID,担当ID',null,'demo');
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',5,  'v_csv_takuhai'             ,'グループID,宅配順,顧客ID,担当者,顧客名１,顧客名２,住所１,住所２,住所３,支払方法区分,削除フラグ,商品ID,商品コード,商品名１,商品名２,単価,削除フラグ,月,火,水,木,金,土,日,計,担当ID',null,'demo');
 
-insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',1,  'v_csv_uriage_tantobetu'    ,'年,月,担当,顧客ID,顧客名,商品ID,商品コード,商品名,本数_a,単価_b,計_a×b,卸値_c, 計_a×c,グループID,担当ID',null,'hara');
+insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',1,  'v_csv_uriage_tantobetu'    ,'年,月,担当,顧客ID,顧客名,商品ID,商品コード,商品名,本数_a,単価_b,計_a×b＋税,卸値_c, 計_a×c,グループID,税区分,担当ID',null,'hara');
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',2,  'v_csv_uriage_groupbetu'    ,'年,月,グループID,グループ名,担当ID,売上合計,件数',null,'hara');
-insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',3,  'v_csv_uriage_kokyakubetu'  ,'年,月,グループID,グループ名,顧客ID,顧客名,請求額,担当ID',null,'hara');
+insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',3,  'v_csv_uriage_kokyakubetu'  ,'年,月,グループID,グループ名,顧客ID,顧客名,請求額,税込請求額,消費税区分,担当ID',null,'demo');
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',4,  'v_csv_hikiotosi'           ,'年,月,宅配順,氏名１,氏名２,支払方法区分,支払方法区分名,請求額,税込額,税区分,グループID,担当ID',null,'hara');
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',5,  'v_csv_takuhai'             ,'グループID,宅配順,顧客ID,担当者,顧客名１,顧客名２,住所１,住所２,住所３,支払方法区分,削除フラグ,商品ID,商品コード,商品名１,商品名２,単価,削除フラグ,月,火,水,木,金,土,日,計,担当ID',null,'hara');
 
@@ -723,14 +723,25 @@ SELECT
         seikyu.quantity
     ) honsu,
     item.tanka item_tanka,
-    Sum(
-        seikyu.price * seikyu.quantity
-    ) kei,
+    case
+        when biko2 = '1' then trunc(
+            SUM(seikyu.price * seikyu.quantity) * 1.08
+        )
+        when biko2 = '2' then SUM(
+            seikyu.price * seikyu.quantity
+        )
+        else 0
+    end kei,
     item.orosine item_orosine,
     Sum(
         item.orosine * seikyu.quantity
     ) orosikei,
     customer.group_id,
+    case
+        when biko2 = '1' then '外税'
+        when biko2 = '2' then '内税'
+        else 'エラー'
+    end zei_kb,
     customer.biko1 tanto_id,
     seikyu.tenant_id
 FROM
@@ -766,7 +777,8 @@ GROUP BY
     item.orosine,
     seikyu.tenant_id,
     customer.group_id,
-    customer.biko1
+    customer.biko1,
+    customer.biko2
 ORDER BY
     to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) desc,
     to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   desc,
@@ -799,7 +811,20 @@ from
             to_char((seikyu.deliver_ymd)::timestamp with time zone, 'mm'::text)   tuki,
             mst_group.group_nm1,
             customer.id,
-            trunc(sum(seikyu.price * seikyu.quantity) * 1.08) shokei,
+            case
+                when biko2 = '1' then trunc(
+                    SUM(seikyu.price * seikyu.quantity) * 1.08
+                )
+                when biko2 = '2' then SUM(
+                    seikyu.price * seikyu.quantity
+                )
+                else 0
+            end shokei,
+            case
+                when biko2 = '1' then '外税'
+                when biko2 = '2' then '内税'
+                else 'エラー'
+            end zei_kb,
             customer.group_id,
             customer.biko1,
             seikyu.tenant_id
@@ -820,6 +845,7 @@ from
             mst_group.group_nm1,
             customer.id,
             customer.biko1,
+            customer.biko2,
             seikyu.tenant_id
         order by
             nen,
@@ -861,6 +887,20 @@ SELECT
     sum(
         seikyu.price * seikyu.quantity
     ) kei,
+    case
+        when biko2 = '1' then trunc(
+            SUM(seikyu.price * seikyu.quantity) * 1.08
+        )
+        when biko2 = '2' then SUM(
+            seikyu.price * seikyu.quantity
+        )
+        else 0
+    end zeikomi,
+    case
+        when biko2 = '1' then '外税'
+        when biko2 = '2' then '内税'
+        else 'エラー'
+    end zei_kb,
     customer.biko1 tanto_id,
     seikyu.tenant_id
 FROM
@@ -881,6 +921,7 @@ group by
     customer.list,
     customer.name1,
     customer.biko1,
+    customer.biko2,
     seikyu.tenant_id
 ORDER BY
     to_char((seikyu.deliver_ymd)::timestamp with time zone, 'yyyy'::text) desc,
