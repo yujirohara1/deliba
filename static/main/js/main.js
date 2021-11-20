@@ -1,4 +1,5 @@
 var DELIMIT = "@|@|@";
+var grantLev = 0;
 
 $(document).ready(function() {
 
@@ -13,6 +14,14 @@ $(document).ready(function() {
         $('#selCustomerGroupKb').append(option3);
     });
   });
+
+  $.getJSON("/isKanriUser", function(json) {
+    list = JSON.parse(json.data);
+    $.each(list, function(i, item) {
+        grantLev = 9;
+    });
+    setShowOrHideByGrant();
+});
   
 //   $.getJSON("/getMstSetting_Main/GROUP_KB", function(json) {
 //     list = JSON.parse(json.data);
@@ -105,18 +114,21 @@ $(document).ready(function() {
     createSeikyuTables_Main(0,NowNenTuki());
   });
   
-  
-  
-   
-  
-  
-  
-  //var domTableCustomer = $('#tableCustomer').DataTable();
+
 
 
 });
 
-
+function setShowOrHideByGrant(){
+    if(grantLev==9){ //管理者モード
+        $('#btnDataDownload').show();
+        $('#divOrosine').show();
+        
+      }else{
+        $('#btnDataDownload').hide();
+        $('#divOrosine').hide();
+      }
+}
 
 
 function NowNenTuki(){

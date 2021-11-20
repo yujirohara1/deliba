@@ -29,7 +29,7 @@
                   請求データ管理
             %div.col-md-2
               %div.input-group
-                %button.btn.btn-primary.btn-sm(type="button" data-toggle="modal" data-target="#modalKatuyo")
+                %button.btn.btn-primary.btn-sm#btnDataDownload(type="button" data-toggle="modal" data-target="#modalKatuyo")
                   データ抽出
             %div.col-md-2
               %div.input-group
@@ -519,10 +519,10 @@
                           %select.form-control.input-sm2#selItemZeiKb
 
                     %div.col-md-6
-                      %div.input-group
+                      %div.input-group#divOrosine
                         %span.input-group-addon
                           卸　値
-                        %input.form-control.input-sm#txtItemOrosi(type="text", maxlength="4" onchange="fncNumOnly()" onblur="$(event.srcElement).val(Comma(value));" style="text-align:right")
+                        %input.form-control.input-sm#txtItemOrosi(type="text", maxlength="8" onchange="fncNumOnly()" onblur="$(event.srcElement).val(Comma(value));" style="text-align:right")
                   %div.row
                                       
                   %div.row
