@@ -506,7 +506,7 @@
                           コード
                         %input.form-control.input-sm#txtItemCode(type="text", maxlength="4" onchange="fncNumOnly();" placeholder="必須")
                     %div.col-md-6
-                      %div.input-group
+                      %div.input-group#divSiirene
                         %span.input-group-addon
                           仕入値
                         %input.form-control.input-sm#txtItemSiire(type="text", maxlength="8" onchange="fncNumOnly()" onblur="$(event.srcElement).val(Comma(value));" style="text-align:right")

@@ -122,11 +122,11 @@ $(document).ready(function() {
 function setShowOrHideByGrant(){
     if(grantLev==9){ //管理者モード
         $('#btnDataDownload').show();
-        $('#divOrosine').show();
+        $('#divSiirene').show();
         
       }else{
         $('#btnDataDownload').hide();
-        $('#divOrosine').hide();
+        $('#divSiirene').hide();
       }
 }
 
