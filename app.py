@@ -114,7 +114,7 @@ def load_user(user_id):
   return users.get(int(user_id))
 
 # db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
-db_uri = os.environ.get('HEROKU_POSTGRESQL_BLACK_URL') #本番用 
+db_uri = os.environ.get('DATABASE_URL') #本番用 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -595,7 +595,7 @@ def dbUpdate_updSeikyuQuantity(customerid, itemid, deliverymd, quantity, price, 
   tdatetime = datetime.datetime.strptime(tstr, '%Y-%m-%d')
   tdate = datetime.date(tdatetime.year, tdatetime.month, tdatetime.day)
 
-  d = Daicho.query.filter(Daicho.customer_id==customerid, Daicho.item_id==itemid, Daicho.youbi==str(tdate.weekday()+1), Seikyu.tenant_id==current_user.tenant_id).all()
+  d = Daicho.query.filter(Daicho.customer_id==customerid, Daicho.item_id==itemid, Daicho.youbi==str(tdate.weekday()+1), Daicho.tenant_id==current_user.tenant_id).all()
   
   if int(quantity) != 0  or len(d) != 0:
     seikyu = Seikyu()
