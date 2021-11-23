@@ -431,7 +431,7 @@ def kingakuFormat(val):
 
 def ZeroToYasumi(val):
   if val==0:
-    return "休"
+    return "＊"
   else:
     return val
 

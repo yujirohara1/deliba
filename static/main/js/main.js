@@ -1781,7 +1781,7 @@ function getSeikyuQuantityColorFlg(val, row, youbiwa){
             if(youbiwa == "土"){teiki=rows[i].dou;  }
             if(youbiwa == "日"){teiki=rows[i].niti; }
 
-            if(toNumber(teiki)==toNumber(val)){return (val==0 ? '休' : val);} 
+            if(toNumber(teiki)==toNumber(val)){return (val==0 ? '＊' : val);} 
         }
     }
     //
@@ -1789,7 +1789,7 @@ function getSeikyuQuantityColorFlg(val, row, youbiwa){
     if(teiki == -1){
         return "<span style='color:red' aria-label='今月のみ追加商品 ' data-balloon-pos='left'/>" + (val==0 ? '' : (val==null ? '' : val));
     }else{
-        return "<span style='color:red' aria-label='定期なら " + teiki + "' data-balloon-pos='left'/>" + (val==0 ? '休' : (val==null ? '' : val));
+        return "<span style='color:red' aria-label='定期なら " + teiki + "' data-balloon-pos='left'/>" + (val==0 ? '＊' : (val==null ? '' : val));
     }
 }
 
