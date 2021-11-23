@@ -2129,7 +2129,7 @@ function createItemGroupTables_DaichoSub(){
         },
         "scrollY":$(window).height() * 40 / 100,
         "pageLength": 1000,
-        order: [[ 1, "desc" ],[ 0, "asc" ]],
+        order: [[ 0, "asc" ],[ 1, "desc" ]],
         paging: false,
         "aoColumnDefs": [
             { 'bSortable': false, 'aTargets': [ 0 ] },
