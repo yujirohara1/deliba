@@ -34,6 +34,9 @@ import smtplib
 from email.mime.text import MIMEText
 from email.utils import formatdate
 import csv
+# import logging 
+# logging.basicConfig()
+# logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 
 DELIMIT = "@|@|@"
@@ -64,7 +67,8 @@ class User(UserMixin):
 users = {
     1: User(1, "yujiro", "yjrhr1102", "demo"),
     2: User(2, "seiya", "seiya7293", "hara"),
-    3: User(3, "yasu", "3021", "hara"),
+    3: User(3, "yasu", "3021", "sato"),
+    4: User(4, "seiya2", "seiya7294", "sato"),
     100: User(100, "demo", "demo", "demo")
 }
 

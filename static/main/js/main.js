@@ -32,6 +32,14 @@ $(document).ready(function() {
 //   });
   
   
+$.getJSON("/getMstSetting_Main/BACK_COLOR", function(json) {
+    list = JSON.parse(json.data);
+    $.each(list, function(i, item) {
+        document.body.style.backgroundColor=item.param_val1;
+    });
+  });
+  
+  
   $.getJSON("/getMstSetting_Main/SIHARAI_KB", function(json) {
     list = JSON.parse(json.data);
     $.each(list, function(i, item) {
