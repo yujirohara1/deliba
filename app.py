@@ -25,6 +25,7 @@ from models.kakute import Kakute, KakuteSchema
 from print.print_seikyu import *
 from sqlalchemy.sql import text
 from sqlalchemy import distinct
+from sqlalchemy import asc
 import json
 # from rq import Queue
 # from worker import conn
@@ -343,7 +344,8 @@ def resPdf_printSeikyu(customerid, customeridB, nentuki, randnum):
   sql = sql + "         customer.group_id,                                                                                                              " 
   sql = sql + "         to_char(seikyu.deliver_ymd,'yyyy') || to_char(seikyu.deliver_ymd,'mm') || lpad(seikyu.customer_id::text,6,0::text) SEIKYU_KEY,  " 
   sql = sql + "         customer.harai_kb ,                                                                                                             " 
-  sql = sql + "         customer.biko2 zei_kb                                                                                                           " 
+  sql = sql + "         customer.biko2 zei_kb,                                                                                                           " 
+  sql = sql + "         customer.biko1 tanto                                                                                                          " 
   sql = sql + "  FROM   " + TableWhereTenantId("seikyu") + " seikyu                                                                                     " 
   sql = sql + "  inner join " + TableWhereTenantId("item") + " item                                                                                     " 
   sql = sql + "  on                                                                                                                                     " 
@@ -457,7 +459,8 @@ def print_pdfMergeSeikyusho():
 @app.route('/getMstSetting_Main/<param_id>')
 @login_required
 def resJson_getMstSetting_Main(param_id):
-  setting = MstSetting.query.filter(MstSetting.param_id==param_id, MstSetting.tenant_id==current_user.tenant_id).all() #変更
+  setting = MstSetting.query.filter(MstSetting.param_id==param_id, 
+  MstSetting.tenant_id==current_user.tenant_id).order_by(asc(MstSetting.param_id),asc(MstSetting.param_no)).all() #変更
   setting_schema = MstSettingSchema(many=True)
   return jsonify({'data': setting_schema.dumps(setting, ensure_ascii=False)})
 

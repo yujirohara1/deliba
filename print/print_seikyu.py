@@ -225,14 +225,47 @@ def print_waku_kihon(pdf_canvas):
 #     width += (len(string) - 1) * charspace
 #     return width
 
-def get_param_val(paramlist, id, no, colidx):
+def get_param_val(paramlist, id, no, colidx, datarow):
   for row in paramlist:
     if row.param_id == id and row.param_no == no:
       if colidx == 1:
-        return row.param_val1
+        if (row.tenant_id == 'sato' and datarow["tanto"] == "3") and (id == "TENPO_RYOSYUSHO" or id == "TENPO_SEIKYUSHO"):
+          return satoSpecial(id, no, row.param_val1)
+        else:
+          return row.param_val1
       if colidx == 2:
         return row.param_val2
   return ""
+
+def satoSpecial(id, no, satoStr):
+  if id == "TENPO_RYOSYUSHO":
+    if no == 1:
+      return "はら牛乳販売店"
+    elif no == 2:
+      return "新潟市南区下曲通１３３－１"
+    elif no == 3:
+      return "025-375-3018"
+    else:
+      return satoStr
+  elif id == "TENPO_SEIKYUSHO":
+    if no == 1:
+      return "はら牛乳販売店"
+    elif no == 2:
+      return "新潟市南区下曲通１３３－１"
+    elif no == 3:
+      return "025-375-3018"
+    else:
+      return satoStr
+  else:
+    return satoStr
+
+  # TENPO_RYOSYUSHO | 領収書の店舗情報 |        1 | はら牛乳販売店             |            |            | hara
+  # TENPO_RYOSYUSHO | 領収書の店舗情報 |        2 | 新潟市南区下曲通１３３－１ |            |            | hara
+  # TENPO_RYOSYUSHO | 領収書の店舗情報 |        3 | 025-375-3018               |            |            | hara
+  # TENPO_SEIKYUSHO | 請求書の店舗情報 |        1 | はら牛乳販売店             |            |            | hara
+  # TENPO_SEIKYUSHO | 請求書の店舗情報 |        2 | 新潟市南区下曲通１３３－１ |            |            | hara
+  # TENPO_SEIKYUSHO | 請求書の店舗情報 |        3 | 025-375-3018               |            |            | hara
+
 
 
 def print_string_sub(pdf_canvas, start_x, start_y, data, paramlist):
@@ -293,18 +326,18 @@ def print_string_sub(pdf_canvas, start_x, start_y, data, paramlist):
 
       font_size = def_font_size
       pdf_canvas.setFont(def_font_type, font_size)
-      comment = get_param_val(paramlist, "COMMENT_SEIKYU", int(row["harai_kb"]), 1).split(";br")
+      comment = get_param_val(paramlist, "COMMENT_SEIKYU", int(row["harai_kb"]), 1, row).split(";br")
 
       pdf_canvas.drawString(start_x+178+155+6, start_y+170, comment[0])
       if len(comment)==2: 
         pdf_canvas.drawString(start_x+178+155+6, start_y+181, comment[1]) 
       
       pdf_canvas.setFont(def_font_type, def_font_size+6)
-      pdf_canvas.drawString(start_x+178+155, start_y+206, get_param_val(paramlist, "TENPO_SEIKYUSHO", 1, 1) ) 
+      pdf_canvas.drawString(start_x+178+155, start_y+206, get_param_val(paramlist, "TENPO_SEIKYUSHO", 1, 1, row) ) 
       pdf_canvas.setFont(def_font_type, def_font_size+1)
-      pdf_canvas.drawString(start_x+178+155, start_y+206+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 2, 1) ) 
+      pdf_canvas.drawString(start_x+178+155, start_y+206+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 2, 1, row) ) 
       pdf_canvas.setFont(def_font_type, def_font_size)
-      pdf_canvas.drawString(start_x+178+155, start_y+206+15+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 3, 1) ) 
+      pdf_canvas.drawString(start_x+178+155, start_y+206+15+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 3, 1, row) ) 
 
       # カレンダー 1日～15日 見出し
       font_size = def_font_size-1
@@ -412,11 +445,11 @@ def print_string_sub(pdf_canvas, start_x, start_y, data, paramlist):
   pdf_canvas.drawString(start_x+178,      start_y+106+14+10+30+20, '　　　　　年　　　月　　　日') 
 
   pdf_canvas.setFont(def_font_type, def_font_size+6)
-  pdf_canvas.drawString(start_x+178+2, start_y+206, get_param_val(paramlist, "TENPO_RYOSYUSHO", 1, 1) ) #'デモ牛乳販売店') 
+  pdf_canvas.drawString(start_x+178+2, start_y+206, get_param_val(paramlist, "TENPO_RYOSYUSHO", 1, 1, row) ) #'デモ牛乳販売店') 
   pdf_canvas.setFont(def_font_type, def_font_size+1)
-  pdf_canvas.drawString(start_x+178+2, start_y+206+15, get_param_val(paramlist, "TENPO_RYOSYUSHO", 2, 1) ) 
+  pdf_canvas.drawString(start_x+178+2, start_y+206+15, get_param_val(paramlist, "TENPO_RYOSYUSHO", 2, 1, row) ) 
   pdf_canvas.setFont(def_font_type, def_font_size)
-  pdf_canvas.drawString(start_x+178+2, start_y+206+15+15, get_param_val(paramlist, "TENPO_RYOSYUSHO", 3, 1) ) 
+  pdf_canvas.drawString(start_x+178+2, start_y+206+15+15, get_param_val(paramlist, "TENPO_RYOSYUSHO", 3, 1, row) ) 
 
 
 

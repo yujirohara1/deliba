@@ -7,7 +7,7 @@ class Item(db.Model):
     name1 = db.Column(db.String(), nullable=True) 
     name2 = db.Column(db.String(), nullable=True) 
     tanka = db.Column(db.Integer, nullable=True) 
-    orosine = db.Column(db.Integer, nullable=True) 
+    orosine = db.Column(db.String(), nullable=True) 
     zei_kb = db.Column(db.Integer, nullable=True) 
     del_flg = db.Column(db.Integer, nullable=True) 
     tenant_id   = db.Column(db.String(), primary_key=True) 
