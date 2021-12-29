@@ -2996,7 +2996,7 @@ function initSystemMode1(){
             aTag.addEventListener('click', function(event) {
                 hoikuListClick(event.srcElement.id);
                 createTableDateKani();
-                createItemNouhinTableKani([]);
+                createItemNouhinTableKani(-1,"1999/1/1");
             });
             $('#listGroupHoiku').append(aTag);
         });
@@ -3051,7 +3051,7 @@ function initSystemMode2(){
         var nentuki = $('#selNentukiKani').val();
         createTableDateKani();
         createItemTableKani();
-        createItemNouhinTableKani([]);
+        createItemNouhinTableKani(-1,"1999/1/1");
     });
 
     
@@ -3197,26 +3197,31 @@ $("#tableItemKani tbody").on('click',function(event) {
 $('#tableDateListKani tbody').on( 'click', 'tr', function () {
     var rowData =   $('#tableDateListKani').DataTable().row( this ).data();
     $('#inpKaniDeliverYmd').val(rowData.deliverYmd + "(" + getAllYoubiByNentukiDD(rowData.deliverYmd) + ")");
-    if(toNumber(rowData.customerId) != 0){
-        //aaa
-        $.ajax({
-            type: "GET",
-            url: "/getSeikyu_ByCusotmerIdAndDate/" + rowData.customerId + "/" + rowData.deliverYmd.split("/").join("-") + "",
-            dataType: "json",
-        }).done(function(json) {
-            list = json.data;
-            // $.each(list, function(i, item) { aaaaa
-            //     alert(i);
-            // });
-            createItemNouhinTableKani(list);
-        }).fail(function(json) {
-            alert("エラー：" + json.statusText);
-        }).always(function(json) {
-            //何もしない
-        });
-    }else{
-        createItemNouhinTableKani([]);
+    var customerId = rowData.customerId;
+    if(customerId == ""){
+        customerId = -1;
     }
+    createItemNouhinTableKani(customerId,rowData.deliverYmd);
+    // if(toNumber(rowData.customerId) != 0){
+    //     //aaa
+    //     $.ajax({
+    //         type: "GET",
+    //         url: "/getSeikyu_ByCusotmerIdAndDate/" + rowData.customerId + "/" + rowData.deliverYmd.split("/").join("-") + "",
+    //         dataType: "json",
+    //     }).done(function(json) {
+    //         list = json.data;
+    //         // $.each(list, function(i, item) { aaaaa
+    //         //     alert(i);
+    //         // });
+    //         createItemNouhinTableKani(list);
+    //     }).fail(function(json) {
+    //         alert("エラー：" + json.statusText);
+    //     }).always(function(json) {
+    //         //何もしない
+    //     });
+    // }else{
+    //     createItemNouhinTableKani([]);
+    // }
 
   });
   
@@ -3311,16 +3316,26 @@ function createItemTableKani(){
   
 
 
-function createItemNouhinTableKani(dataList){
+function createItemNouhinTableKani(customerId, deliverYmd){
 
-    var data = dataList;
+    //var data = dataList;
     
     $('#tableItemNouhinKani').DataTable({
         bInfo: false,
         bSort: true,
         destroy: true,
         "processing": true,
-        data:dataList,
+        ajax: {
+            url: "/getSeikyu_ByCusotmerIdAndDate/" + customerId + "/" + deliverYmd.split("/").join("-") + "",
+            dataType: "json",
+            dataSrc: function ( json ) {
+                return json.data;
+            },
+            contentType:"application/json; charset=utf-8",
+            complete: function () {
+                return; 
+            }
+        },
         columns: [
             { data: 'id'     ,width: '8%',  className: 'dt-body-right',render: function (data, type, row) 
                 { 
