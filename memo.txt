@@ -1,8 +1,11 @@
 <meta name="Keywords" content="牛乳宅配管理システム,牛乳宅配管理ソフト,宅配PRO,宅配プロ,姫路コンピュータ">
 <meta name="Description" content="多岐にわたりご活用頂ける安心サポート付き牛乳宅配管理システム『宅配プロ』でお客様のあらゆるニーズにお応えします。発注や請求書作成にとても便利。">
 
-C:\Users\yujir>psql -U postgres deliba_db
+C:\Users\yujir>psql -U postgres newdb3
 ユーザ postgres のパスワード:yjrhr1102
+
+
+psql -U postgres newdb3
 
 Heroku CLI heroku pg:psql postgresql-cylindrical-36948 --app deliba
 heroku pg:psql postgresql-solid-08326 --app deliba
@@ -57,3 +60,50 @@ ie
 
 chrome
 "mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/88.0.4324.104 safari/537.36"
+
+
+
+
+
+
+ public   | customer                 | テーブル   | postgres
+ public   | daicho                   | テーブル   | postgres
+ public   | item                     | テーブル   | postgres
+ public   | kakute                   | テーブル   | postgres
+ public   | mst_setting              | テーブル   | postgres
+ public   | seikyu                   | テーブル   | postgres
+
+
+
+create table   customer_wksato           as select * from     customer      where tenant_id = 'hara';
+create table   daicho_wksato             as select * from     daicho        where tenant_id = 'hara';
+create table   item_wksato               as select * from     item          where tenant_id = 'hara';
+create table   mst_setting_wksato        as select * from     mst_setting   where tenant_id = 'hara';
+
+
+update  customer_wksato     set tenant_id='sato';
+update  daicho_wksato       set tenant_id='sato';
+update  item_wksato         set tenant_id='sato';
+update  mst_setting_wksato  set tenant_id='sato';
+
+
+
+
+
+insert into    customer    select * from  customer_wksato    ;
+insert into    daicho      select * from  daicho_wksato      ;
+insert into    item        select * from  item_wksato        ;
+insert into    mst_setting select * from  mst_setting_wksato ;
+
+
+
+
+delete from mst_setting where param_id = 'BACK_COLOR';
+insert into mst_setting values('BACK_COLOR','背景色',1,'#DAE4FC',null,null,'sato');
+insert into mst_setting values('BACK_COLOR','背景色',1,'#F9FCDA',null,null,'hara');
+
+
+
+
+
+

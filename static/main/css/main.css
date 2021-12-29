@@ -132,3 +132,31 @@ table.dataTable thead tr {
 .with-nav-tabs.panel-primary .nav-tabs > li.dropdown .dropdown-menu > .active > a:focus {
     background-color: #4a9fe9;
 }
+
+
+.input-mm {
+    height: 32px;
+    padding: 6px 10px;
+    font-size: 14px;
+    line-height: 1.3333333;
+    border-radius: 4px;
+}
+
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #337ab7;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#tableItemKani_wrapper{
+    top:-5px;
+}
+
+
+#tableItemNouhinKani td{
+    height: 30px;
+    font-size:24px;
+}

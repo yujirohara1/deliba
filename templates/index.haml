@@ -841,7 +841,93 @@
               閉じる
 
 
-
+%div.container-fluid#divHoikuMain
+  %div.row
+    %div.col-md-3.h4
+      １．顧客名を選択してください。
+    %div.col-md-9.h4
+      商品名を選択してください。
+  %div.row
+    %div.col-md-3
+      <div class="list-group" id="listGroupHoiku">
+      </div>
+      %div.h4
+        ２．納品日を選択してください。
+      %div.form-group
+          %select.form-control.input-mm#selNentukiKani
+    %div.col-md-9
+      %div.col-md-8
+        %table.table-bordered.row.hover#tableItemKani
+          %thead
+            %tr
+              %th 
+                ID
+              %th
+                コード
+              %th
+                商品名
+              %th
+                単価
+          %tbody
+  %div.row
+    %div.col-md-3
+      %table.table-bordered.row.hover#tableDateListKani
+        %thead
+          %tr
+            %th 
+              納品日
+            %th
+              相手先
+            %th
+              請求額
+        %tbody
+    %div.col-md-9
+      %div.h4
+        請求情報を作成してください。
+      %div.row
+        %hr
+      %div.row
+        %div.col-md-1.h4
+          納品先
+        %div.col-md-7
+          %input.form-control#inpKaniAite(type="text" style="width:60%; height:30px; font-size:20px" disabled)
+      %div.row
+        %div.col-md-1.h4
+          納品日
+        %div.col-md-7
+          %input.form-control#inpKaniDeliverYmd(type="text" style="width:60%; height:30px; font-size:20px" disabled)
+      %div.row
+        %div.col-md-1.h4
+          請求明細
+        %div.col-md-7
+          %table.table-bordered.row.hover#tableItemNouhinKani
+            %thead
+              %tr
+                %th 
+                  &nbsp;
+                %th
+                  コード
+                %th
+                  商品名
+                %th
+                  単価
+                %th
+                  数量
+                %th
+                  小計
+            %tbody
+      %div.row
+        %div.col-md-1
+        %div.col-md-4
+        %div.col-md-1.h4
+          合計
+        %div.col-md-2
+          %input.form-control#inpKaniGokei(type="text" style="width:100%; height:30px; font-size:20px; text-align:right" disabled)
+        %div.col-md-4
+      %div.row
+        %div.col-md-6
+        %div.col-md-2
+        %div.col-md-4
 
 {% endblock %}
 

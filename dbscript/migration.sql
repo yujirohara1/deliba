@@ -659,6 +659,7 @@ insert into mst_setting values('START_YM','利用開始年月',1,'201908',null,null,'h
 insert into mst_setting values('GROUP_KB','グループ区分',100,'月水金','Aグループ',null,'hara');
 insert into mst_setting values('GROUP_KB','グループ区分',200,'火木土','Bグループ',null,'hara');
 insert into mst_setting values('GROUP_KB','グループ区分',300,'月水金[佐藤]','Cグループ',null,'hara');
+insert into mst_setting values('GROUP_KB','グループ区分',400,'火木土[佐藤]','Dグループ',null,'hara');
 insert into mst_setting values('SIHARAI_KB','支払方法区分',1,'現金',null,null,'hara');
 insert into mst_setting values('SIHARAI_KB','支払方法区分',2,'引落',null,null,'hara');
 insert into mst_setting values('CUSTOMER_ZEI_KB','内税外税区分',1,'外税',null,null,'hara');
@@ -699,7 +700,7 @@ insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',5,  'v_csv_ta
 
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',1,  'v_csv_uriage_tantobetu'    ,'年,月,担当,顧客ID,顧客名,商品ID,商品コード,商品名,本数_a,単価_b,計_a×b＋税,卸値_c, 計_a×c,グループID,税区分,担当ID',null,'hara');
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',2,  'v_csv_uriage_groupbetu'    ,'年,月,グループID,グループ名,担当ID,売上合計,件数',null,'hara');
-insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',3,  'v_csv_uriage_kokyakubetu'  ,'年,月,グループID,グループ名,顧客ID,顧客名,請求額,税込請求額,消費税区分,担当ID',null,'demo');
+insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',3,  'v_csv_uriage_kokyakubetu'  ,'年,月,グループID,グループ名,顧客ID,顧客名,請求額,税込請求額,消費税区分,担当ID',null,'hara');
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',4,  'v_csv_hikiotosi'           ,'年,月,宅配順,氏名１,氏名２,支払方法区分,支払方法区分名,請求額,税込額,税区分,グループID,担当ID',null,'hara');
 insert into mst_setting values('VIEW_COLUMN_NAME','ビューカラム名',5,  'v_csv_takuhai'             ,'グループID,宅配順,顧客ID,担当者,顧客名１,顧客名２,住所１,住所２,住所３,支払方法区分,削除フラグ,商品ID,商品コード,商品名１,商品名２,単価,削除フラグ,月,火,水,木,金,土,日,計,担当ID',null,'hara');
 
@@ -1193,6 +1194,7 @@ ALTER TABLE mst_setting  ADD COLUMN tenant_id character varying(80) not null def
 
 
 
+ALTER TABLE item         ALTER COLUMN  orosine type numeric(10,3);
 
 
 
@@ -1228,3 +1230,57 @@ rollback;
 --$$ LANGUAGE plpgsql;
 --
 --select deliver_ymd, date_to_youbi(deliver_ymd) from seikyu;
+
+
+
+
+select * from item where id = 48;
+
+
+
+select * from item where code in ('110','315') and tenant_id = 'hara';
+update item set code = '110', name1 = '塚田コーヒー180' where code in ('110','315') and tenant_id = 'hara';
+
+
+
+
+select * from item where code in ('311','104') and tenant_id = 'hara';
+update item set code = '104', name1 = '塚田75牛乳200' where code in ('311','104') and tenant_id = 'hara';
+
+
+
+select * from item where code in ('107','313') and tenant_id = 'hara';
+update item set code = '107', name1 = '塚田カルセンド' where code in ('107','313') and tenant_id = 'hara';
+
+
+
+select * from item where (code in ('119') or id in (352,173,294)) and tenant_id = 'hara';
+update item set code = '119', name1 = '塚田ヨーグルト' where (code in ('119') or id in (352,173,294)) and tenant_id = 'hara';
+
+
+select * from item where code in ('101','309') and tenant_id = 'hara';
+update item set code = '101', name1 = '塚田3.6牛乳1000' where code in ('101','309') and tenant_id = 'hara';
+
+
+select * from item where code in ('113') and tenant_id = 'hara';
+update item set name1 = '塚田フルーツ180' where code in ('113') and tenant_id = 'hara';
+
+
+select * from item where code in ('112') and tenant_id = 'hara';
+update item set name1 = '塚田センド720' where code in ('112') and tenant_id = 'hara';
+
+select * from item where code in ('125') and tenant_id = 'hara';
+update item set name1 = '塚田牛乳200' where code in ('125') and tenant_id = 'hara';
+
+select * from item where code in ('124') and tenant_id = 'hara';
+update item set name1 = '塚田牛乳180' where code in ('124') and tenant_id = 'hara';
+
+
+select * from item where code in ('103') and tenant_id = 'hara';
+update item set name1 = '塚田3.6牛乳500P' where code in ('103') and tenant_id = 'hara';
+
+select * from item where code in ('120') and tenant_id = 'hara';
+update item set name1 = '塚田植物のむヨーグルト' where code in ('120') and tenant_id = 'hara';
+
+select * from item where code in ('105') and tenant_id = 'hara';
+update item set name1 = '塚田植物性のむヨーグルト' where code in ('105') and tenant_id = 'hara';

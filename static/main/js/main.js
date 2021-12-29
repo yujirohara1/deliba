@@ -1,127 +1,139 @@
 var DELIMIT = "@|@|@";
 var grantLev = 0;
+var systemMode = 0;
+
+    
 
 $(document).ready(function() {
 
-  $.getJSON("/getMstSetting_Main/GROUP_KB", function(json) {
-    list = JSON.parse(json.data);
-    $.each(list, function(i, item) {
-        var option = $('<option>').text(item.param_val1).val(item.param_no);
-        var option2 = $('<option>').text(item.param_val1).val(item.param_no);
-        var option3 = $('<option>').text(item.param_val1).val(item.param_no);
-        $('#selGroupKb').append(option);
-        $('#selCsvGroupKb').append(option2);
-        $('#selCustomerGroupKb').append(option3);
-    });
-  });
+    $.getJSON("/getMstSetting_Main/SYSTEM_MODE", function(json) {
+        list = JSON.parse(json.data);
+        $.each(list, function(i, item) {
+            systemMode = item.param_no;
+        });
+        if(systemMode==1){
+            $('.container-fluid').hide();
+            $('#divHoikuMain').show();
+            initSystemMode1();
+            return;
+        } else {
+            $('.container-fluid').show();
+            $('#divHoikuMain').hide();
 
-  $.getJSON("/isKanriUser", function(json) {
-    list = JSON.parse(json.data);
-    $.each(list, function(i, item) {
-        grantLev = 9;
-    });
-    setShowOrHideByGrant();
-});
-  
-//   $.getJSON("/getMstSetting_Main/GROUP_KB", function(json) {
-//     list = JSON.parse(json.data);
-//     $.each(list, function(i, item) {
-//         var option = $('<option>').text(item.param_val1).val(item.param_no);
-//         $('#selCustomerGroupKb').append(option);
-//     });
-//   });
-  
-  
-$.getJSON("/getMstSetting_Main/BACK_COLOR", function(json) {
-    list = JSON.parse(json.data);
-    $.each(list, function(i, item) {
-        document.body.style.backgroundColor=item.param_val1;
-    });
-  });
-  
-  
-  $.getJSON("/getMstSetting_Main/SIHARAI_KB", function(json) {
-    list = JSON.parse(json.data);
-    $.each(list, function(i, item) {
-        var option = $('<option>').text(item.param_val1).val(item.param_no);
-        $('#selHaraiKb').append(option);
-    });
-  });
-  
-  $.getJSON("/getMstSetting_Main/CUSTOMER_ZEI_KB", function(json) {
-    list = JSON.parse(json.data);
-    $.each(list, function(i, item) {
-        var option = $('<option>').text(item.param_val1).val(item.param_no);
-        $('#selCustomerZeiKb').append(option);
-    });
-  });
-  
-  $.getJSON("/getMstSetting_Main/HONTEN_KB", function(json) {
-    list = JSON.parse(json.data);
-    $.each(list, function(i, item) {
-        var option = $('<option>').text(item.param_val1).val(item.param_no);
-        var option2 = $('<option>').text(item.param_val1).val(item.param_no);
-        $('#selTantoName').append(option);
-        $('#selCsvTanto').append(option2);
-    });
-  });
-  
-  
+            $.getJSON("/getMstSetting_Main/GROUP_KB", function(json) {
+            list = JSON.parse(json.data);
+            $.each(list, function(i, item) {
+            var option = $('<option>').text(item.param_val1).val(item.param_no);
+            var option2 = $('<option>').text(item.param_val1).val(item.param_no);
+            var option3 = $('<option>').text(item.param_val1).val(item.param_no);
+            $('#selGroupKb').append(option);
+            $('#selCsvGroupKb').append(option2);
+            $('#selCustomerGroupKb').append(option3);
+            });
+            });
 
-  $.getJSON("/getMstSetting_Main/ZEI_KB", function(json) {
-    list = JSON.parse(json.data);
-    $.each(list, function(i, item) {
-        var option = $('<option>').text(item.param_val2).val(item.param_no);
-        $('#selItemZeiKb').append(option);
-    });
-  });
-  
+                
 
-  //
-  
-  $.getJSON("/getMstSetting_Main/START_YM", function(json) {
-    list = JSON.parse(json.data);
-    if(list.length == 1){
-      var y = list[0].param_val1.substring(0,4)*1;
-      var m = list[0].param_val1.substring(4,6)*1-1;
-      var dt = new Date(y, m, 15);
-      var today = new Date(); 
-      today.setMonth(today.getMonth() + 2);
-      
-      var ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
-      var ymTo =  today.getFullYear() + "" + ("0"+today.getMonth()).slice(-2);
-      ymFrom = ymFrom * 1;
-      ymTo = ymTo * 1;
-      
-      while (ymFrom <= ymTo) {
-          var option = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
-          var option2 = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
-          $('#selNentuki').append(option);
-          $('#selCsvNentuki').append(option2);
-          
-          dt.setMonth(dt.getMonth() + 1);
-          ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
-          ymFrom = ymFrom * 1;
-      }
-      var seldate = new Date();
-      $('#selNentuki').val(NowNenTuki());
-      $('#selCsvNentuki').val(NowNenTuki());
-      
-    }else{
-      alert("エラー：START_YMがありません");
-    }
-  }).done(function(json) {
-    console.log("成功");
-  }).fail(function(jqXHR, textStatus, errorThrown) {
-    console.log("エラー：" + textStatus);
-    console.log("テキスト：" + jqXHR.responseText);
-  }).always(function() {
-    console.log("完了");
-    createCustomerTables_Main();
-    createDaichoTables_Main(0);
-    createSeikyuTables_Main(0,NowNenTuki());
-  });
-  
+            $.getJSON("/isKanriUser", function(json) {
+            list = JSON.parse(json.data);
+            $.each(list, function(i, item) {
+            grantLev = 9;
+            });
+            setShowOrHideByGrant();
+            });
+        
+            $.getJSON("/getMstSetting_Main/BACK_COLOR", function(json) {
+            list = JSON.parse(json.data);
+            $.each(list, function(i, item) {
+            document.body.style.backgroundColor=item.param_val1;
+            });
+            });
+        
+            $.getJSON("/getMstSetting_Main/SIHARAI_KB", function(json) {
+            list = JSON.parse(json.data);
+            $.each(list, function(i, item) {
+            var option = $('<option>').text(item.param_val1).val(item.param_no);
+            $('#selHaraiKb').append(option);
+            });
+            });
+        
+            $.getJSON("/getMstSetting_Main/CUSTOMER_ZEI_KB", function(json) {
+            list = JSON.parse(json.data);
+            $.each(list, function(i, item) {
+            var option = $('<option>').text(item.param_val1).val(item.param_no);
+            $('#selCustomerZeiKb').append(option);
+            });
+            });
+        
+            $.getJSON("/getMstSetting_Main/HONTEN_KB", function(json) {
+            list = JSON.parse(json.data);
+            $.each(list, function(i, item) {
+            var option = $('<option>').text(item.param_val1).val(item.param_no);
+            var option2 = $('<option>').text(item.param_val1).val(item.param_no);
+            $('#selTantoName').append(option);
+            $('#selCsvTanto').append(option2);
+            });
+            });
+        
+
+
+            $.getJSON("/getMstSetting_Main/ZEI_KB", function(json) {
+            list = JSON.parse(json.data);
+            $.each(list, function(i, item) {
+            var option = $('<option>').text(item.param_val2).val(item.param_no);
+            $('#selItemZeiKb').append(option);
+            });
+            });
+        
+        
+            //
+        
+            $.getJSON("/getMstSetting_Main/START_YM", function(json) {
+                list = JSON.parse(json.data);
+                if(list.length == 1){
+                    var y = list[0].param_val1.substring(0,4)*1;
+                    var m = list[0].param_val1.substring(4,6)*1-1;
+                    var dt = new Date(y, m, 15);
+                    var today = new Date(); 
+                    today.setMonth(today.getMonth() + 2);
+            
+                    var ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
+                    var ymTo =  today.getFullYear() + "" + ("0"+today.getMonth()).slice(-2);
+                    ymFrom = ymFrom * 1;
+                    ymTo = ymTo * 1;
+            
+                    while (ymFrom <= ymTo) {
+                        var option = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
+                        var option2 = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
+                        $('#selNentuki').append(option);
+                        $('#selCsvNentuki').append(option2);
+                    
+                        dt.setMonth(dt.getMonth() + 1);
+                        ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
+                        ymFrom = ymFrom * 1;
+                    }
+                    var seldate = new Date();
+                    $('#selNentuki').val(NowNenTuki());
+                    $('#selCsvNentuki').val(NowNenTuki());
+            
+                }else{
+                    alert("エラー：START_YMがありません");
+                }
+            }).done(function(json) {
+                console.log("成功");
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                console.log("エラー：" + textStatus);
+                console.log("テキスト：" + jqXHR.responseText);
+            }).always(function() {
+                console.log("完了");
+                createCustomerTables_Main();
+                createDaichoTables_Main(0);
+                createSeikyuTables_Main(0,NowNenTuki());
+            });
+        
+        }
+    });
+    
 
 
 
@@ -1509,6 +1521,9 @@ function getAllYoubiByNentuki(nen, tuki){
 
 
 
+
+
+
 /*
 || メイン下部の請求テーブルを作成
 */
@@ -2283,6 +2298,43 @@ function fncNumOnly(){
     // $(event.srcElement).val(ret.toLocaleString());
 }
 
+
+function fncNumOnlyKani(){
+    var inp = $(event.srcElement).val();
+    inp = inp.replace("０","0");
+    inp = inp.replace("１","1");
+    inp = inp.replace("２","2");
+    inp = inp.replace("３","3");
+    inp = inp.replace("４","4");
+    inp = inp.replace("５","5");
+    inp = inp.replace("６","6");
+    inp = inp.replace("７","7");
+    inp = inp.replace("８","8");
+    inp = inp.replace("９","9");
+    var ret = inp.replace(/[‐－―ー]/g, '-').replace(/[^\-\d\.]/g, '').replace(/(?!^\-)[^\d\.]/g, '');
+    $(event.srcElement).val(ret);
+    // $(event.srcElement).val(ret.toLocaleString());
+    
+    var tanka = toNumber(event.srcElement.parentElement.previousElementSibling.innerText);
+    event.srcElement.parentElement.nextElementSibling.innerText = (tanka * ret).toLocaleString();
+    $("#inpKaniGokei").val(calcGokei().toLocaleString());
+}
+
+function calcGokei(){
+    var tableRows = document.getElementById("tableItemNouhinKani").rows;
+    //var row =   $('#tableAddDaicho').DataTable().row( this ).data(); // 選択データ
+    var srcData = $('#tableItemNouhinKani').DataTable().rows().data(); // 台帳データ
+
+    //var tableRows = $("#tableItemNouhinKani");
+    var gokei = 0;
+    for(var i=0; i<tableRows.length; i++){
+        var shokei = toNumber(tableRows[i].cells[4].innerText);
+        gokei = gokei + shokei;
+    }
+    return gokei;
+}
+
+
 /*
 || メイン左の顧客テーブルを作成
 */
@@ -2515,6 +2567,30 @@ function fncUpdateSeikyuQuantity(customerid, itemid, nen, tuki, niti, price, pri
         //alert(data);
         createSeikyuTables_Main(customerid, nen + ("00"+tuki).slice(-2));
 
+    }).fail(function(data) {
+        alert("エラー：" + data.statusText);
+    }).always(function(data) {
+        //何もしない
+    });
+}
+  
+
+function fncUpdateSeikyuQuantityKani(itemid, price, pricesub){
+    var deliverYmd = $('#inpKaniDeliverYmd').val().split("(")[0];
+    var customerid = getCustomerIdKaniMode(); //customer_id
+    var nen = toNumber(deliverYmd.split("/")[0]);
+    var tuki = toNumber(deliverYmd.split("/")[1]);
+    var niti = toNumber(deliverYmd.split("/")[2]);
+    var deliverymd = nen + "-" + tuki + "-" + niti;
+    var quantity = toNumber($("#inputQuantityTmp").val());
+    $.ajax({
+        type: "GET",
+        url: "/updateSeikyuQuantity/" + customerid + "/" + itemid + "/" + deliverymd + "/" + quantity + "/" + price + "/" + pricesub + ""
+    }).done(function(data) {
+        //alert(data);
+        //createSeikyuTables_Main(customerid, nen + ("00"+tuki).slice(-2));
+        var nentuki = $('#selNentukiKani').val();
+        createTableDateKani(nentuki);
     }).fail(function(data) {
         alert("エラー：" + data.statusText);
     }).always(function(data) {
@@ -2894,3 +2970,428 @@ $("#tableSeikyuKanriCustomer tbody").on('click',function(event) {
     $(event.target.parentNode).addClass('row_selected seikyuKanri2');
     
 });
+
+
+
+function initSystemMode1(){
+    $.ajax({
+        type: "GET",
+        url: "/getCustomer_Main/" + (100) + "/" + 2 +  "/" + (-1) +  "/" + (-1) + "",
+        dataType: "json",
+    }).done(function(json) {
+        list = JSON.parse(json.data);
+        $.each(list, function(i, item) {
+            var aTag = document.createElement('a'); 
+            aTag.id = "aCustomer_" + item.id;
+            aTag.value = item.id;
+            aTag.innerText = item.name1;
+            aTag.classList.add("list-group-item");
+            if(i == 0){
+                aTag.classList.add("active");
+                $('#inpKaniAite').val(item.name1);
+            }
+            aTag.addEventListener('click', function(event) {
+                hoikuListClick(event.srcElement.id);
+            });
+            $('#listGroupHoiku').append(aTag);
+        });
+    }).fail(function(json) {
+        alert("エラー：" + data.statusText);
+    }).always(function(json) {
+        //何もしない
+    });
+
+        
+    $.getJSON("/getMstSetting_Main/START_YM", function(json) {
+        list = JSON.parse(json.data);
+        if(list.length == 1){
+            var y = list[0].param_val1.substring(0,4)*1;
+            var m = list[0].param_val1.substring(4,6)*1-1;
+            var dt = new Date(y, m, 15);
+            var today = new Date(); 
+            today.setMonth(today.getMonth() + 2);
+    
+            var ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
+            var ymTo =  today.getFullYear() + "" + ("0"+today.getMonth()).slice(-2);
+            ymFrom = ymFrom * 1;
+            ymTo = ymTo * 1;
+    
+            while (ymFrom <= ymTo) {
+                var option = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
+                var option2 = $('<option>').text(dt.getFullYear() + "年" + " " + (dt.getMonth()*1+1) + "月").val(dt.getFullYear() + "" + (("00"+(dt.getMonth()*1+1)).slice(-2)));
+                $('#selNentukiKani').append(option);
+            
+                dt.setMonth(dt.getMonth() + 1);
+                ymFrom = dt.getFullYear() + "" + ("0"+dt.getMonth()).slice(-2);
+                ymFrom = ymFrom * 1;
+            }
+            var seldate = new Date();
+            $('#selNentukiKani').val(NowNenTuki());
+    
+        }else{
+            alert("エラー：START_YMがありません");
+        }
+    }).done(function(json) {
+        console.log("成功");
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log("エラー：" + textStatus);
+        console.log("テキスト：" + jqXHR.responseText);
+    }).always(function() {
+        console.log("完了");
+        var nentuki = $('#selNentukiKani').val();
+        createTableDateKani(nentuki);
+        createItemTableKani();
+        createItemNouhinTableKani();
+        //createCustomerTables_Main();
+        //createDaichoTables_Main(0);
+        //createSeikyuTables_Main(0,NowNenTuki());
+    });
+
+}
+
+function hoikuListClick(selectedId){
+    $('#listGroupHoiku .list-group-item').each(function(i, item) {
+        item.classList.remove("active");
+        if(item.id==selectedId){
+            item.classList.add("active");
+            $('#inpKaniAite').val(item.innerText);
+        }
+      });
+    // while(list.lastChild){
+    //     list.lastChild.classList.remove("active");
+    //     if(list.lastChild.id==selectedId){
+    //         list.lastChild.classList.add("active");
+    //     }
+    // }
+}
+
+
+
+
+$("#selNentukiKani").change(function(){
+    var nentuki = $('#selNentukiKani').val();
+    createTableDateKani(nentuki);
+
+    // $.ajax({
+    //     type: "GET",
+    //     url: "/getKaniDateList/" + $('#selNentukiKani').val() + "",
+    //     dataType: "json",
+    // }).done(function(json) {
+    //     list = json.data;
+    //     alert(list);
+    // }).fail(function(json) {
+    //     alert("エラー：" + data.statusText);
+    // }).always(function(json) {
+    //     //何もしない
+    // });
+});
+  
+  
+
+
+var pageScrollPosDateKani = 0;
+function createTableDateKani(nentuki){
+  pageScrollPosDateKani = $('#tableDateListKani')[0].parentElement.scrollTop;
+  
+  $('#tableDateListKani').DataTable({
+      bInfo: false,
+      bSort: true,
+      destroy: true,
+      "processing": true,
+      ajax: {
+        url: "/getKaniDateList/" + nentuki + "",
+          dataType: "json",
+          dataSrc: function ( json ) {
+              return json.data;
+          },
+          contentType:"application/json; charset=utf-8",
+          complete: function () {
+              return; 
+          }
+      },
+      columns: [
+          { data: 'deliverYmd'     ,width: '20%',render: 
+          function (data, type, row) { 
+              return data + "(" + getAllYoubiByNentukiDD(row.deliverYmd) + ")";
+          } },
+          { data: 'customerName'   ,width: '25%' ,  className: 'dt-body-center'},
+          { data: 'sumPrice'     ,width: '25%' ,  className: 'dt-body-right',render: function (data, type, row) { return (data*1).toLocaleString();} },
+      ],
+      aoColumnDefs: [
+          { 'bSortable': false, 'aTargets': [ 0,1,2 ] }
+       ],
+      language: {
+         url: "../static/main/js/japanese.json"
+      },
+      "scrollY":        $(window).height() * 70 / 100,
+      searching: false,
+      "pageLength": 1000,
+      paging:false,
+      "order": [ 0, "asc" ],
+      "lengthMenu": [100, 300, 500, 1000],
+      dom:"<'row'<'col-sm-12'tr>>" +
+          "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+          "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+    "preDrawCallback": function (settings) {
+      return;
+    },
+    "drawCallback": function (settings) {
+        $('#tableDateListKani')[0].parentElement.scrollTop = pageScrollPosDateKani;
+    }
+  });
+}
+
+
+
+function getAllYoubiByNentukiDD(deliverYmd){
+    var nen = deliverYmd.split("/")[0];
+    var tuki = deliverYmd.split("/")[1];
+    var d = deliverYmd.split("/")[2];
+    var ret=[];
+    var dayOfWeekStr = [ "日", "月", "火", "水", "木", "金", "土" ];
+    for(i=1; i<=31; i++){
+        if(i == d){
+            var d = new Date(nen + '/' + tuki + '/' +  ('00'+i).slice(-2));
+            return dayOfWeekStr[d.getDay()];
+        }
+    }
+    return "";
+}
+
+
+$("#tableDateListKani tbody").on('click',function(event) {
+    $("#tableDateListKani").removeClass('row_selected customer');        
+    $("#tableDateListKani tbody tr").removeClass('row_selected customer');        
+    $("#tableDateListKani tbody td").removeClass('row_selected customer');        
+    $(event.target.parentNode).addClass('row_selected customer');
+    
+});
+
+
+$("#tableItemKani tbody").on('click',function(event) {
+    $("#tableItemKani").removeClass('row_selected customer');        
+    $("#tableItemKani tbody tr").removeClass('row_selected customer');        
+    $("#tableItemKani tbody td").removeClass('row_selected customer');        
+    $(event.target.parentNode).addClass('row_selected customer');
+    
+});
+
+
+$('#tableDateListKani tbody').on( 'click', 'tr', function () {
+    var rowData =   $('#tableDateListKani').DataTable().row( this ).data();
+    $('#inpKaniDeliverYmd').val(rowData.deliverYmd + "(" + getAllYoubiByNentukiDD(rowData.deliverYmd) + ")");
+  } );
+  
+$('#tableItemKani tbody').on( 'click', 'tr', function () {
+    var rowData =   $('#tableItemKani').DataTable().row( this ).data();
+    
+    rowData.suryo = "1";
+    rowData.shokei = "";
+    
+    
+    //存在チェック
+    var tableData = $('#tableItemNouhinKani').DataTable().rows().data(); // 台帳データ
+    //$("#tableItemNouhinKani").DataTable().rows().data().length
+    if(tableData.length>0){
+        for(var i=0; i<tableData.length; i++){
+            if(tableData[i].id == rowData.id){
+                HighlightSelectRowCheck(rowData);
+                return;
+            }
+        }
+    }
+
+
+    var tableNouhin = $("#tableItemNouhinKani").DataTable(); //納品ピックアップアイテム
+    tableNouhin.row.add(rowData).draw();
+    
+  } );
+  
+  
+function HighlightSelectRowCheck(rowData){
+    var tableRows = document.getElementById("tableItemNouhinKani").rows;
+    for(var i=0; i<tableRows.length; i++){
+        if(tableRows[i].cells[0].firstElementChild.name == rowData.id){
+            tableRows[i].style.backgroundColor = "lightpink";
+            setTimeout("setRowColorTransparent(" + i + ");", 1000);
+        }
+    }
+}
+
+function setRowColorTransparent(index){
+    document.getElementById("tableItemNouhinKani").rows[index].style.backgroundColor = "transparent";
+}
+
+  
+
+
+function createItemTableKani(){
+    
+    $('#tableItemKani').DataTable({
+        bInfo: false,
+        bSort: true,
+        destroy: true,
+        "processing": true,
+        ajax: {
+            url: "/getItem_Daicho/すべて",
+            dataType: "json",
+            dataSrc: function ( json ) {
+                return JSON.parse(json.data);
+            },
+            contentType:"application/json; charset=utf-8",
+            complete: function () {
+                return; 
+            }
+        },
+        columns: [
+            { data: 'id'     ,width: '8%' },
+            { data: 'code'   ,width: '12%'},
+            { data: 'name1'  ,width: '33%'},
+            { data: 'tanka'  ,width: '10%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+        ],
+        language: {
+           url: "../static/main/js/japanese.json"
+        },
+        "scrollY":$(window).height() * 15 / 100,
+        order: [[ 1, "asc" ],[ 3, "asc" ]],
+        "pageLength": 1000,
+        paging: false,
+        searching: false,
+        "lengthMenu": [100, 300, 500, 1000],
+            dom:"<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+          "preDrawCallback": function (settings) {
+            return;
+          },
+          "drawCallback": function (settings) {
+              $('#tableDateListKani')[0].parentElement.scrollTop = pageScrollPosDateKani;
+          }
+    });
+  }
+  
+  
+  
+
+
+function createItemNouhinTableKani(){
+    
+    $('#tableItemNouhinKani').DataTable({
+        bInfo: false,
+        bSort: true,
+        destroy: true,
+        "processing": true,
+        columns: [
+            { data: 'id'     ,width: '8%',  className: 'dt-body-right',render: function (data, type, row) 
+                { 
+                    var btnTag = "";
+                    btnTag = btnTag + '<a href="#" ';
+                    btnTag = btnTag + ' id="btnDeleteKani_' + row.id + '" ';
+                    btnTag = btnTag + ' name = "' + row.id + '" ';
+                    btnTag = btnTag + ' value = "' + row.id + '" ';
+                    btnTag = btnTag + ' title = "' + row.id + '" ';
+                    btnTag = btnTag + ' onclick="funcDeleteRowKani(this,'+ row.id + ')" ';
+                    btnTag = btnTag + ' class="btn btn-primary btn-lg" ';
+                    btnTag = btnTag + ' role="button">削除</a>';
+                    return btnTag;
+                } 
+            },
+            { data: 'code'   ,width: '12%'},
+            { data: 'name1'  ,width: '33%'},
+            { data: 'tanka'  ,width: '10%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+            { data: 'suryo'       ,width: '25%',  className: 'dt-body-right',render: function (data, type, row) 
+                { 
+                    // if(data==null){
+                    var inputtag = "";
+                    inputtag = inputtag + '<input id="inputQuantityTmp" ';
+                    inputtag = inputtag + 'class="form-control input-lg" ';
+                    inputtag = inputtag + 'type="text" ';
+                    inputtag = inputtag + 'style="width:100%; font-size:28px; text-align:right" ';
+                    inputtag = inputtag + 'maxlength="3" ';
+                    inputtag = inputtag + 'oninput="fncNumOnlyKani();" ';
+                    inputtag = inputtag + 'onchange="fncUpdateSeikyuQuantityKani( ';
+                    inputtag = inputtag + '  ' + row.id + ', '; //item_id
+                    inputtag = inputtag + '  ' + row.tanka + ', '; //price
+                    inputtag = inputtag + '  ' + 0 + ' '; //price_sub
+                    inputtag = inputtag + ' );" ';
+                    inputtag = inputtag + 'value=' + "" + '>';
+                    //     return "未作成";
+                    // }else{
+                    //     return data;
+                    // }
+                    return inputtag;
+                } 
+            },
+            { data: 'shokei'  ,width: '33%',className: 'dt-body-right'},
+        ],
+        "columnDefs": [
+            {
+                "targets": [ 0 ], 
+                "visible": true
+            },
+            {
+                "targets": [ 1 ],
+                "visible": false
+            },
+            {
+                "targets": [ 0,1,2,3,4,5 ],
+                "sortable": false
+
+            }
+        ],
+        aoColumnDefs: [
+            { 'bSortable': false, 'aTargets': [ 0,1,2,3 ] }
+         ],
+        language: {
+           url: "../static/main/js/japanese.json"
+        },
+        "scrollY":$(window).height() * 35 / 100,
+        //order: [[ 1, "asc" ],[ 3, "asc" ]],
+        "pageLength": 1000,
+        paging: false,
+        searching: false,
+        "lengthMenu": [100, 300, 500, 1000],
+            dom:"<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+    });
+  }
+  
+  
+  function getCustomerIdKaniMode(){
+      var cid = toNumber($('#listGroupHoiku .list-group-item.active').val());
+      return cid;
+  }
+
+
+  function funcDeleteRowKani(eventObj, itemId){
+    // var rowData =   $('#tableItemKani').DataTable().row( this ).data();
+    // rowData.suryo = "1";
+    // rowData.shokei = "";
+
+    // var tableData = $('#tableItemNouhinKani').DataTable().rows().data(); // 台帳データ
+    // //$("#tableItemNouhinKani").DataTable().rows().data().length
+    // if(tableData.length>0){
+    //     for(var i=0; i<tableData.length; i++){
+    //         if(tableData[i].id == itemId){
+    //             HighlightSelectRowCheck(rowData);
+    //             return;
+    //         }
+    //     }
+    // }
+
+    var idx = $('#tableItemNouhinKani').DataTable().row(eventObj.parentElement.parentElement).index();
+    var tableId = "#tableItemNouhinKani";
+    //listChangeTarget = null;
+    //var scrpos = $(tableId)[0].parentElement.scrollTop;
+    var table = $(tableId).DataTable();
+    //var row = table.row(eventObj)
+    //var data = table.row(eventObj).data();
+    //var idx = table.row( eventObj ).index();
+    table.row(idx).remove().draw();
+    
+
+    //var tableNouhin = $("#tableItemNouhinKani").DataTable(); //納品ピックアップアイテム
+    //tableNouhin.row.add(rowData).draw();
+    
+  }

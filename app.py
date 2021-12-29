@@ -70,6 +70,7 @@ users = {
     2: User(2, "seiya", "seiya7293", "hara"),
     3: User(3, "yasu", "3021", "sato"),
     4: User(4, "seiya2", "seiya7294", "sato"),
+    5: User(5, "setu", "0301", "hoiku"),
     100: User(100, "demo", "demo", "demo")
 }
 
@@ -118,8 +119,8 @@ def SendMail_AccountToroku():
 def load_user(user_id):
   return users.get(int(user_id))
 
-# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用 
+db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
+# db_uri = os.environ.get('DATABASE_URL') #本番用 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -131,6 +132,149 @@ ma.init_app(app)
 def favicon():
     return app.send_static_file("favicon.ico")
     
+
+
+@app.route('/getKaniDateList/<nentuki>')
+@login_required
+def getKaniDateList(nentuki):
+  y = int(nentuki[0:4])
+  m = int(nentuki[4:6])
+  
+  sql = " "
+  sql = sql + " select "
+  sql = sql + "     s.customer_id, "
+  sql = sql + "     min(c.name1) customer_name1, "
+  sql = sql + "     sum(s.price*quantity) sum_price, "
+  sql = sql + "     s.deliver_ymd "
+  sql = sql + " from "
+  sql = sql + "     " + TableWhereTenantId("seikyu") + " s, "
+  sql = sql + "     " + TableWhereTenantId("customer") + " c "
+  sql = sql + " where "
+  sql = sql + "     s.customer_id = c.id "
+  sql = sql + "     and cast(to_char(deliver_ymd,'yyyy') as integer) = " + str(y) + " "
+  sql = sql + "     and cast(to_char(deliver_ymd,'mm') as integer) = " + str(m) + " "
+  sql = sql + " group by "
+  sql = sql + "     s.customer_id, "
+  sql = sql + "     s.deliver_ymd "
+  sql = sql + " order by s.deliver_ymd, s.customer_id "
+  
+  resultset=[]
+  data_listA = None
+  exist = False
+
+  if db.session.execute(text(sql)).fetchone() is not None:
+    data_listA = db.session.execute(text(sql))
+
+    if data_listA is not None:
+      for row in data_listA:
+        tstr = row["deliver_ymd"].strftime('%Y/%m/%d')
+        resultset.append({"deliverYmd":tstr, "customerId":row["customer_id"], "customerName":row["customer_name1"], "sumPrice":row["sum_price"]})
+
+  for d in range(1, 32):
+    exist = False
+    y = int(nentuki[0:4])
+    m = int(nentuki[4:6])
+    if isDate(y, m, d):
+      deliverymdstr="%04d/%02d/%02d"%(y,m,d)
+
+      for r in resultset:
+        if r["deliverYmd"] == deliverymdstr:
+          exist = True
+          break
+      
+      if exist == False:
+        resultset.append({"deliverYmd":deliverymdstr, "customerId":"", "customerName":"", "sumPrice":""})
+
+  # data_listA = None
+  # if db.session.execute(text(sql)).fetchone() is not None:
+  #   data_listA = db.session.execute(text(sql))
+
+  # resultset=[]
+  # for d in range(1, 32):
+  #   y = int(nentuki[0:4])
+  #   m = int(nentuki[4:6])
+  #   if isDate(y, m, d):
+  #     deliverymdstr="%04d/%02d/%02d"%(y,m,d)
+  #     # locale.setlocale(locale.LC_TIME, 'ja_JP.UTF-8')
+  #     # dt.strftime('%A, %a, %B, %b')
+  #     # deliverymd=datetime.datetime.strptime(deliverymdstr,"%Y/%m/%d")
+  #     # yobi = deliverymd.strftime("%A")
+  #     # resultset.append({deliverymdstr, {"deliverYmd":deliverymdstr}})
+  #     exist = False
+
+  #     if data_listA is not None:
+  #       for row in data_listA:
+  #         a = row
+  #         tstr = row["deliver_ymd"].strftime('%Y/%m/%d')
+          
+  #         if tstr == deliverymdstr:
+  #           exist = True
+  #           resultset.append({"deliverYmd":deliverymdstr, "customerId":row["customer_id"], "customerName":row["customer_name1"], "sumPrice":row["sum_price"]})
+          
+  #     if exist==False:
+  #       resultset.append({"deliverYmd":deliverymdstr, "customerId":"", "customerName":"", "sumPrice":""})
+
+
+    # resultset=[]
+    # for d in range(1, 32):
+    #   y = int(nentuki[0:4])
+    #   m = int(nentuki[4:6])
+    #   if isDate(y, m, d):
+    #     deliverymdstr="%04d/%02d/%02d"%(y,m,d)
+    #     # locale.setlocale(locale.LC_TIME, 'ja_JP.UTF-8')
+    #     # dt.strftime('%A, %a, %B, %b')
+    #     # deliverymd=datetime.datetime.strptime(deliverymdstr,"%Y/%m/%d")
+    #     # yobi = deliverymd.strftime("%A")
+    #     resultset.append({"deliverYmd":deliverymdstr})
+
+    # customernentuki = db.session.execute(text(sql))
+    # customernentuki_schema = CustomerNentukiSchema(many=True)
+  return jsonify({'data': resultset})
+    # return json.dumps(resultset, skipkeys=True, ensure_ascii=False)
+
+
+
+# @app.route('/getSeikyuByCustomerIdAndDeliverSum/<customerid>/<nentuki>')
+# @login_required
+# def resJson_getSeikyuByCustomerIdAndDeliverSum(customerid, nentuki):
+#     sql = " "
+    
+
+
+#     sql = sql + " select "
+#     sql = sql + "     s.customer_id, "
+#     sql = sql + "     min(c.name1) customer_name1, "
+#     sql = sql + "     sum(s.price) sum_price, "
+#     sql = sql + "     s.deliver_ymd "
+#     sql = sql + " from "
+#     sql = sql + "     " + TableWhereTenantId("seikyu") + " s, "
+#     sql = sql + "     " + TableWhereTenantId("customer") + " c "
+#     sql = sql + " where "
+#     sql = sql + "     s.customer_id = c.id "
+#     sql = sql + " group by "
+#     sql = sql + "     s.customer_id, "
+#     sql = sql + "     s.deliver_ymd "
+#     sql = sql + " order by s.deliver_ymd, s.customer_id "
+
+#     resultset=[]
+#     for d in range(1, 32):
+#       y = int(nentuki[0:4])
+#       m = int(nentuki[4:6])
+#       if isDate(y, m, d):
+#         deliverymdstr="%04d/%02d/%02d"%(y,m,d)
+#         # locale.setlocale(locale.LC_TIME, 'ja_JP.UTF-8')
+#         # dt.strftime('%A, %a, %B, %b')
+#         # deliverymd=datetime.datetime.strptime(deliverymdstr,"%Y/%m/%d")
+#         # yobi = deliverymd.strftime("%A")
+#         resultset.append({"deliverYmd":deliverymdstr})
+
+#     # customernentuki = db.session.execute(text(sql))
+#     # customernentuki_schema = CustomerNentukiSchema(many=True)
+#     return jsonify({'data': resultset})
+#     # return json.dumps(resultset, skipkeys=True, ensure_ascii=False)
+
+
+
 @app.route('/getCustomer_Main/<group_kb>/<yuko_muko>/<nen>/<tuki>')
 @login_required
 def resJson_getCustomer_Main(group_kb, yuko_muko, nen, tuki):
@@ -159,10 +303,12 @@ def resJson_getCustomer_Main(group_kb, yuko_muko, nen, tuki):
         sql = sql + "  and   c.list is not null "
       else:
         sql = sql + "  and   c.list is null "
+      sql = sql + "  order by list "
       
       customernentuki = db.session.execute(text(sql))
       customernentuki_schema = CustomerNentukiSchema(many=True)
       return jsonify({'data': customernentuki_schema.dumps(customernentuki, ensure_ascii=False)})
+
 
 @app.route('/getItem_Daicho/<itemname1>')
 @login_required
@@ -481,6 +627,8 @@ def resJson_getMstSetting_Full():
 
 
 
+
+
 @app.route('/updateSetteiText/<params>')
 @login_required
 def dbUpdate_updateSetteiText(params):
@@ -710,6 +858,8 @@ def export_list_csv(export_list, csv_dir):
   with open(csv_dir, "w", encoding='utf8') as f:
     writer = csv.writer(f, lineterminator='\n')
     writer.writerows(export_list)
+
+
 
 @app.route('/updateCustomer/<customerid>/<param>')
 @login_required
