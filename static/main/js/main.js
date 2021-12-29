@@ -3116,9 +3116,14 @@ function createTableDateKani(nentuki){
           } },
           { data: 'customerName'   ,width: '25%' ,  className: 'dt-body-center'},
           { data: 'sumPrice'     ,width: '25%' ,  className: 'dt-body-right',render: function (data, type, row) { return (data*1).toLocaleString();} },
+          { data: 'customerId'   ,width: '25%' ,  className: 'dt-body-center'},
       ],
-      aoColumnDefs: [
-          { 'bSortable': false, 'aTargets': [ 0,1,2 ] }
+      columnDefs: [
+          { 'sortable': false, 'targets': [ 0,1,2 ] },
+          {
+            "targets": [ 3 ],
+            "visible":false
+        }
        ],
       language: {
          url: "../static/main/js/japanese.json"
