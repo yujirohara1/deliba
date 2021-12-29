@@ -160,3 +160,19 @@ table.dataTable thead tr {
     height: 30px;
     font-size:24px;
 }
+
+#tableItemKani td{
+    height: 25px;
+    font-size:18px;
+}
+#tableDateListKani td{
+    height: 25px;
+    font-size:18px;
+}
+
+.btn-group-lg>.btn, .btn-mm {
+    padding: 8px 14px;
+    font-size: 16px;
+    line-height: 1.3333333;
+    border-radius: 4px;
+}

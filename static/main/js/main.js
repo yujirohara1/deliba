@@ -2322,16 +2322,19 @@ function fncNumOnlyKani(){
 
 function calcGokei(){
     var tableRows = document.getElementById("tableItemNouhinKani").rows;
-    //var row =   $('#tableAddDaicho').DataTable().row( this ).data(); // 選択データ
     var srcData = $('#tableItemNouhinKani').DataTable().rows().data(); // 台帳データ
 
-    //var tableRows = $("#tableItemNouhinKani");
     var gokei = 0;
     for(var i=0; i<tableRows.length; i++){
         var shokei = toNumber(tableRows[i].cells[4].innerText);
         gokei = gokei + shokei;
     }
-    return gokei;
+
+    //Math.floor( 1.5 ) ;
+
+    var zeiritu = $("#inpKaniZeiritu").val().split("%")[0];
+    var zei = gokei * (zeiritu/100);
+    return gokei + Math.floor(zei);
 }
 
 
@@ -2575,22 +2578,22 @@ function fncUpdateSeikyuQuantity(customerid, itemid, nen, tuki, niti, price, pri
 }
   
 
-function fncUpdateSeikyuQuantityKani(itemid, price, pricesub){
+function fncUpdateSeikyuQuantityKani(itemid, price, pricesub, evnetObj){
     var deliverYmd = $('#inpKaniDeliverYmd').val().split("(")[0];
     var customerid = getCustomerIdKaniMode(); //customer_id
     var nen = toNumber(deliverYmd.split("/")[0]);
     var tuki = toNumber(deliverYmd.split("/")[1]);
     var niti = toNumber(deliverYmd.split("/")[2]);
     var deliverymd = nen + "-" + tuki + "-" + niti;
-    var quantity = toNumber($("#inputQuantityTmp").val());
+    var quantity = 0; //toNumber($("#inputQuantityTmp").val());
+    if(evnetObj != null){
+        quantity = evnetObj.value;
+    }
     $.ajax({
         type: "GET",
         url: "/updateSeikyuQuantity/" + customerid + "/" + itemid + "/" + deliverymd + "/" + quantity + "/" + price + "/" + pricesub + ""
     }).done(function(data) {
-        //alert(data);
-        //createSeikyuTables_Main(customerid, nen + ("00"+tuki).slice(-2));
-        var nentuki = $('#selNentukiKani').val();
-        createTableDateKani(nentuki);
+        createTableDateKani();
     }).fail(function(data) {
         alert("エラー：" + data.statusText);
     }).always(function(data) {
@@ -2992,9 +2995,12 @@ function initSystemMode1(){
             }
             aTag.addEventListener('click', function(event) {
                 hoikuListClick(event.srcElement.id);
+                createTableDateKani();
+                createItemNouhinTableKani([]);
             });
             $('#listGroupHoiku').append(aTag);
         });
+        initSystemMode2();
     }).fail(function(json) {
         alert("エラー：" + data.statusText);
     }).always(function(json) {
@@ -3002,6 +3008,10 @@ function initSystemMode1(){
     });
 
         
+
+}
+
+function initSystemMode2(){
     $.getJSON("/getMstSetting_Main/START_YM", function(json) {
         list = JSON.parse(json.data);
         if(list.length == 1){
@@ -3039,13 +3049,20 @@ function initSystemMode1(){
     }).always(function() {
         console.log("完了");
         var nentuki = $('#selNentukiKani').val();
-        createTableDateKani(nentuki);
+        createTableDateKani();
         createItemTableKani();
-        createItemNouhinTableKani();
-        //createCustomerTables_Main();
-        //createDaichoTables_Main(0);
-        //createSeikyuTables_Main(0,NowNenTuki());
+        createItemNouhinTableKani([]);
     });
+
+    
+    $.getJSON("/getMstSetting_Main/ZEI_KB", function(json) {
+        list = JSON.parse(json.data);
+        $.each(list, function(i, item) {
+            $('#inpKaniZeiritu').val(item.param_val2);
+        });
+    });
+    
+    
 
 }
 
@@ -3069,29 +3086,16 @@ function hoikuListClick(selectedId){
 
 
 $("#selNentukiKani").change(function(){
-    var nentuki = $('#selNentukiKani').val();
-    createTableDateKani(nentuki);
-
-    // $.ajax({
-    //     type: "GET",
-    //     url: "/getKaniDateList/" + $('#selNentukiKani').val() + "",
-    //     dataType: "json",
-    // }).done(function(json) {
-    //     list = json.data;
-    //     alert(list);
-    // }).fail(function(json) {
-    //     alert("エラー：" + data.statusText);
-    // }).always(function(json) {
-    //     //何もしない
-    // });
+    createTableDateKani();
 });
   
   
 
 
 var pageScrollPosDateKani = 0;
-function createTableDateKani(nentuki){
-  pageScrollPosDateKani = $('#tableDateListKani')[0].parentElement.scrollTop;
+function createTableDateKani(){
+    var nentuki = $('#selNentukiKani').val();
+    pageScrollPosDateKani = $('#tableDateListKani')[0].parentElement.scrollTop;
   
   $('#tableDateListKani').DataTable({
       bInfo: false,
@@ -3099,7 +3103,7 @@ function createTableDateKani(nentuki){
       destroy: true,
       "processing": true,
       ajax: {
-        url: "/getKaniDateList/" + nentuki + "",
+        url: "/getKaniDateList/" + getCustomerIdKaniMode() + "/" + nentuki + "",
           dataType: "json",
           dataSrc: function ( json ) {
               return json.data;
@@ -3115,7 +3119,15 @@ function createTableDateKani(nentuki){
               return data + "(" + getAllYoubiByNentukiDD(row.deliverYmd) + ")";
           } },
           { data: 'customerName'   ,width: '25%' ,  className: 'dt-body-center'},
-          { data: 'sumPrice'     ,width: '25%' ,  className: 'dt-body-right',render: function (data, type, row) { return (data*1).toLocaleString();} },
+          { data: 'sumPrice'     ,width: '25%' ,  className: 'dt-body-right',render: function (data, type, row) 
+            { 
+                if(toNumber(data)==0){
+                    return "";
+                }else{
+                    return toNumber(data).toLocaleString();
+                }
+            } 
+          },
           { data: 'customerId'   ,width: '25%' ,  className: 'dt-body-center'},
       ],
       columnDefs: [
@@ -3185,18 +3197,38 @@ $("#tableItemKani tbody").on('click',function(event) {
 $('#tableDateListKani tbody').on( 'click', 'tr', function () {
     var rowData =   $('#tableDateListKani').DataTable().row( this ).data();
     $('#inpKaniDeliverYmd').val(rowData.deliverYmd + "(" + getAllYoubiByNentukiDD(rowData.deliverYmd) + ")");
-  } );
+    if(toNumber(rowData.customerId) != 0){
+        //aaa
+        $.ajax({
+            type: "GET",
+            url: "/getSeikyu_ByCusotmerIdAndDate/" + rowData.customerId + "/" + rowData.deliverYmd.split("/").join("-") + "",
+            dataType: "json",
+        }).done(function(json) {
+            list = json.data;
+            // $.each(list, function(i, item) { aaaaa
+            //     alert(i);
+            // });
+            createItemNouhinTableKani(list);
+        }).fail(function(json) {
+            alert("エラー：" + json.statusText);
+        }).always(function(json) {
+            //何もしない
+        });
+    }else{
+        createItemNouhinTableKani([]);
+    }
+
+  });
   
 $('#tableItemKani tbody').on( 'click', 'tr', function () {
     var rowData =   $('#tableItemKani').DataTable().row( this ).data();
     
-    rowData.suryo = "1";
+    rowData.suryo = "0";
     rowData.shokei = "";
     
     
     //存在チェック
     var tableData = $('#tableItemNouhinKani').DataTable().rows().data(); // 台帳データ
-    //$("#tableItemNouhinKani").DataTable().rows().data().length
     if(tableData.length>0){
         for(var i=0; i<tableData.length; i++){
             if(tableData[i].id == rowData.id){
@@ -3279,13 +3311,16 @@ function createItemTableKani(){
   
 
 
-function createItemNouhinTableKani(){
+function createItemNouhinTableKani(dataList){
+
+    var data = dataList;
     
     $('#tableItemNouhinKani').DataTable({
         bInfo: false,
         bSort: true,
         destroy: true,
         "processing": true,
+        data:dataList,
         columns: [
             { data: 'id'     ,width: '8%',  className: 'dt-body-right',render: function (data, type, row) 
                 { 
@@ -3296,7 +3331,7 @@ function createItemNouhinTableKani(){
                     btnTag = btnTag + ' value = "' + row.id + '" ';
                     btnTag = btnTag + ' title = "' + row.id + '" ';
                     btnTag = btnTag + ' onclick="funcDeleteRowKani(this,'+ row.id + ')" ';
-                    btnTag = btnTag + ' class="btn btn-primary btn-lg" ';
+                    btnTag = btnTag + ' class="btn btn-primary btn-mm" ';
                     btnTag = btnTag + ' role="button">削除</a>';
                     return btnTag;
                 } 
@@ -3310,16 +3345,14 @@ function createItemNouhinTableKani(){
                     var inputtag = "";
                     inputtag = inputtag + '<input id="inputQuantityTmp" ';
                     inputtag = inputtag + 'class="form-control input-lg" ';
-                    inputtag = inputtag + 'type="text" ';
+                    inputtag = inputtag + 'type="text" '; //autocomplete="off"
+                    inputtag = inputtag + 'autocomplete="off" '; //
                     inputtag = inputtag + 'style="width:100%; font-size:28px; text-align:right" ';
                     inputtag = inputtag + 'maxlength="3" ';
                     inputtag = inputtag + 'oninput="fncNumOnlyKani();" ';
-                    inputtag = inputtag + 'onchange="fncUpdateSeikyuQuantityKani( ';
-                    inputtag = inputtag + '  ' + row.id + ', '; //item_id
-                    inputtag = inputtag + '  ' + row.tanka + ', '; //price
-                    inputtag = inputtag + '  ' + 0 + ' '; //price_sub
-                    inputtag = inputtag + ' );" ';
-                    inputtag = inputtag + 'value=' + "" + '>';
+                    inputtag = inputtag + 'onchange="fncUpdateSeikyuQuantityKani( ' + row.id + ', ' + row.tanka + ', ' + 0 + ',this );" '; 
+                    inputtag = inputtag + 'onblur="fncUpdateSeikyuQuantityKani( ' + row.id + ', ' + row.tanka + ', ' + 0 + ',this );" '; 
+                    inputtag = inputtag + 'value=' + data + '>';
                     //     return "未作成";
                     // }else{
                     //     return data;
@@ -3327,7 +3360,16 @@ function createItemNouhinTableKani(){
                     return inputtag;
                 } 
             },
-            { data: 'shokei'  ,width: '33%',className: 'dt-body-right'},
+            { data: 'shokei'  ,width: '10%' ,className: 'dt-body-right' ,render: function (data, type, row) 
+                { 
+                    var ret = row.tanka * row.suryo;
+                    if(ret==0){
+                        return "";
+                    } else {
+                        return (ret).toLocaleString();
+                    }
+                } 
+            },
         ],
         "columnDefs": [
             {
@@ -3358,8 +3400,14 @@ function createItemNouhinTableKani(){
         "lengthMenu": [100, 300, 500, 1000],
             dom:"<'row'<'col-sm-12'tr>>" +
                 "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
-                "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        "drawCallback": function (settings) {
+            if(settings.aoData.length>0){
+                $("#inpKaniGokei").val(calcGokei().toLocaleString());
+            }
+        }
     });
+
   }
   
   
@@ -3370,21 +3418,6 @@ function createItemNouhinTableKani(){
 
 
   function funcDeleteRowKani(eventObj, itemId){
-    // var rowData =   $('#tableItemKani').DataTable().row( this ).data();
-    // rowData.suryo = "1";
-    // rowData.shokei = "";
-
-    // var tableData = $('#tableItemNouhinKani').DataTable().rows().data(); // 台帳データ
-    // //$("#tableItemNouhinKani").DataTable().rows().data().length
-    // if(tableData.length>0){
-    //     for(var i=0; i<tableData.length; i++){
-    //         if(tableData[i].id == itemId){
-    //             HighlightSelectRowCheck(rowData);
-    //             return;
-    //         }
-    //     }
-    // }
-
     var idx = $('#tableItemNouhinKani').DataTable().row(eventObj.parentElement.parentElement).index();
     var tableId = "#tableItemNouhinKani";
     //listChangeTarget = null;
@@ -3394,9 +3427,5 @@ function createItemNouhinTableKani(){
     //var data = table.row(eventObj).data();
     //var idx = table.row( eventObj ).index();
     table.row(idx).remove().draw();
-    
-
-    //var tableNouhin = $("#tableItemNouhinKani").DataTable(); //納品ピックアップアイテム
-    //tableNouhin.row.add(rowData).draw();
-    
+    fncUpdateSeikyuQuantityKani(itemId, 0, 0, null);
   }

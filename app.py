@@ -119,8 +119,8 @@ def SendMail_AccountToroku():
 def load_user(user_id):
   return users.get(int(user_id))
 
-db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
-# db_uri = os.environ.get('DATABASE_URL') #本番用 
+# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
+db_uri = os.environ.get('DATABASE_URL') #本番用 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -134,9 +134,9 @@ def favicon():
     
 
 
-@app.route('/getKaniDateList/<nentuki>')
+@app.route('/getKaniDateList/<customerId>/<nentuki>')
 @login_required
-def getKaniDateList(nentuki):
+def getKaniDateList(customerId, nentuki):
   y = int(nentuki[0:4])
   m = int(nentuki[4:6])
   
@@ -151,6 +151,7 @@ def getKaniDateList(nentuki):
   sql = sql + "     " + TableWhereTenantId("customer") + " c "
   sql = sql + " where "
   sql = sql + "     s.customer_id = c.id "
+  sql = sql + "     and s.customer_id = " + customerId + " "
   sql = sql + "     and cast(to_char(deliver_ymd,'yyyy') as integer) = " + str(y) + " "
   sql = sql + "     and cast(to_char(deliver_ymd,'mm') as integer) = " + str(m) + " "
   sql = sql + " group by "
@@ -344,6 +345,51 @@ def resJson_getVSeikyuA_ByCusotmerId(customerid, nentuki):
       seikyu = VSeikyuA.query.filter(VSeikyuA.customer_id==customerid, VSeikyuA.nen==nentuki[0:4], VSeikyuA.tuki==nentuki[4:6], VSeikyuA.tenant_id==current_user.tenant_id).all()
       seikyu_schema = VSeikyuASchema(many=True)
       return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
+
+@app.route('/getSeikyu_ByCusotmerIdAndDate/<customerid>/<deliverYmd>')
+@login_required
+def resJson_getSeikyu_ByCusotmerIdAndDate(customerid, deliverYmd):
+  vDeliverYmd = deliverYmd.replace("-","")
+  sql = " "
+  sql = sql + " select "
+  sql = sql + "     s.*, "
+  sql = sql + "     i.name1 item_name1 "
+  sql = sql + " from "
+  sql = sql + "     " + TableWhereTenantId("seikyu") + " s, "
+  sql = sql + "     " + TableWhereTenantId("item") + " i "
+  sql = sql + " where "
+  sql = sql + "     s.item_id = i.id "
+  sql = sql + "     and s.customer_id = " + customerid + " "
+  sql = sql + "     and cast(to_char(deliver_ymd,'yyyymmdd') as integer) = " + vDeliverYmd + " "
+  sql = sql + " order by s.item_id "
+  
+  resultset=[]
+  data_listA = None
+
+  if db.session.execute(text(sql)).fetchone() is not None:
+    data_listA = db.session.execute(text(sql))
+
+    if data_listA is not None:
+      for row in data_listA:
+        resultset.append({
+          "id":row["item_id"], 
+          "code":row["item_id"], 
+          "tanka":row["price"], 
+          "suryo":row["quantity"],
+          "name1":row["item_name1"],
+          "shokei": int(row["price"]) * int(row["quantity"]),
+        })
+  return jsonify({'data': resultset})
+
+
+  # vDeliverYmd = deliverYmd.replace("-","/")
+  # seikyu = Seikyu.query.filter(Seikyu.customer_id==int(customerid), Seikyu.deliver_ymd==deliverYmd, Seikyu.tenant_id==current_user.tenant_id).all()
+  # if seikyu is not None:
+  #     for row in seikyu:
+  #       a = row
+  #       b = a
+  # seikyu_schema = SeikyuSchema(many=True)
+  # return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
 
 @app.route('/getCustomer_ById/<customerid>')
 @login_required
