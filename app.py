@@ -349,10 +349,12 @@ def resJson_getVSeikyuA_ByCusotmerId(customerid, nentuki):
 @app.route('/getSeikyu_ByCusotmerIdAndDate/<customerid>/<deliverYmd>')
 @login_required
 def resJson_getSeikyu_ByCusotmerIdAndDate(customerid, deliverYmd):
-  vDeliverYmd = deliverYmd.replace("-","")
+  vDeliverYmd = deliverYmd.replace("-","/")
   sql = " "
   sql = sql + " select "
-  sql = sql + "     s.*, "
+  sql = sql + "     s.item_id, "
+  sql = sql + "     s.price, "
+  sql = sql + "     s.quantity, "
   sql = sql + "     i.name1 item_name1 "
   sql = sql + " from "
   sql = sql + "     " + TableWhereTenantId("seikyu") + " s, "
@@ -360,7 +362,8 @@ def resJson_getSeikyu_ByCusotmerIdAndDate(customerid, deliverYmd):
   sql = sql + " where "
   sql = sql + "     s.item_id = i.id "
   sql = sql + "     and s.customer_id = " + customerid + " "
-  sql = sql + "     and cast(to_char(deliver_ymd,'yyyymmdd') as integer) = " + vDeliverYmd + " "
+  sql = sql + "     and deliver_ymd = '" + vDeliverYmd + "' "
+  # sql = sql + "     and cast(to_char(deliver_ymd,'yyyymmdd') as integer) = " + vDeliverYmd + " "
   sql = sql + " order by s.item_id "
   
   resultset=[]
