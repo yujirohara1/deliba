@@ -38,6 +38,8 @@ create index on customer (id);
 
 
 
+
+
 住所３にlistを入れる
 update customer set address3 = list;
 

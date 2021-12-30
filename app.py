@@ -387,7 +387,6 @@ def resJson_getSeikyu_ByCusotmerIdAndDate(customerid, deliverYmd):
         })
   return jsonify({'data': resultset})
 
-
 @app.route('/OutputExcelNouhinsho/<customerid>/<deliverYmd>')
 @login_required
 def resExcelFile_OutputExcelNouhinsho(customerid, deliverYmd):
@@ -452,69 +451,126 @@ def resExcelFile_OutputExcelNouhinsho(customerid, deliverYmd):
 
   wb.save('tmp/' + filename + '.xlsx')
 
-
-  # response = make_response()
-  # wb = open( 'tmp/' + filename + '.xlsx' , "rb" )
-  # response.data = wb.read()
-  # wb.close()
-  # response.headers[ "Content-Disposition" ] = "attachment; filename=" + filename + '.xlsx' 
-  # response.mimetype = XLSX_MIMETYPE
-  # return response
-
-
-
-  # return send_file('tmp/' + filename + '.xlsx', as_attachment=True)
   return send_file('tmp/' + filename + '.xlsx', as_attachment=True, mimetype=XLSX_MIMETYPE, attachment_filename = filename + '.xlsx')
 
-  # # shutil.copy2("ExcelTemplate/hoiku/納品書_保育園.xlsx", "ExcelTemplate/hoiku/" + filename + ".xlsx")
-  # df = pd.read_excel('ExcelTemplate/hoiku/' + "納品書_保育園" + '.xlsx') #tmp/" + filename + ".pdf", "rb").read()
-  # # df = pd.read_excel('ExcelTemplate/hoiku/' + filename + '.xlsx') #tmp/" + filename + ".pdf", "rb").read()
-  # # df.to_excel('output.xlsx') 'ExcelTemplate/hoiku/' + "納品書_保育園" + '.xlsx'
-  # df.to_excel('ExcelTemplate/hoiku/' + filename + '.xlsx') 
 
-  # for sh in xl:
-  #   for row in xl[sh].itertuples():
-  #     for cell in row:
-  #       a = cell
-  #       b = a
-  # file = pd.ExcelFile("ExcelTemplate/hoiku/納品書_保育園.xlsx", encoding='utf8')
-  # sheet_df = file.parse("納品書")
-  # aa = sheet_df.iloc[5, 5]
+@app.route('/OutputExcelSeikyusho/<nentuki>')
+@login_required
+def resExcelFile_OutputExcelSeikyusho(nentuki):
+  resultsetA=[]
+  
+  sql = " "
+  sql = sql + " select "
+  sql = sql + "     s.deliver_ymd, "
+  sql = sql + "     s.item_id, "
+  sql = sql + "     s.price, "
+  sql = sql + "     s.quantity, "
+  sql = sql + "     i.name1 item_name1, "
+  sql = sql + "     c.name1 customer_name1 "
+  sql = sql + " from "
+  sql = sql + "     " + TableWhereTenantId("seikyu") + " s, "
+  sql = sql + "     " + TableWhereTenantId("item") + " i, "
+  sql = sql + "     " + TableWhereTenantId("customer") + " c "
+  sql = sql + " where "
+  sql = sql + "     s.item_id = i.id "
+  sql = sql + "     and s.customer_id = c.id "
+  sql = sql + "     and cast(to_char(s.deliver_ymd,'yyyymm') as integer) = " + nentuki + " "
+  sql = sql + " order by c.name1, s.deliver_ymd, s.item_id "
+  
+  resultsetA=[]
+  data_listA = None
+
+  if db.session.execute(text(sql)).fetchone() is not None:
+    data_listA = db.session.execute(text(sql))
+
+    if data_listA is not None:
+      for row in data_listA:
+        resultsetA.append({
+          "deliver_ymd":row["deliver_ymd"], 
+          "item_id":row["item_id"], 
+          "price":row["price"], 
+          "quantity":row["quantity"],
+          "item_name1":row["item_name1"],
+          "customer_name1":row["customer_name1"],
+        })
   
 
-  # # xl.to_excel('ExcelTemplate/hoiku/' + filename +'.xlsx')
+  sql = " "
+  sql = sql + " select "
+  sql = sql + "     s.deliver_ymd, "
+  sql = sql + "     sum(s.price * s.quantity) zeinuki, "
+  sql = sql + "     s.customer_id, "
+  sql = sql + "     c.name1 customer_name1 "
+  sql = sql + " from "
+  sql = sql + "     " + TableWhereTenantId("seikyu") + " s, "
+  sql = sql + "     " + TableWhereTenantId("customer") + " c "
+  sql = sql + " where "
+  sql = sql + "         s.customer_id = c.id "
+  sql = sql + "     and cast(to_char(s.deliver_ymd,'yyyymm') as integer) = " + nentuki + " "
+  sql = sql + " group by "
+  sql = sql + "     s.deliver_ymd, "
+  sql = sql + "     s.customer_id, "
+  sql = sql + "     c.name1 "
+  sql = sql + " order by c.name1, s.deliver_ymd "
+  
+  resultsetB=[]
+  data_listB = None
 
-  # with pd.ExcelWriter('ExcelTemplate/hoiku/' + filename +'.xlsx', mode='a') as writer:
-  #   xl.to_excel(writer)
-  # #   xl.to_excel(writer, sheet_name='sheet2')
+  if db.session.execute(text(sql)).fetchone() is not None:
+    data_listB = db.session.execute(text(sql))
 
-  # if db.session.execute(text(sql)).fetchone() is not None:
-  #   data_listA = db.session.execute(text(sql))
+    if data_listB is not None:
+      for row in data_listB:
+        resultsetB.append({
+          "deliver_ymd":row["deliver_ymd"], 
+          "zeinuki":row["zeinuki"], 
+          "customer_id":row["customer_id"],
+          "customer_name1":row["customer_name1"],
+        })
+  
+  timestamp = datetime.datetime.now()
+  timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+  filename = "file_" + nentuki + "_" + timestampStr + "_" + current_user.name + "_" + current_user.tenant_id
+  
+  wb = openpyxl.load_workbook('ExcelTemplate/hoiku/請求書_指定.xlsx')
 
-  #   if data_listA is not None:
-  #     for row in data_listA:
-  #       resultset.append({
-  #         "id":row["item_id"], 
-  #         "code":row["item_id"], 
-  #         "tanka":row["price"], 
-  #         "suryo":row["quantity"],
-  #         "name1":row["item_name1"],
-  #         "shokei": int(row["price"]) * int(row["quantity"]),
-  #       })
-  # return jsonify({'data': resultset})
+  if len(resultsetA) > 0:
+    sheet = wb['書式']
+    # cell = sheet['A2']
+    # sheet['A2'] = resultset[0]["customer_name1"]
+    sheet['C16'] = str(int(nentuki[0:4])) + "年" + str(int(nentuki[4:6])) + "月分"
 
+    idx = 69
+    for r in resultsetA:
+      sheet['A' + str(idx)] = r["item_name1"]
+      sheet['U' + str(idx)] = r["quantity"]
+      sheet['AA' + str(idx)] = r["price"]
+      sheet['AI' + str(idx)] = int(r["price"]) * int(r["quantity"])
+      sheet['AV' + str(idx)] =  r["deliver_ymd"].strftime('%Y/%m/%d') + " 納品"
+      sheet['AV' + str(idx+1)] = r["customer_name1"] + " 様"
 
+      idx += 2
 
-# 
+  if len(resultsetA) > 0:
+    sheet = wb['書式']
+    # cell = sheet['A2']
+    # sheet['A2'] = resultset[0]["customer_name1"]
+    sheet['C16'] = str(int(nentuki[0:4])) + "年" + str(int(nentuki[4:6])) + "月分"
 
-  # vDeliverYmd = deliverYmd.replace("-","/")
-  # seikyu = Seikyu.query.filter(Seikyu.customer_id==int(customerid), Seikyu.deliver_ymd==deliverYmd, Seikyu.tenant_id==current_user.tenant_id).all()
-  # if seikyu is not None:
-  #     for row in seikyu:
-  #       a = row
-  #       b = a
-  # seikyu_schema = SeikyuSchema(many=True)
-  # return jsonify({'data': seikyu_schema.dumps(seikyu, ensure_ascii=False)})
+    idx = 1
+    for r in resultsetB:
+      sheet['EA' + str(idx)] = r["deliver_ymd"]
+      sheet['EB' + str(idx)] = r["customer_name1"]
+      sheet['EC' + str(idx)] = int(r["zeinuki"])
+      sheet['ED' + str(idx)] = math.floor(int(r["zeinuki"])*0.08)
+      sheet['EE' + str(idx)] = int(r["zeinuki"]) + math.floor(int(r["zeinuki"])*0.08)
+
+      idx += 1
+
+  wb.save('tmp/' + filename + '.xlsx')
+
+  return send_file('tmp/' + filename + '.xlsx', as_attachment=True, mimetype=XLSX_MIMETYPE, attachment_filename = filename + '.xlsx')
+
 
 @app.route('/getCustomer_ById/<customerid>')
 @login_required
