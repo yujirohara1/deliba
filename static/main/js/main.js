@@ -2997,6 +2997,8 @@ function initSystemMode1(){
                 hoikuListClick(event.srcElement.id);
                 createTableDateKani();
                 createItemNouhinTableKani(-1,"1999/1/1");
+                $('#inpKaniDeliverYmd').val("");
+
             });
             $('#listGroupHoiku').append(aTag);
         });
@@ -3087,6 +3089,8 @@ function hoikuListClick(selectedId){
 
 $("#selNentukiKani").change(function(){
     createTableDateKani();
+    createItemNouhinTableKani(-1,"1999/1/1");
+    $('#inpKaniDeliverYmd').val("");
 });
   
   
@@ -3224,11 +3228,42 @@ $('#tableDateListKani tbody').on( 'click', 'tr', function () {
     // }
 
   });
+
+  function isDeliverYmdOK(){
+     var ret = false; 
+    if($('#inpKaniDeliverYmd').val()==""){
+        $('#inpKaniDeliverYmd').val("先に納品日を設定してください。");
+        document.getElementById("inpKaniDeliverYmd").style.color='red';
+
+        
+        setTimeout(function(){
+            document.getElementById('inpKaniDeliverYmd').value='';
+            document.getElementById('inpKaniDeliverYmd').style.color=''; 
+        }, 1000);
+
+        ret = false; 
+    } else {
+        try{
+            if ($('#inpKaniDeliverYmd').val().split("(")[0].split("/").length==3){
+                ret = true;
+            }
+        }catch(e){
+            ret = false; 
+        }
+    }
+    return ret;
+  }
   
 $('#tableItemKani tbody').on( 'click', 'tr', function () {
+
+    if(isDeliverYmdOK()){
+        ;
+    }else{
+        return false;
+    }
+
     var rowData =   $('#tableItemKani').DataTable().row( this ).data();
-    
-    rowData.suryo = "0";
+    rowData.suryo = "";
     rowData.shokei = "";
     
     
