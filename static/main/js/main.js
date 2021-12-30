@@ -3444,3 +3444,29 @@ function createItemNouhinTableKani(customerId, deliverYmd){
     table.row(idx).remove().draw();
     fncUpdateSeikyuQuantityKani(itemId, 0, 0, null);
   }
+
+  function s2ab(s) {
+    var buf = new ArrayBuffer(s.length);
+    var view = new Uint8Array(buf);
+    for (var i=0; i!=s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+    return buf;
+  }
+  
+$('#printKaniNouhinsho').on('click', function() { //printKaniNouhinsho
+    var deliverYmd = $('#inpKaniDeliverYmd').val().split("(")[0];
+    var customerid = getCustomerIdKaniMode(); //customer_id
+    $.ajax({
+        type: "GET",
+        url: "/OutputExcelNouhinsho/" + customerid + "/" + deliverYmd.split("/").join("-") + "",
+        xhrFields    : {responseType : 'blob'},
+      }).done(function(data, textStatus, jqXHR ) {
+        var blob=new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64"});//
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "" + Math.random().toString(32).substring(2) + ".xlsx";
+        link.click();
+      }).fail(function(data) {
+            alert("エラー：" + data.statusText);
+      }).always(function(data) {
+    });
+ });

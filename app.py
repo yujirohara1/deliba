@@ -35,13 +35,17 @@ import smtplib
 from email.mime.text import MIMEText
 from email.utils import formatdate
 import csv
+import pandas as pd
+import shutil
+import openpyxl
+
 # import logging 
 # logging.basicConfig()
 # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 
 DELIMIT = "@|@|@"
-
+XLSX_MIMETYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
 class FlaskWithHamlish(Flask):
     jinja_options = ImmutableDict(
@@ -119,8 +123,8 @@ def SendMail_AccountToroku():
 def load_user(user_id):
   return users.get(int(user_id))
 
-# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用 
+db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
+# db_uri = os.environ.get('DATABASE_URL') #本番用 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -384,6 +388,76 @@ def resJson_getSeikyu_ByCusotmerIdAndDate(customerid, deliverYmd):
         })
   return jsonify({'data': resultset})
 
+
+@app.route('/OutputExcelNouhinsho/<customerid>/<deliverYmd>')
+@login_required
+def resExcelFile_OutputExcelNouhinsho(customerid, deliverYmd):
+  resultset=[]
+  
+  timestamp = datetime.datetime.now()
+  timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+  filename = "file_" + customerid + "_" + timestampStr + "_" + current_user.name + "_" + current_user.tenant_id
+
+  wb = openpyxl.load_workbook('ExcelTemplate/hoiku/納品書_保育園.xlsx')
+  sheet = wb['納品書']
+  # cell = sheet['A2']
+  sheet['A2'] = "aaaaaaa"
+  wb.save('tmp/' + filename + '.xlsx')
+
+
+  # response = make_response()
+  # wb = open( 'tmp/' + filename + '.xlsx' , "rb" )
+  # response.data = wb.read()
+  # wb.close()
+  # response.headers[ "Content-Disposition" ] = "attachment; filename=" + filename + '.xlsx' 
+  # response.mimetype = XLSX_MIMETYPE
+  # return response
+
+
+
+  # return send_file('tmp/' + filename + '.xlsx', as_attachment=True)
+  return send_file('tmp/' + filename + '.xlsx', as_attachment=True, mimetype=XLSX_MIMETYPE, attachment_filename = filename + '.xlsx')
+
+  # # shutil.copy2("ExcelTemplate/hoiku/納品書_保育園.xlsx", "ExcelTemplate/hoiku/" + filename + ".xlsx")
+  # df = pd.read_excel('ExcelTemplate/hoiku/' + "納品書_保育園" + '.xlsx') #tmp/" + filename + ".pdf", "rb").read()
+  # # df = pd.read_excel('ExcelTemplate/hoiku/' + filename + '.xlsx') #tmp/" + filename + ".pdf", "rb").read()
+  # # df.to_excel('output.xlsx') 'ExcelTemplate/hoiku/' + "納品書_保育園" + '.xlsx'
+  # df.to_excel('ExcelTemplate/hoiku/' + filename + '.xlsx') 
+
+  # for sh in xl:
+  #   for row in xl[sh].itertuples():
+  #     for cell in row:
+  #       a = cell
+  #       b = a
+  # file = pd.ExcelFile("ExcelTemplate/hoiku/納品書_保育園.xlsx", encoding='utf8')
+  # sheet_df = file.parse("納品書")
+  # aa = sheet_df.iloc[5, 5]
+  
+
+  # # xl.to_excel('ExcelTemplate/hoiku/' + filename +'.xlsx')
+
+  # with pd.ExcelWriter('ExcelTemplate/hoiku/' + filename +'.xlsx', mode='a') as writer:
+  #   xl.to_excel(writer)
+  # #   xl.to_excel(writer, sheet_name='sheet2')
+
+  # if db.session.execute(text(sql)).fetchone() is not None:
+  #   data_listA = db.session.execute(text(sql))
+
+  #   if data_listA is not None:
+  #     for row in data_listA:
+  #       resultset.append({
+  #         "id":row["item_id"], 
+  #         "code":row["item_id"], 
+  #         "tanka":row["price"], 
+  #         "suryo":row["quantity"],
+  #         "name1":row["item_name1"],
+  #         "shokei": int(row["price"]) * int(row["quantity"]),
+  #       })
+  # return jsonify({'data': resultset})
+
+
+
+# 
 
   # vDeliverYmd = deliverYmd.replace("-","/")
   # seikyu = Seikyu.query.filter(Seikyu.customer_id==int(customerid), Seikyu.deliver_ymd==deliverYmd, Seikyu.tenant_id==current_user.tenant_id).all()
