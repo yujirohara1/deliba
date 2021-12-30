@@ -3140,14 +3140,14 @@ function createTableDateKani(){
       columnDefs: [
           { 'sortable': false, 'targets': [ 0,1,2 ] },
           {
-            "targets": [ 3 ],
+            "targets": [ 1,3 ],
             "visible":false
         }
        ],
       language: {
          url: "../static/main/js/japanese.json"
       },
-      "scrollY":        $(window).height() * 70 / 100,
+      "scrollY":        $(window).height() * 52 / 100,
       searching: false,
       "pageLength": 1000,
       paging:false,
@@ -3209,26 +3209,6 @@ $('#tableDateListKani tbody').on( 'click', 'tr', function () {
         customerId = -1;
     }
     createItemNouhinTableKani(customerId,rowData.deliverYmd);
-    // if(toNumber(rowData.customerId) != 0){
-    //     //aaa
-    //     $.ajax({
-    //         type: "GET",
-    //         url: "/getSeikyu_ByCusotmerIdAndDate/" + rowData.customerId + "/" + rowData.deliverYmd.split("/").join("-") + "",
-    //         dataType: "json",
-    //     }).done(function(json) {
-    //         list = json.data;
-    //         // $.each(list, function(i, item) { aaaaa
-    //         //     alert(i);
-    //         // });
-    //         createItemNouhinTableKani(list);
-    //     }).fail(function(json) {
-    //         alert("エラー：" + json.statusText);
-    //     }).always(function(json) {
-    //         //何もしない
-    //     });
-    // }else{
-    //     createItemNouhinTableKani([]);
-    // }
 
   });
 
@@ -3332,7 +3312,7 @@ function createItemTableKani(){
         language: {
            url: "../static/main/js/japanese.json"
         },
-        "scrollY":$(window).height() * 15 / 100,
+        "scrollY":$(window).height() * 25 / 100,
         order: [[ 1, "asc" ],[ 3, "asc" ]],
         "pageLength": 1000,
         paging: false,
@@ -3445,7 +3425,7 @@ function createItemNouhinTableKani(customerId, deliverYmd){
         language: {
            url: "../static/main/js/japanese.json"
         },
-        "scrollY":$(window).height() * 35 / 100,
+        "scrollY":$(window).height() * 28 / 100,
         //order: [[ 1, "asc" ],[ 3, "asc" ]],
         "pageLength": 1000,
         paging: false,

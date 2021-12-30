@@ -189,105 +189,13 @@ def getKaniDateList(customerId, nentuki):
       if exist == False:
         resultset.append({"deliverYmd":deliverymdstr, "customerId":"", "customerName":"", "sumPrice":""})
 
-  # data_listA = None
-  # if db.session.execute(text(sql)).fetchone() is not None:
-  #   data_listA = db.session.execute(text(sql))
-
-  # resultset=[]
-  # for d in range(1, 32):
-  #   y = int(nentuki[0:4])
-  #   m = int(nentuki[4:6])
-  #   if isDate(y, m, d):
-  #     deliverymdstr="%04d/%02d/%02d"%(y,m,d)
-  #     # locale.setlocale(locale.LC_TIME, 'ja_JP.UTF-8')
-  #     # dt.strftime('%A, %a, %B, %b')
-  #     # deliverymd=datetime.datetime.strptime(deliverymdstr,"%Y/%m/%d")
-  #     # yobi = deliverymd.strftime("%A")
-  #     # resultset.append({deliverymdstr, {"deliverYmd":deliverymdstr}})
-  #     exist = False
-
-  #     if data_listA is not None:
-  #       for row in data_listA:
-  #         a = row
-  #         tstr = row["deliver_ymd"].strftime('%Y/%m/%d')
-          
-  #         if tstr == deliverymdstr:
-  #           exist = True
-  #           resultset.append({"deliverYmd":deliverymdstr, "customerId":row["customer_id"], "customerName":row["customer_name1"], "sumPrice":row["sum_price"]})
-          
-  #     if exist==False:
-  #       resultset.append({"deliverYmd":deliverymdstr, "customerId":"", "customerName":"", "sumPrice":""})
-
-
-    # resultset=[]
-    # for d in range(1, 32):
-    #   y = int(nentuki[0:4])
-    #   m = int(nentuki[4:6])
-    #   if isDate(y, m, d):
-    #     deliverymdstr="%04d/%02d/%02d"%(y,m,d)
-    #     # locale.setlocale(locale.LC_TIME, 'ja_JP.UTF-8')
-    #     # dt.strftime('%A, %a, %B, %b')
-    #     # deliverymd=datetime.datetime.strptime(deliverymdstr,"%Y/%m/%d")
-    #     # yobi = deliverymd.strftime("%A")
-    #     resultset.append({"deliverYmd":deliverymdstr})
-
-    # customernentuki = db.session.execute(text(sql))
-    # customernentuki_schema = CustomerNentukiSchema(many=True)
   return jsonify({'data': resultset})
-    # return json.dumps(resultset, skipkeys=True, ensure_ascii=False)
-
-
-
-# @app.route('/getSeikyuByCustomerIdAndDeliverSum/<customerid>/<nentuki>')
-# @login_required
-# def resJson_getSeikyuByCustomerIdAndDeliverSum(customerid, nentuki):
-#     sql = " "
-    
-
-
-#     sql = sql + " select "
-#     sql = sql + "     s.customer_id, "
-#     sql = sql + "     min(c.name1) customer_name1, "
-#     sql = sql + "     sum(s.price) sum_price, "
-#     sql = sql + "     s.deliver_ymd "
-#     sql = sql + " from "
-#     sql = sql + "     " + TableWhereTenantId("seikyu") + " s, "
-#     sql = sql + "     " + TableWhereTenantId("customer") + " c "
-#     sql = sql + " where "
-#     sql = sql + "     s.customer_id = c.id "
-#     sql = sql + " group by "
-#     sql = sql + "     s.customer_id, "
-#     sql = sql + "     s.deliver_ymd "
-#     sql = sql + " order by s.deliver_ymd, s.customer_id "
-
-#     resultset=[]
-#     for d in range(1, 32):
-#       y = int(nentuki[0:4])
-#       m = int(nentuki[4:6])
-#       if isDate(y, m, d):
-#         deliverymdstr="%04d/%02d/%02d"%(y,m,d)
-#         # locale.setlocale(locale.LC_TIME, 'ja_JP.UTF-8')
-#         # dt.strftime('%A, %a, %B, %b')
-#         # deliverymd=datetime.datetime.strptime(deliverymdstr,"%Y/%m/%d")
-#         # yobi = deliverymd.strftime("%A")
-#         resultset.append({"deliverYmd":deliverymdstr})
-
-#     # customernentuki = db.session.execute(text(sql))
-#     # customernentuki_schema = CustomerNentukiSchema(many=True)
-#     return jsonify({'data': resultset})
-#     # return json.dumps(resultset, skipkeys=True, ensure_ascii=False)
 
 
 
 @app.route('/getCustomer_Main/<group_kb>/<yuko_muko>/<nen>/<tuki>')
 @login_required
 def resJson_getCustomer_Main(group_kb, yuko_muko, nen, tuki):
-      # if yuko_muko == "2":
-      #   customers = Customer.query.filter(Customer.group_id==group_kb, Customer.tenant_id==current_user.tenant_id).all()
-      # elif yuko_muko == "1":
-      #   customers = Customer.query.outerjoin(Kakute, Kakute.customer_id==Customer.id).filter(Customer.group_id==group_kb, Customer.list!=None, Customer.tenant_id==current_user.tenant_id, Kakute.nen==2020, Kakute.tuki==3).all()
-      # else:
-      #   customers = Customer.query.filter(Customer.group_id==group_kb, Customer.list==None, Customer.tenant_id==current_user.tenant_id).all()
       
       sql = " "
       sql = sql + " SELECT "
@@ -774,26 +682,14 @@ def print_pdfMergeSeikyusho():
   vals = request.json["data"]
   merger = PyPDF2.PdfFileMerger()
 
-  # for id_list in vals:
-  #   try:
-  #     merger.append("tmp/" + id_list + "")
-  #   except:
-  #     errorfile = id_list
-  #     import traceback
-  #     traceback.print_exc()
-
   idx = 0
   tryCnt = 0
   while True :
     try:
-      # merger.append("tmp/" + vals.pop(idx) + "")
-      # idx = idx + 1
       merger.append("tmp/" + vals[0] + "")
       print("成功：" + vals.pop(0))
     except:
       print("失敗：" + vals[0])
-      # import traceback
-      # traceback.print_exc()
     finally:
       tryCnt = tryCnt + 1
 
@@ -806,28 +702,6 @@ def print_pdfMergeSeikyusho():
   merger.close()
   
   return send_file("tmp/" + timestampStr + ".pdf", as_attachment=True)
-
-        
-
-
-# # def makeWrapper(data_list):
-# def makeWrapper():
-
-#   timestamp = datetime.datetime.now()
-#   timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
-
-
-#   # make("file" + timestampStr, data_list)
-#   # with app.app_context():
-#   make("file" + timestampStr)
-
-#   response = make_response()
-#   response.data = open("tmp/" + "file" + timestampStr + ".pdf", "rb").read()
-#   response.headers['Content-Disposition'] = "attachment; filename=unicode.pdf"
-#   response.mimetype = 'application/pdf'
-#   # return response
-#   return send_file("tmp/" + "file" + timestampStr + ".pdf", as_attachment=True)
-
 
 @app.route('/getMstSetting_Main/<param_id>')
 @login_required
