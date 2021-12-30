@@ -393,14 +393,63 @@ def resJson_getSeikyu_ByCusotmerIdAndDate(customerid, deliverYmd):
 def resExcelFile_OutputExcelNouhinsho(customerid, deliverYmd):
   resultset=[]
   
+  vDeliverYmd = deliverYmd.replace("-","/")
+  sql = " "
+  sql = sql + " select "
+  sql = sql + "     s.item_id, "
+  sql = sql + "     s.price, "
+  sql = sql + "     s.quantity, "
+  sql = sql + "     i.name1 item_name1, "
+  sql = sql + "     c.name1 customer_name1 "
+  sql = sql + " from "
+  sql = sql + "     " + TableWhereTenantId("seikyu") + " s, "
+  sql = sql + "     " + TableWhereTenantId("item") + " i, "
+  sql = sql + "     " + TableWhereTenantId("customer") + " c "
+  sql = sql + " where "
+  sql = sql + "     s.item_id = i.id "
+  sql = sql + "     and s.customer_id = c.id "
+  sql = sql + "     and s.customer_id = " + customerid + " "
+  sql = sql + "     and deliver_ymd = '" + vDeliverYmd + "' "
+  # sql = sql + "     and cast(to_char(deliver_ymd,'yyyymmdd') as integer) = " + vDeliverYmd + " "
+  sql = sql + " order by s.item_id "
+  
+  resultset=[]
+  data_listA = None
+
+  if db.session.execute(text(sql)).fetchone() is not None:
+    data_listA = db.session.execute(text(sql))
+
+    if data_listA is not None:
+      for row in data_listA:
+        resultset.append({
+          "item_id":row["item_id"], 
+          "price":row["price"], 
+          "quantity":row["quantity"],
+          "item_name1":row["item_name1"],
+          "customer_name1":row["customer_name1"],
+        })
+  
   timestamp = datetime.datetime.now()
   timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
   filename = "file_" + customerid + "_" + timestampStr + "_" + current_user.name + "_" + current_user.tenant_id
-
+  
   wb = openpyxl.load_workbook('ExcelTemplate/hoiku/納品書_保育園.xlsx')
-  sheet = wb['納品書']
-  # cell = sheet['A2']
-  sheet['A2'] = "aaaaaaa"
+
+  if len(resultset) > 0:
+    sheet = wb['納品書']
+    # cell = sheet['A2']
+    sheet['A2'] = resultset[0]["customer_name1"]
+    sheet['P2'] = vDeliverYmd
+
+    idx = 1
+    for r in resultset:
+      sheet['A' + str(9 + idx)] = str(idx)
+      sheet['C' + str(9 + idx)] = r["item_name1"]
+      sheet['L' + str(9 + idx)] = str(r["quantity"])
+      sheet['N' + str(9 + idx)] = str(r["price"])
+
+      idx += 1
+
   wb.save('tmp/' + filename + '.xlsx')
 
 
