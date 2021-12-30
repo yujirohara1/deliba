@@ -450,12 +450,12 @@ def resExcelFile_OutputExcelSeikyusho(nentuki):
 
     idx = 69
     for r in resultsetA:
-      sheet['A' + str(idx)] = r["item_name1"]
-      sheet['U' + str(idx)] = r["quantity"]
-      sheet['AA' + str(idx)] = r["price"]
-      sheet['AI' + str(idx)] = int(r["price"]) * int(r["quantity"])
-      sheet['AV' + str(idx)] =  r["deliver_ymd"].strftime('%Y/%m/%d') + " 納品"
-      sheet['AV' + str(idx+1)] = r["customer_name1"] + " 様"
+      sheet['C' + str(idx)] = r["item_name1"]
+      sheet['W' + str(idx)] = r["quantity"]
+      sheet['AC' + str(idx)] = r["price"]
+      sheet['AK' + str(idx)] = int(r["price"]) * int(r["quantity"])
+      sheet['AX' + str(idx)] =  r["deliver_ymd"].strftime('%Y/%m/%d') + " 納品"
+      sheet['AX' + str(idx+1)] = r["customer_name1"] + " 様"
 
       idx += 2
 
@@ -465,15 +465,23 @@ def resExcelFile_OutputExcelSeikyusho(nentuki):
     # sheet['A2'] = resultset[0]["customer_name1"]
     sheet['C16'] = str(int(nentuki[0:4])) + "年" + str(int(nentuki[4:6])) + "月分"
 
-    idx = 1
+    gokei = 0
+    idx = 4
     for r in resultsetB:
-      sheet['EA' + str(idx)] = r["deliver_ymd"]
-      sheet['EB' + str(idx)] = r["customer_name1"]
-      sheet['EC' + str(idx)] = int(r["zeinuki"])
-      sheet['ED' + str(idx)] = math.floor(int(r["zeinuki"])*0.08)
-      sheet['EE' + str(idx)] = int(r["zeinuki"]) + math.floor(int(r["zeinuki"])*0.08)
-
+      sheet['BQ' + str(idx)] = r["deliver_ymd"]
+      sheet['BR' + str(idx)] = r["customer_name1"]
+      sheet['BS' + str(idx)] = int(r["zeinuki"])
+      sheet['BT' + str(idx)] = math.floor(int(r["zeinuki"])*0.08)
+      sheet['BU' + str(idx)] = int(r["zeinuki"]) + math.floor(int(r["zeinuki"])*0.08)
       idx += 1
+      gokei = gokei + (int(r["zeinuki"]) + math.floor(int(r["zeinuki"])*0.08))
+
+    kingakuarray = list(str(gokei))
+    kingakuarray.reverse()
+    cellkey = ["AY10", "AV10", "AS10", "AP10", "AM10", "AJ10", "AG10"]
+    for k in range(7):
+      if k < len(kingakuarray):
+        sheet[cellkey[k]] = kingakuarray[k]
 
   wb.save('tmp/' + filename + '.xlsx')
 
