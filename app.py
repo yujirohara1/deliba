@@ -443,10 +443,10 @@ def resExcelFile_OutputExcelNouhinsho(customerid, deliverYmd):
 
     idx = 1
     for r in resultset:
-      sheet['A' + str(9 + idx)] = str(idx)
+      sheet['A' + str(9 + idx)] = idx
       sheet['C' + str(9 + idx)] = r["item_name1"]
-      sheet['L' + str(9 + idx)] = str(r["quantity"])
-      sheet['N' + str(9 + idx)] = str(r["price"])
+      sheet['L' + str(9 + idx)] = r["quantity"]
+      sheet['N' + str(9 + idx)] = r["price"]
 
       idx += 1
 

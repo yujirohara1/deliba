@@ -3372,7 +3372,7 @@ function createItemNouhinTableKani(customerId, deliverYmd){
             }
         },
         columns: [
-            { data: 'id'     ,width: '8%',  className: 'dt-body-right',render: function (data, type, row) 
+            { data: 'id'     ,width: '5%',  className: 'dt-body-right',render: function (data, type, row) 
                 { 
                     var btnTag = "";
                     btnTag = btnTag + '<a href="#" ';
@@ -3386,10 +3386,10 @@ function createItemNouhinTableKani(customerId, deliverYmd){
                     return btnTag;
                 } 
             },
-            { data: 'code'   ,width: '12%'},
-            { data: 'name1'  ,width: '33%'},
+            { data: 'code'   ,width: '5%'},
+            { data: 'name1'  ,width: '45%'},
             { data: 'tanka'  ,width: '10%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
-            { data: 'suryo'       ,width: '25%',  className: 'dt-body-right',render: function (data, type, row) 
+            { data: 'suryo'       ,width: '15%',  className: 'dt-body-right',render: function (data, type, row) 
                 { 
                     // if(data==null){
                     var inputtag = "";
@@ -3410,7 +3410,7 @@ function createItemNouhinTableKani(customerId, deliverYmd){
                     return inputtag;
                 } 
             },
-            { data: 'shokei'  ,width: '10%' ,className: 'dt-body-right' ,render: function (data, type, row) 
+            { data: 'shokei'  ,width: '15%' ,className: 'dt-body-right' ,render: function (data, type, row) 
                 { 
                     var ret = row.tanka * row.suryo;
                     if(ret==0){
