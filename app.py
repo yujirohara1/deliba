@@ -35,7 +35,6 @@ import smtplib
 from email.mime.text import MIMEText
 from email.utils import formatdate
 import csv
-import pandas as pd
 import shutil
 import openpyxl
 
