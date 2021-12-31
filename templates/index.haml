@@ -883,20 +883,23 @@
               id
         %tbody
     %div.col-md-9
-      %div.h4(style="color:#f36623; font-weight:bold")
-        ４．請求情報を作成してください。
       %div.row
-        %div.col-md-2.h4
-          納品先
         %div.col-md-7
-          %input.form-control#inpKaniAite(type="text" style="height:30px; font-size:20px" disabled)
-        %div.col-md-3
-      %div.row
-        %div.col-md-2.h4
-          納品日
-        %div.col-md-7
-          %input.form-control#inpKaniDeliverYmd(type="text" style="height:30px; font-size:20px" disabled)
-        %div.col-md-3
+          %div.h4(style="color:#f36623; font-weight:bold")
+            ４．請求情報を作成してください。
+          %div.row
+            %div.col-md-4.h4
+              納品先
+            %div.col-md-8
+              %input.form-control#inpKaniAite(type="text" style="height:30px; font-size:20px" disabled)
+          %div.row
+            %div.col-md-4.h4
+              納品日
+            %div.col-md-8
+              %input.form-control#inpKaniDeliverYmd(type="text" style="height:30px; font-size:20px" disabled)
+        %div.col-md-1
+        %div.col-md-4
+
       %div.row
         %div.col-md-12
           %table.table-bordered.row.hover#tableItemNouhinKani

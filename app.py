@@ -444,27 +444,54 @@ def resExcelFile_OutputExcelSeikyusho(nentuki):
 
   if len(resultsetA) > 0:
     sheet = wb['書式']
-    # cell = sheet['A2']
-    # sheet['A2'] = resultset[0]["customer_name1"]
-    sheet['C16'] = str(int(nentuki[0:4])) + "年" + str(int(nentuki[4:6])) + "月分"
+    sheet['AZ36'] = "09020721"
 
-    idx = 69
+    prevDate = ""
+    prevDateCellSt = ""
+    prevDateCellEn = ""
+    nikkei = 0
+    idx = 68
     for r in resultsetA:
-      sheet['C' + str(idx)] = r["item_name1"]
-      sheet['W' + str(idx)] = r["quantity"]
-      sheet['AC' + str(idx)] = r["price"]
-      sheet['AK' + str(idx)] = int(r["price"]) * int(r["quantity"])
-      sheet['AX' + str(idx)] =  r["deliver_ymd"].strftime('%Y/%m/%d') + " 納品"
-      sheet['AX' + str(idx+1)] = r["customer_name1"] + " 様"
+      if prevDate != r["deliver_ymd"].strftime('%m/%d') :
+        sheet['C' + str(idx)] = r["deliver_ymd"].strftime('%m/%d') 
 
-      idx += 2
+        if prevDateCellSt != "" and prevDateCellEn != "" and int(prevDateCellSt.replace("BE","")) <= int(prevDateCellEn.replace("BM","")) :
+          sheet.merge_cells(prevDateCellSt + ":" + prevDateCellEn)
+          sheet[prevDateCellSt] = nikkei + math.floor(nikkei*0.08) #4567
+          sheet[prevDateCellSt].alignment = openpyxl.styles.Alignment(wrapText=True, vertical = 'center')
+          sheet.merge_cells(prevDateCellSt.replace("BE","C") + ":" + prevDateCellEn.replace("BM","F"))
+          sheet.merge_cells(prevDateCellSt.replace("BE","AY") + ":" + prevDateCellEn.replace("BM","BD"))
+          sheet[prevDateCellSt.replace("BE","AY")] = math.floor(nikkei*0.08) #消費税
+          nikkei = 0
+          sheet[prevDateCellSt.replace("BE","C")].alignment = openpyxl.styles.Alignment(vertical = 'top', horizontal="center")
+          prevDateCellEn = ""
 
-  if len(resultsetA) > 0:
-    sheet = wb['書式']
-    # cell = sheet['A2']
-    # sheet['A2'] = resultset[0]["customer_name1"]
-    sheet['C16'] = str(int(nentuki[0:4])) + "年" + str(int(nentuki[4:6])) + "月分"
+        prevDateCellSt = 'BE' + str(idx)
+      
+      prevDateCellEn = 'BM' + str(idx)
 
+      sheet['G' + str(idx)] = r["item_name1"]
+      sheet['AC' + str(idx)] = r["quantity"]
+      sheet['AG' + str(idx)] = r["price"]
+      sheet['AM' + str(idx)] = int(r["price"]) * int(r["quantity"])
+      nikkei = nikkei + int(r["price"]) * int(r["quantity"])
+      sheet['AU' + str(idx)] = "8%"
+
+      prevDate = r["deliver_ymd"].strftime('%m/%d')
+
+      idx += 1
+
+    sheet.merge_cells(prevDateCellSt + ":" + prevDateCellEn)
+    sheet[prevDateCellSt] = nikkei + math.floor(nikkei*0.08) #4567
+    sheet[prevDateCellSt].alignment = openpyxl.styles.Alignment(wrapText=True, vertical = 'center')
+    sheet.merge_cells(prevDateCellSt.replace("BE","C") + ":" + prevDateCellEn.replace("BM","F"))
+    sheet.merge_cells(prevDateCellSt.replace("BE","AY") + ":" + prevDateCellEn.replace("BM","BD"))
+    sheet[prevDateCellSt.replace("BE","AY")] = math.floor(nikkei*0.08) #消費税
+    nikkei = 0
+    sheet[prevDateCellSt.replace("BE","C")].alignment = openpyxl.styles.Alignment(vertical = 'top', horizontal="center")
+    prevDateCellEn = ""
+
+  if len(resultsetB) > 0:
     gokei = 0
     idx = 4
     for r in resultsetB:
