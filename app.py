@@ -362,11 +362,7 @@ def resExcelFile_OutputExcelNouhinsho(customerid, deliverYmd):
   return send_file('tmp/' + filename + '.xlsx', as_attachment=True, mimetype=XLSX_MIMETYPE, attachment_filename = filename + '.xlsx')
 
 
-@app.route('/OutputExcelSeikyusho/<nentuki>')
-@login_required
-def resExcelFile_OutputExcelSeikyusho(nentuki):
-  resultsetA=[]
-  
+def SeikyuExcelSqlA(nentuki, customerid):
   sql = " "
   sql = sql + " select "
   sql = sql + "     s.deliver_ymd, "
@@ -382,27 +378,12 @@ def resExcelFile_OutputExcelSeikyusho(nentuki):
   sql = sql + " where "
   sql = sql + "     s.item_id = i.id "
   sql = sql + "     and s.customer_id = c.id "
+  sql = sql + "     and s.customer_id = " + str(customerid) + " "
   sql = sql + "     and cast(to_char(s.deliver_ymd,'yyyymm') as integer) = " + nentuki + " "
   sql = sql + " order by c.name1, s.deliver_ymd, s.item_id "
-  
-  resultsetA=[]
-  data_listA = None
+  return sql
 
-  if db.session.execute(text(sql)).fetchone() is not None:
-    data_listA = db.session.execute(text(sql))
-
-    if data_listA is not None:
-      for row in data_listA:
-        resultsetA.append({
-          "deliver_ymd":row["deliver_ymd"], 
-          "item_id":row["item_id"], 
-          "price":row["price"], 
-          "quantity":row["quantity"],
-          "item_name1":row["item_name1"],
-          "customer_name1":row["customer_name1"],
-        })
-  
-
+def SeikyuExcelSqlB(nentuki):
   sql = " "
   sql = sql + " select "
   sql = sql + "     s.deliver_ymd, "
@@ -419,10 +400,49 @@ def resExcelFile_OutputExcelSeikyusho(nentuki):
   sql = sql + "     s.deliver_ymd, "
   sql = sql + "     s.customer_id, "
   sql = sql + "     c.name1 "
-  sql = sql + " order by c.name1, s.deliver_ymd "
+  sql = sql + " order by s.customer_id, s.deliver_ymd "
+  return sql
   
+
+def SeikyuExcelSqlC(nentuki):
+  sql = " "
+  sql = sql + " select "
+  sql = sql + "     sum(s.price * s.quantity) zeinuki, "
+  sql = sql + "     s.customer_id, "
+  sql = sql + "     c.name1 customer_name1 "
+  sql = sql + " from "
+  sql = sql + "     " + TableWhereTenantId("seikyu") + " s, "
+  sql = sql + "     " + TableWhereTenantId("customer") + " c "
+  sql = sql + " where "
+  sql = sql + "         s.customer_id = c.id "
+  sql = sql + "     and cast(to_char(s.deliver_ymd,'yyyymm') as integer) = " + nentuki + " "
+  sql = sql + " group by "
+  sql = sql + "     s.customer_id, "
+  sql = sql + "     c.name1 "
+  sql = sql + " order by s.customer_id "
+  return sql
+  
+
+@app.route('/OutputExcelSeikyusho/<nentuki>')
+@login_required
+def resExcelFile_OutputExcelSeikyusho(nentuki):
+  
+  resultsetC=[]
+  data_listC = None
+  sql = SeikyuExcelSqlC(nentuki)
+
+  if db.session.execute(text(sql)).fetchone() is not None:
+    data_listC = db.session.execute(text(sql))
+
+    if data_listC is not None:
+      for row in data_listC:
+        resultsetC.append({
+          "zeinuki":row["zeinuki"], "customer_id":row["customer_id"], "customer_name1":row["customer_name1"],
+        })
+
   resultsetB=[]
   data_listB = None
+  sql = SeikyuExcelSqlB(nentuki)
 
   if db.session.execute(text(sql)).fetchone() is not None:
     data_listB = db.session.execute(text(sql))
@@ -430,10 +450,8 @@ def resExcelFile_OutputExcelSeikyusho(nentuki):
     if data_listB is not None:
       for row in data_listB:
         resultsetB.append({
-          "deliver_ymd":row["deliver_ymd"], 
-          "zeinuki":row["zeinuki"], 
-          "customer_id":row["customer_id"],
-          "customer_name1":row["customer_name1"],
+          "deliver_ymd":row["deliver_ymd"], "zeinuki":row["zeinuki"], 
+          "customer_id":row["customer_id"], "customer_name1":row["customer_name1"],
         })
   
   timestamp = datetime.datetime.now()
@@ -442,54 +460,76 @@ def resExcelFile_OutputExcelSeikyusho(nentuki):
   
   wb = openpyxl.load_workbook('ExcelTemplate/hoiku/請求書_指定.xlsx')
 
-  if len(resultsetA) > 0:
-    sheet = wb['書式']
-    sheet['AZ36'] = "09020721"
+  sheet = wb['書式']
+  sheet['AZ36'] = "09020721"
 
-    prevDate = ""
-    prevDateCellSt = ""
-    prevDateCellEn = ""
-    nikkei = 0
-    idx = 68
-    for r in resultsetA:
-      if prevDate != r["deliver_ymd"].strftime('%m/%d') :
-        sheet['C' + str(idx)] = r["deliver_ymd"].strftime('%m/%d') 
+  ccnt = 0
+  if len(resultsetC) > 0:
+    for c in resultsetC:
+      ccnt = ccnt + 1
+      sheet['I' + str(3 + (65 * ccnt))] = "　" + c["customer_name1"] + "　様"
 
-        if prevDateCellSt != "" and prevDateCellEn != "" and int(prevDateCellSt.replace("BE","")) <= int(prevDateCellEn.replace("BM","")) :
-          sheet.merge_cells(prevDateCellSt + ":" + prevDateCellEn)
-          sheet[prevDateCellSt] = nikkei + math.floor(nikkei*0.08) #4567
-          sheet[prevDateCellSt].alignment = openpyxl.styles.Alignment(wrapText=True, vertical = 'center')
-          sheet.merge_cells(prevDateCellSt.replace("BE","C") + ":" + prevDateCellEn.replace("BM","F"))
-          sheet.merge_cells(prevDateCellSt.replace("BE","AY") + ":" + prevDateCellEn.replace("BM","BD"))
-          sheet[prevDateCellSt.replace("BE","AY")] = math.floor(nikkei*0.08) #消費税
-          nikkei = 0
-          sheet[prevDateCellSt.replace("BE","C")].alignment = openpyxl.styles.Alignment(vertical = 'top', horizontal="center")
-          prevDateCellEn = ""
-
-        prevDateCellSt = 'BE' + str(idx)
       
-      prevDateCellEn = 'BM' + str(idx)
+      resultsetA=[]
+      data_listA = None
+      sql = SeikyuExcelSqlA(nentuki, c["customer_id"])
 
-      sheet['G' + str(idx)] = r["item_name1"]
-      sheet['AC' + str(idx)] = r["quantity"]
-      sheet['AG' + str(idx)] = r["price"]
-      sheet['AM' + str(idx)] = int(r["price"]) * int(r["quantity"])
-      nikkei = nikkei + int(r["price"]) * int(r["quantity"])
-      sheet['AU' + str(idx)] = "8%"
+      if db.session.execute(text(sql)).fetchone() is not None:
+        data_listA = db.session.execute(text(sql))
 
-      prevDate = r["deliver_ymd"].strftime('%m/%d')
+        if data_listA is not None:
+          for row in data_listA:
+            resultsetA.append({
+              "deliver_ymd":row["deliver_ymd"], "item_id":row["item_id"], 
+              "price":row["price"], "quantity":row["quantity"],
+              "item_name1":row["item_name1"], "customer_name1":row["customer_name1"],
+            })
 
-      idx += 1
 
-    sheet.merge_cells(prevDateCellSt + ":" + prevDateCellEn)
-    sheet[prevDateCellSt] = nikkei + math.floor(nikkei*0.08) #4567
-    sheet[prevDateCellSt].alignment = openpyxl.styles.Alignment(wrapText=True, vertical = 'center')
-    sheet.merge_cells(prevDateCellSt.replace("BE","C") + ":" + prevDateCellEn.replace("BM","F"))
-    sheet.merge_cells(prevDateCellSt.replace("BE","AY") + ":" + prevDateCellEn.replace("BM","BD"))
-    sheet[prevDateCellSt.replace("BE","AY")] = math.floor(nikkei*0.08) #消費税
-    nikkei = 0
-    sheet[prevDateCellSt.replace("BE","C")].alignment = openpyxl.styles.Alignment(vertical = 'top', horizontal="center")
-    prevDateCellEn = ""
+      prevDate = ""
+      prevDateCellSt = ""
+      prevDateCellEn = ""
+      nikkei = 0
+      idx = 7 + (65 * ccnt)
+      for r in resultsetA:
+        if prevDate != r["deliver_ymd"].strftime('%m/%d') :
+          sheet['C' + str(idx)] = r["deliver_ymd"].strftime('%m/%d') 
+
+          if prevDateCellSt != "" and prevDateCellEn != "" and int(prevDateCellSt.replace("BE","")) <= int(prevDateCellEn.replace("BM","")) :
+            sheet.merge_cells(prevDateCellSt + ":" + prevDateCellEn)
+            sheet[prevDateCellSt] = nikkei + math.floor(nikkei*0.08) #4567
+            sheet[prevDateCellSt].alignment = openpyxl.styles.Alignment(wrapText=True, vertical = 'center')
+            sheet.merge_cells(prevDateCellSt.replace("BE","C") + ":" + prevDateCellEn.replace("BM","F"))
+            sheet.merge_cells(prevDateCellSt.replace("BE","AY") + ":" + prevDateCellEn.replace("BM","BD"))
+            sheet[prevDateCellSt.replace("BE","AY")] = math.floor(nikkei*0.08) #消費税
+            nikkei = 0
+            sheet[prevDateCellSt.replace("BE","C")].alignment = openpyxl.styles.Alignment(vertical = 'top', horizontal="center")
+            prevDateCellEn = ""
+
+          prevDateCellSt = 'BE' + str(idx)
+        
+        prevDateCellEn = 'BM' + str(idx)
+
+        sheet['G' + str(idx)] = r["item_name1"]
+        sheet['AC' + str(idx)] = r["quantity"]
+        sheet['AG' + str(idx)] = r["price"]
+        sheet['AM' + str(idx)] = int(r["price"]) * int(r["quantity"])
+        nikkei = nikkei + int(r["price"]) * int(r["quantity"])
+        sheet['AU' + str(idx)] = "8%"
+
+        prevDate = r["deliver_ymd"].strftime('%m/%d')
+
+        idx += 1
+
+      sheet.merge_cells(prevDateCellSt + ":" + prevDateCellEn)
+      sheet[prevDateCellSt] = nikkei + math.floor(nikkei*0.08) #4567
+      sheet[prevDateCellSt].alignment = openpyxl.styles.Alignment(wrapText=True, vertical = 'center')
+      sheet.merge_cells(prevDateCellSt.replace("BE","C") + ":" + prevDateCellEn.replace("BM","F"))
+      sheet.merge_cells(prevDateCellSt.replace("BE","AY") + ":" + prevDateCellEn.replace("BM","BD"))
+      sheet[prevDateCellSt.replace("BE","AY")] = math.floor(nikkei*0.08) #消費税
+      nikkei = 0
+      sheet[prevDateCellSt.replace("BE","C")].alignment = openpyxl.styles.Alignment(vertical = 'top', horizontal="center")
+      prevDateCellEn = ""
 
   if len(resultsetB) > 0:
     gokei = 0
