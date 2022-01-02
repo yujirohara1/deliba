@@ -383,7 +383,7 @@ def SeikyuExcelSqlA(nentuki, customerid):
   sql = sql + " order by c.name1, s.deliver_ymd, s.item_id "
   return sql
 
-def SeikyuExcelSqlB(nentuki):
+def SeikyuExcelSqlB(nentuki, customerid):
   sql = " "
   sql = sql + " select "
   sql = sql + "     s.deliver_ymd, "
@@ -395,6 +395,7 @@ def SeikyuExcelSqlB(nentuki):
   sql = sql + "     " + TableWhereTenantId("customer") + " c "
   sql = sql + " where "
   sql = sql + "         s.customer_id = c.id "
+  sql = sql + "     and s.customer_id = " + str(customerid) + " "
   sql = sql + "     and cast(to_char(s.deliver_ymd,'yyyymm') as integer) = " + nentuki + " "
   sql = sql + " group by "
   sql = sql + "     s.deliver_ymd, "
@@ -427,6 +428,12 @@ def SeikyuExcelSqlC(nentuki):
 @login_required
 def resExcelFile_OutputExcelSeikyusho(nentuki):
   
+  timestamp = datetime.datetime.now()
+  timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+  filename = "file_" + nentuki + "_" + timestampStr + "_" + current_user.name + "_" + current_user.tenant_id
+  
+  wb = openpyxl.load_workbook('ExcelTemplate/hoiku/請求書_指定.xlsx')
+
   resultsetC=[]
   data_listC = None
   sql = SeikyuExcelSqlC(nentuki)
@@ -440,34 +447,16 @@ def resExcelFile_OutputExcelSeikyusho(nentuki):
           "zeinuki":row["zeinuki"], "customer_id":row["customer_id"], "customer_name1":row["customer_name1"],
         })
 
-  resultsetB=[]
-  data_listB = None
-  sql = SeikyuExcelSqlB(nentuki)
-
-  if db.session.execute(text(sql)).fetchone() is not None:
-    data_listB = db.session.execute(text(sql))
-
-    if data_listB is not None:
-      for row in data_listB:
-        resultsetB.append({
-          "deliver_ymd":row["deliver_ymd"], "zeinuki":row["zeinuki"], 
-          "customer_id":row["customer_id"], "customer_name1":row["customer_name1"],
-        })
-  
-  timestamp = datetime.datetime.now()
-  timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
-  filename = "file_" + nentuki + "_" + timestampStr + "_" + current_user.name + "_" + current_user.tenant_id
-  
-  wb = openpyxl.load_workbook('ExcelTemplate/hoiku/請求書_指定.xlsx')
-
-  sheet = wb['書式']
-  sheet['AZ36'] = "09020721"
-
   ccnt = 0
   if len(resultsetC) > 0:
     for c in resultsetC:
+      
+      sheet = wb.worksheets[ccnt]
+      sheet.title = c["customer_name1"]
+      sheet['AZ36'] = "09020721"
+
       ccnt = ccnt + 1
-      sheet['I' + str(3 + (65 * ccnt))] = "　" + c["customer_name1"] + "　様"
+      sheet['I' + str(3 + (65 * 1))] = "　" + c["customer_name1"] + "　様"
 
       
       resultsetA=[]
@@ -490,7 +479,7 @@ def resExcelFile_OutputExcelSeikyusho(nentuki):
       prevDateCellSt = ""
       prevDateCellEn = ""
       nikkei = 0
-      idx = 7 + (65 * ccnt)
+      idx = 7 + 65 #(65 * ccnt)
       for r in resultsetA:
         if prevDate != r["deliver_ymd"].strftime('%m/%d') :
           sheet['C' + str(idx)] = r["deliver_ymd"].strftime('%m/%d') 
@@ -531,24 +520,38 @@ def resExcelFile_OutputExcelSeikyusho(nentuki):
       sheet[prevDateCellSt.replace("BE","C")].alignment = openpyxl.styles.Alignment(vertical = 'top', horizontal="center")
       prevDateCellEn = ""
 
-  if len(resultsetB) > 0:
-    gokei = 0
-    idx = 4
-    for r in resultsetB:
-      sheet['BQ' + str(idx)] = r["deliver_ymd"]
-      sheet['BR' + str(idx)] = r["customer_name1"]
-      sheet['BS' + str(idx)] = int(r["zeinuki"])
-      sheet['BT' + str(idx)] = math.floor(int(r["zeinuki"])*0.08)
-      sheet['BU' + str(idx)] = int(r["zeinuki"]) + math.floor(int(r["zeinuki"])*0.08)
-      idx += 1
-      gokei = gokei + (int(r["zeinuki"]) + math.floor(int(r["zeinuki"])*0.08))
+      resultsetB=[]
+      data_listB = None
+      sql = SeikyuExcelSqlB(nentuki, c["customer_id"])
 
-    kingakuarray = list(str(gokei))
-    kingakuarray.reverse()
-    cellkey = ["AY10", "AV10", "AS10", "AP10", "AM10", "AJ10", "AG10"]
-    for k in range(7):
-      if k < len(kingakuarray):
-        sheet[cellkey[k]] = kingakuarray[k]
+      if db.session.execute(text(sql)).fetchone() is not None:
+        data_listB = db.session.execute(text(sql))
+
+        if data_listB is not None:
+          for row in data_listB:
+            resultsetB.append({
+              "deliver_ymd":row["deliver_ymd"], "zeinuki":row["zeinuki"], 
+              "customer_id":row["customer_id"], "customer_name1":row["customer_name1"],
+            })
+              
+            if len(resultsetB) > 0:
+              gokei = 0
+              idx = 4
+              for r in resultsetB:
+                sheet['BQ' + str(idx)] = r["deliver_ymd"]
+                sheet['BR' + str(idx)] = r["customer_name1"]
+                sheet['BS' + str(idx)] = int(r["zeinuki"])
+                sheet['BT' + str(idx)] = math.floor(int(r["zeinuki"])*0.08)
+                sheet['BU' + str(idx)] = int(r["zeinuki"]) + math.floor(int(r["zeinuki"])*0.08)
+                idx += 1
+                gokei = gokei + (int(r["zeinuki"]) + math.floor(int(r["zeinuki"])*0.08))
+
+              kingakuarray = list(str(gokei))
+              kingakuarray.reverse()
+              cellkey = ["AY10", "AV10", "AS10", "AP10", "AM10", "AJ10", "AG10"]
+              for k in range(7):
+                if k < len(kingakuarray):
+                  sheet[cellkey[k]] = kingakuarray[k]
 
   wb.save('tmp/' + filename + '.xlsx')
 
