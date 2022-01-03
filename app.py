@@ -346,7 +346,8 @@ def resExcelFile_OutputExcelNouhinsho(customerid, deliverYmd):
     sheet = wb['納品書']
     # cell = sheet['A2']
     sheet['A2'] = resultset[0]["customer_name1"]
-    sheet['P2'] = vDeliverYmd
+    dd = vDeliverYmd.split("/")
+    sheet['P2'] = dd[0] + "年 " + dd[1] + "月 " + dd[2] + "日"
 
     idx = 1
     for r in resultset:
