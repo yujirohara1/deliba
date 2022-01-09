@@ -384,6 +384,28 @@ def SeikyuExcelSqlA(nentuki, customerid):
   sql = sql + " order by c.name1, s.deliver_ymd, s.item_id "
   return sql
 
+
+def SeikyuExcelSqlD(nentuki, customerid):
+  sql = " "
+  sql = sql + " select "
+  sql = sql + "     s.deliver_ymd, "
+  sql = sql + "     s.item_id, "
+  sql = sql + "     s.price, "
+  sql = sql + "     s.quantity, "
+  sql = sql + "     i.name1 item_name1, "
+  sql = sql + "     c.name1 customer_name1 "
+  sql = sql + " from "
+  sql = sql + "     " + TableWhereTenantId("seikyu") + " s, "
+  sql = sql + "     " + TableWhereTenantId("item") + " i, "
+  sql = sql + "     " + TableWhereTenantId("customer") + " c "
+  sql = sql + " where "
+  sql = sql + "     s.item_id = i.id "
+  sql = sql + "     and s.customer_id = c.id "
+  sql = sql + "     and s.customer_id = " + str(customerid) + " "
+  sql = sql + "     and cast(to_char(s.deliver_ymd,'yyyymm') as integer) = " + nentuki + " "
+  sql = sql + " order by c.name1, s.item_id, s.deliver_ymd "
+  return sql
+
 def SeikyuExcelSqlB(nentuki, customerid):
   sql = " "
   sql = sql + " select "
@@ -554,6 +576,79 @@ def resExcelFile_OutputExcelSeikyusho(nentuki):
                 if k < len(kingakuarray):
                   sheet[cellkey[k]] = kingakuarray[k]
 
+  wb.save('tmp/' + filename + '.xlsx')
+
+  return send_file('tmp/' + filename + '.xlsx', as_attachment=True, mimetype=XLSX_MIMETYPE, attachment_filename = filename + '.xlsx')
+
+
+@app.route('/OutputExcelSeikyushoB/<nentuki>')
+@login_required
+def resExcelFile_OutputExcelSeikyushoB(nentuki):
+  
+  timestamp = datetime.datetime.now()
+  timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+  filename = "file_" + nentuki + "_" + timestampStr + "_" + current_user.name + "_" + current_user.tenant_id
+  
+  wb = openpyxl.load_workbook('ExcelTemplate/hoiku/請求書_指定B.xlsx')
+
+  resultsetC=[]
+  data_listC = None
+  sql = SeikyuExcelSqlC(nentuki)
+
+  if db.session.execute(text(sql)).fetchone() is not None:
+    data_listC = db.session.execute(text(sql))
+
+    if data_listC is not None:
+      for row in data_listC:
+        resultsetC.append({
+          "zeinuki":row["zeinuki"], "customer_id":row["customer_id"], "customer_name1":row["customer_name1"],
+        })
+
+  ccnt = 0
+  if len(resultsetC) > 0:
+    for c in resultsetC:
+      
+      # sheet = wb.worksheets[ccnt]
+      sheet = wb.copy_worksheet(wb['Sheet1'])
+      sheet.title = c["customer_name1"]
+
+      ccnt = ccnt + 1
+      sheet['A1'] = "　" + c["customer_name1"] + "　様"
+      sheet['F4'] = c["zeinuki"] 
+      sheet['A4'] = nentuki[0:4] + " 年 " + nentuki[4:6] + " 月 分"
+      
+      resultsetA=[]
+      data_listA = None
+      sql = SeikyuExcelSqlD(nentuki, c["customer_id"])
+
+      if db.session.execute(text(sql)).fetchone() is not None:
+        data_listA = db.session.execute(text(sql))
+
+        if data_listA is not None:
+          for row in data_listA:
+            resultsetA.append({
+              "deliver_ymd":row["deliver_ymd"], "item_id":row["item_id"], 
+              "price":row["price"], "quantity":row["quantity"],
+              "item_name1":row["item_name1"], "customer_name1":row["customer_name1"],
+            })
+
+      itemColumnId = ["B","D","F","H","J","L","N","P"]
+      nikkei = 0
+      gyoNum = 0
+      idx = 1
+      itemIndex = -1
+      prevItemId = 0
+      for r in resultsetA:
+        if prevItemId != r["item_id"]:
+          itemIndex += 1
+          sheet[itemColumnId[itemIndex] + "7"] = r["item_name1"]
+
+        gyoNum = int(r["deliver_ymd"].strftime('%d')) + 10
+        sheet[itemColumnId[itemIndex] + str(gyoNum)] = r["quantity"]
+        prevItemId = r["item_id"]
+        idx += 1
+
+  wb.remove(wb['Sheet1'])
   wb.save('tmp/' + filename + '.xlsx')
 
   return send_file('tmp/' + filename + '.xlsx', as_attachment=True, mimetype=XLSX_MIMETYPE, attachment_filename = filename + '.xlsx')

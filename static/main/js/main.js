@@ -3508,3 +3508,21 @@ $('#printKaniNouhinsho').on('click', function() { //printKaniNouhinsho
       }).always(function(data) {
     });
  });
+
+ $('#printKaniSiteiSeikyushoB').on('click', function() { //printKaniNouhinsho
+    var nentuki = $('#selNentukiKani').val();
+    $.ajax({
+        type: "GET",
+        url: "/OutputExcelSeikyushoB/" + nentuki + "",
+        xhrFields    : {responseType : 'blob'},
+      }).done(function(data, textStatus, jqXHR ) {
+        var blob=new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64"});//
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "" + Math.random().toString(32).substring(2) + ".xlsx";
+        link.click();
+      }).fail(function(data) {
+            alert("エラー：" + data.statusText);
+      }).always(function(data) {
+    });
+ });
