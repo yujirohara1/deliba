@@ -642,6 +642,7 @@ def resExcelFile_OutputExcelSeikyushoB(nentuki):
         if prevItemId != r["item_id"]:
           itemIndex += 1
           sheet[itemColumnId[itemIndex] + "7"] = r["item_name1"]
+          sheet[itemColumnId[itemIndex] + "8"] = r["price"]
 
         gyoNum = int(r["deliver_ymd"].strftime('%d')) + 10
         sheet[itemColumnId[itemIndex] + str(gyoNum)] = r["quantity"]
