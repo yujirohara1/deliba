@@ -919,13 +919,19 @@
                   小計
             %tbody
       %div.row
-        %div.col-md-2
-          %button.btn.btn-success.btn-mm#printKaniNouhinsho(type="button")
-            納品書Excel出力
-        %div.col-md-2
-          %button.btn.btn-success.btn-mm#printKaniSiteiSeikyusho(type="button")
-            指定請求書Excel出力
         %div.col-md-1
+          %button.btn.btn-success.btn-mm#printKaniNouhinsho(type="button")
+            納品書
+        %div.col-md-1
+          %button.btn.btn-success.btn-mm#printKaniSiteiSeikyusho(type="button")
+            請求書A
+        %div.col-md-1
+          %button.btn.btn-success.btn-mm#printKaniSiteiSeikyushoB(type="button")
+            請求書B
+        %div.col-md-1
+          &nbsp;
+        %div.col-md-1
+          &nbsp;
         %div.col-md-2.h4(style="text-align:right")
           消費税率
         %div.col-md-2
