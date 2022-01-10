@@ -11,82 +11,77 @@ $(document).ready(function() {
         $.each(list, function(i, item) {
             systemMode = item.param_no;
         });
-        if(systemMode==1){
-            $('.container-fluid').hide();
-            $('#divHoikuMain').show();
-            initSystemMode1();
-            return;
-        } else {
-            $('.container-fluid').show();
-            $('#divHoikuMain').hide();
+        
+        $.getJSON("/isKanriUser", function(json) {
+            list = JSON.parse(json.data);
+            $.each(list, function(i, item) {
+                grantLev = 9;
+            });
 
+            if(systemMode==1){
+                $('.container-fluid').hide();
+                $('#divHoikuMain').show();
+                initSystemMode1();
+                // return;
+            } else {
+                $('.container-fluid').show();
+                $('#divHoikuMain').hide();
+
+                setShowOrHideByGrant();
+            }
+            
             $.getJSON("/getMstSetting_Main/GROUP_KB", function(json) {
             list = JSON.parse(json.data);
             $.each(list, function(i, item) {
-            var option = $('<option>').text(item.param_val1).val(item.param_no);
-            var option2 = $('<option>').text(item.param_val1).val(item.param_no);
-            var option3 = $('<option>').text(item.param_val1).val(item.param_no);
-            $('#selGroupKb').append(option);
-            $('#selCsvGroupKb').append(option2);
-            $('#selCustomerGroupKb').append(option3);
-            });
+                    var option = $('<option>').text(item.param_val1).val(item.param_no);
+                    var option2 = $('<option>').text(item.param_val1).val(item.param_no);
+                    var option3 = $('<option>').text(item.param_val1).val(item.param_no);
+                    $('#selGroupKb').append(option);
+                    $('#selCsvGroupKb').append(option2);
+                    $('#selCustomerGroupKb').append(option3);
+                });
             });
 
-                
-
-            $.getJSON("/isKanriUser", function(json) {
-            list = JSON.parse(json.data);
-            $.each(list, function(i, item) {
-            grantLev = 9;
-            });
-            setShowOrHideByGrant();
-            });
-        
             $.getJSON("/getMstSetting_Main/BACK_COLOR", function(json) {
-            list = JSON.parse(json.data);
-            $.each(list, function(i, item) {
-            document.body.style.backgroundColor=item.param_val1;
-            });
+                list = JSON.parse(json.data);
+                $.each(list, function(i, item) {
+                    document.body.style.backgroundColor=item.param_val1;
+                });
             });
         
             $.getJSON("/getMstSetting_Main/SIHARAI_KB", function(json) {
-            list = JSON.parse(json.data);
-            $.each(list, function(i, item) {
-            var option = $('<option>').text(item.param_val1).val(item.param_no);
-            $('#selHaraiKb').append(option);
-            });
+                list = JSON.parse(json.data);
+                $.each(list, function(i, item) {
+                    var option = $('<option>').text(item.param_val1).val(item.param_no);
+                    $('#selHaraiKb').append(option);
+                });
             });
         
             $.getJSON("/getMstSetting_Main/CUSTOMER_ZEI_KB", function(json) {
-            list = JSON.parse(json.data);
-            $.each(list, function(i, item) {
-            var option = $('<option>').text(item.param_val1).val(item.param_no);
-            $('#selCustomerZeiKb').append(option);
-            });
+                list = JSON.parse(json.data);
+                $.each(list, function(i, item) {
+                    var option = $('<option>').text(item.param_val1).val(item.param_no);
+                    $('#selCustomerZeiKb').append(option);
+                });
             });
         
             $.getJSON("/getMstSetting_Main/HONTEN_KB", function(json) {
-            list = JSON.parse(json.data);
-            $.each(list, function(i, item) {
-            var option = $('<option>').text(item.param_val1).val(item.param_no);
-            var option2 = $('<option>').text(item.param_val1).val(item.param_no);
-            $('#selTantoName').append(option);
-            $('#selCsvTanto').append(option2);
-            });
+                list = JSON.parse(json.data);
+                $.each(list, function(i, item) {
+                    var option = $('<option>').text(item.param_val1).val(item.param_no);
+                    var option2 = $('<option>').text(item.param_val1).val(item.param_no);
+                    $('#selTantoName').append(option);
+                    $('#selCsvTanto').append(option2);
+                });
             });
         
-
-
             $.getJSON("/getMstSetting_Main/ZEI_KB", function(json) {
-            list = JSON.parse(json.data);
-            $.each(list, function(i, item) {
-            var option = $('<option>').text(item.param_val2).val(item.param_no);
-            $('#selItemZeiKb').append(option);
+                list = JSON.parse(json.data);
+                $.each(list, function(i, item) {
+                    var option = $('<option>').text(item.param_val2).val(item.param_no);
+                    $('#selItemZeiKb').append(option);
+                });
             });
-            });
-        
-        
-            //
         
             $.getJSON("/getMstSetting_Main/START_YM", function(json) {
                 list = JSON.parse(json.data);
@@ -130,13 +125,9 @@ $(document).ready(function() {
                 createDaichoTables_Main(0);
                 createSeikyuTables_Main(0,NowNenTuki());
             });
-        
-        }
+
+        });
     });
-    
-
-
-
 });
 
 function setShowOrHideByGrant(){
@@ -2587,7 +2578,7 @@ function fncUpdateSeikyuQuantityKani(itemid, price, pricesub, evnetObj){
     var deliverymd = nen + "-" + tuki + "-" + niti;
     var quantity = 0; //toNumber($("#inputQuantityTmp").val());
     if(evnetObj != null){
-        quantity = evnetObj.value;
+        quantity = toNumber(evnetObj.value);
     }
     if(quantity==""){
         quantity = 0;
@@ -3147,7 +3138,7 @@ function createTableDateKani(){
       language: {
          url: "../static/main/js/japanese.json"
       },
-      "scrollY":        $(window).height() * 52 / 100,
+      "scrollY":        $(window).height() * 40 / 100,
       searching: false,
       "pageLength": 1000,
       paging:false,
@@ -3312,7 +3303,7 @@ function createItemTableKani(){
         language: {
            url: "../static/main/js/japanese.json"
         },
-        "scrollY":$(window).height() * 25 / 100,
+        "scrollY":$(window).height() * 18 / 100,
         order: [[ 1, "asc" ],[ 3, "asc" ]],
         "pageLength": 1000,
         paging: false,
@@ -3364,7 +3355,7 @@ function createItemNouhinTableKani(customerId, deliverYmd){
                     btnTag = btnTag + ' value = "' + row.id + '" ';
                     btnTag = btnTag + ' title = "' + row.id + '" ';
                     btnTag = btnTag + ' onclick="funcDeleteRowKani(this,'+ row.id + ')" ';
-                    btnTag = btnTag + ' class="btn btn-primary btn-mm" ';
+                    btnTag = btnTag + ' class="btn btn-primary btn-sm" ';
                     btnTag = btnTag + ' role="button">削除</a>';
                     return btnTag;
                 } 
@@ -3377,10 +3368,10 @@ function createItemNouhinTableKani(customerId, deliverYmd){
                     // if(data==null){
                     var inputtag = "";
                     inputtag = inputtag + '<input id="inputQuantityTmp" ';
-                    inputtag = inputtag + 'class="form-control input-lg" ';
+                    inputtag = inputtag + 'class="form-control input-mm" ';
                     inputtag = inputtag + 'type="text" '; //autocomplete="off"
                     inputtag = inputtag + 'autocomplete="off" '; //
-                    inputtag = inputtag + 'style="width:100%; font-size:28px; text-align:right" ';
+                    inputtag = inputtag + 'style="width:100%; font-size:18px; text-align:right" ';
                     inputtag = inputtag + 'maxlength="3" ';
                     inputtag = inputtag + 'oninput="fncNumOnlyKani();" ';
                     inputtag = inputtag + 'onchange="fncUpdateSeikyuQuantityKani( ' + row.id + ', ' + row.tanka + ', ' + 0 + ',this );" '; 
@@ -3425,7 +3416,7 @@ function createItemNouhinTableKani(customerId, deliverYmd){
         language: {
            url: "../static/main/js/japanese.json"
         },
-        "scrollY":$(window).height() * 28 / 100,
+        "scrollY":$(window).height() * 20 / 100,
         //order: [[ 1, "asc" ],[ 3, "asc" ]],
         "pageLength": 1000,
         paging: false,

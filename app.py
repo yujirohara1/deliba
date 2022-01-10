@@ -37,6 +37,7 @@ from email.utils import formatdate
 import csv
 import shutil
 import openpyxl
+from openpyxl.worksheet.pagebreak import Break 
 
 # import logging 
 # logging.basicConfig()
@@ -480,6 +481,8 @@ def resExcelFile_OutputExcelSeikyusho(nentuki):
 
       ccnt = ccnt + 1
       sheet['I' + str(3 + (65 * 1))] = "　" + c["customer_name1"] + "　様"
+      # page_break = Break(id=10) # create Break obj
+      # sheet.page_breaks[0].append(page_break) # insert page break
 
       
       resultsetA=[]

@@ -135,7 +135,7 @@ table.dataTable thead tr {
 
 
 .input-mm {
-    height: 32px;
+    height: 24px;
     padding: 6px 10px;
     font-size: 14px;
     line-height: 1.3333333;
@@ -147,8 +147,16 @@ table.dataTable thead tr {
     color: #fff;
     background-color: #337ab7;
     border-color: #337ab7;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
+}
+.list-group-item {
+    position: relative;
+    display: block;
+    padding: 4px 6px;
+    margin-bottom: -1px;
+    background-color: #fff;
+    border: 1px solid #ddd;
 }
 
 #tableItemKani_wrapper{
@@ -157,16 +165,16 @@ table.dataTable thead tr {
 
 
 #tableItemNouhinKani td{
-    height: 30px;
-    font-size:24px;
+    height: 22px;
+    font-size:18px;
 }
 
 #tableItemKani td{
-    height: 25px;
+    height: 20px;
     font-size:18px;
 }
 #tableDateListKani td{
-    height: 25px;
+    height: 20px;
     font-size:18px;
 }
 
