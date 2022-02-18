@@ -18,7 +18,7 @@ $(document).ready(function() {
                 grantLev = 9;
             });
 
-            if(systemMode==1){
+            if(systemMode==1 && grantLev != 9){
                 $('.container-fluid').hide();
                 $('#divHoikuMain').show();
                 initSystemMode1();
@@ -1995,7 +1995,9 @@ $('#btnItemToroku').on('click', function() {
         createItemGroupTables_DaichoSub();
         createItemTables_DaichoSub($('#txtItemName1').val(), true);
         //$('#btnNewItem').click();
-
+        if(systemMode==1 && grantLev != 9){
+            createItemTableKani();
+        }
     }).fail(function(data) {
             alert("エラー：" + data.statusText);
       }).always(function(data) {
@@ -2191,7 +2193,7 @@ $('#modalAddDaicho').on("shown.bs.modal", function (e) {
 */
 $('#modalAddDaicho').on("show.bs.modal", function (e) {
    var customerid = toNumber($(".row_selected.customer").find("td:eq(0)").text());
-   if(customerid==0){
+   if(customerid==0 && systemMode!=1){
      $("#mainAddDaichoMessageArea")[0].innerText="";
      $("#mainAddDaichoMessageArea").append("<p style='color:red'>左のリストから顧客を選択してください。</p>");
      setTimeout('$("#mainAddDaichoMessageArea")[0].innerText="";', 3000);
