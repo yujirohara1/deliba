@@ -572,7 +572,7 @@ def resExcelFile_OutputExcelSeikyusho(nentuki):
                 idx += 1
                 gokei = gokei + (int(r["zeinuki"]) + math.floor(int(r["zeinuki"])*0.08))
 
-              kingakuarray = list(str(gokei))
+              kingakuarray = list('￥' + str(gokei))
               kingakuarray.reverse()
               cellkey = ["AY10", "AV10", "AS10", "AP10", "AM10", "AJ10", "AG10"]
               for k in range(7):
