@@ -1496,6 +1496,26 @@ function toNumber(val){
 }
 
 
+function toNumberOrBlank(val){ 
+    if(val == ""){
+        return "b";
+    }
+    
+    var vala = (val+"").split(',').join('');
+    if(isNaN(parseInt(vala))){
+        return 0;
+    }
+  
+    var ret = 0;
+    try{
+        ret = vala * 1;
+    }catch(e){
+        ret = 0;
+    }
+    return ret;
+}
+
+
 
 function getAllYoubiByNentuki(nen, tuki){
     var ret=[];
@@ -2555,7 +2575,7 @@ $('#tableSeikyu tbody').on( 'click', 'td', function () {
   
 function fncUpdateSeikyuQuantity(customerid, itemid, nen, tuki, niti, price, pricesub){
     var deliverymd = nen + "-" + tuki + "-" + niti;
-    var quantity = toNumber($("#inputQuantityTmp").val());
+    var quantity = toNumberOrBlank($("#inputQuantityTmp").val());
     $.ajax({
         type: "GET",
         url: "/updateSeikyuQuantity/" + customerid + "/" + itemid + "/" + deliverymd + "/" + quantity + "/" + price + "/" + pricesub + ""

@@ -1025,7 +1025,12 @@ def dbUpdate_updTakuhaijun():
 def dbUpdate_updSeikyuQuantity(customerid, itemid, deliverymd, quantity, price, pricesub):
   
   Seikyu.query.filter(Seikyu.customer_id==customerid, Seikyu.item_id==itemid, Seikyu.deliver_ymd==deliverymd, Seikyu.tenant_id==current_user.tenant_id).delete()
-  
+
+  if quantity == "b":
+    # データを確定
+    db.session.commit()
+    return "1"
+
   tstr = deliverymd #'2012-12-29 13:49:37'
   tdatetime = datetime.datetime.strptime(tstr, '%Y-%m-%d')
   tdate = datetime.date(tdatetime.year, tdatetime.month, tdatetime.day)
