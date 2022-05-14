@@ -1,0 +1,111 @@
+<meta name="Keywords" content="牛乳宅配管理システム,牛乳宅配管理ソフト,宅配PRO,宅配プロ,姫路コンピュータ">
+<meta name="Description" content="多岐にわたりご活用頂ける安心サポート付き牛乳宅配管理システム『宅配プロ』でお客様のあらゆるニーズにお応えします。発注や請求書作成にとても便利。">
+
+C:\Users\yujir>psql -U postgres newdb3
+ユーザ postgres のパスワード:yjrhr1102
+
+
+psql -U postgres newdb3
+
+Heroku CLI heroku pg:psql postgresql-cylindrical-36948 --app deliba
+heroku pg:psql postgresql-solid-08326 --app deliba
+
+
+ 
+
+deliba_db=# select setval('customer_id_seq',(select max(id) from customer));
+ setval
+--------
+   1070
+(1 行)
+
+
+deliba_db=# select setval('item_id_seq',(select max(id) from item));
+ setval
+--------
+    412
+(1 行)
+
+
+analyze seikyu;
+analyze customer;
+analyze item;
+analyze daicho;
+create index on daicho (customer_id);
+create index on daicho (item_id);
+create index on item (id);
+create index on customer (id);
+
+
+
+
+
+住所３にlistを入れる
+update customer set address3 = list;
+
+
+
+
+update customer a set list = (select
+                              b.rowno
+                          from
+                              (select row_number() over(partition by group_id) rowno, id, tenant_id from customer) b
+                          where
+                              a.id = b.id and
+                              a.tenant_id = b.tenant_id
+                          )
+where group_id = 200;
+
+
+ie
+"mozilla/5.0 (windows nt 10.0; wow64; trident/7.0; .net4.0c; .net4.0e; mcafee; .net clr 2.0.50727; .net clr 3.0.30729; .net clr 3.5.30729; rv:11.0) like gecko"
+
+chrome
+"mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/88.0.4324.104 safari/537.36"
+
+
+
+
+
+
+ public   | customer                 | テーブル   | postgres
+ public   | daicho                   | テーブル   | postgres
+ public   | item                     | テーブル   | postgres
+ public   | kakute                   | テーブル   | postgres
+ public   | mst_setting              | テーブル   | postgres
+ public   | seikyu                   | テーブル   | postgres
+
+
+
+create table   customer_wksato           as select * from     customer      where tenant_id = 'hara';
+create table   daicho_wksato             as select * from     daicho        where tenant_id = 'hara';
+create table   item_wksato               as select * from     item          where tenant_id = 'hara';
+create table   mst_setting_wksato        as select * from     mst_setting   where tenant_id = 'hara';
+
+
+update  customer_wksato     set tenant_id='sato';
+update  daicho_wksato       set tenant_id='sato';
+update  item_wksato         set tenant_id='sato';
+update  mst_setting_wksato  set tenant_id='sato';
+
+
+
+
+
+insert into    customer    select * from  customer_wksato    ;
+insert into    daicho      select * from  daicho_wksato      ;
+insert into    item        select * from  item_wksato        ;
+insert into    mst_setting select * from  mst_setting_wksato ;
+
+
+
+
+delete from mst_setting where param_id = 'BACK_COLOR';
+insert into mst_setting values('BACK_COLOR','背景色',1,'#DAE4FC',null,null,'sato');
+insert into mst_setting values('BACK_COLOR','背景色',1,'#F9FCDA',null,null,'hara');
+
+
+
+
+
+
