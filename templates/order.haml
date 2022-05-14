@@ -1,0 +1,157 @@
+{% extends 'common.html' %}
+
+{% block title %}LatteCloud 注文管理{% endblock %}
+
+{% block content %}
+  %div
+    %div.row
+      %div.col-md-8
+        %img.img-responsive(src="../static/image/logo_small.png" align="left" style="position:absolute; top:-5px")
+        %h5(style="position:absolute; left:100px; top10px")
+          牛乳宅配管理サービス&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;© Yujiro Hara, 2020
+        %h1(style="font-size:45px; position:absolute; left:90px;")
+          &nbsp;Latte Cloud
+        %br
+        %h1(style="font-size:45px; color:transparent" )
+          &nbsp;
+      %div.col-md-4
+        &nbsp;
+
+  %div.container-fluid#containerOrderForm
+    %div.row
+      %div.col-md-2
+        %div.form-group
+          %div.input-group
+            %span.input-group-addon
+              注文日
+            %input.form-control.date#inpOrderDate(type="text")
+      %div.col-md-2
+        %div.form-group
+          %div.input-group
+            %span.input-group-addon
+              納品希望日
+            %input.form-control.date#inpHopeDate(type="text")
+
+      %div.col-md-8
+        %a.btn.btn-primary.btn-sm#btnShowItemList(type="button")
+          入力開始
+
+    %div.row
+      %div.col-md-4
+        %div#divTableOrderItemMasterLeft
+          %table.table-bordered.row.hover#tableOrderItemMasterLeft
+            %thead
+              %tr
+                %th 
+                  ID
+                %th
+                  コード
+                %th
+                  商品名
+                %th
+                  仕入値
+                %th
+                  注文数
+            %tbody
+
+      %div.col-md-4
+        %div#divTableOrderItemMasterCenter
+          %table.table-bordered.row.hover#tableOrderItemMasterCenter
+            %thead
+              %tr
+                %th 
+                  ID
+                %th
+                  コード
+                %th
+                  商品名
+                %th
+                  仕入値
+                %th
+                  注文数
+            %tbody
+
+      %div.col-md-4
+        %div#divTableOrderItemMasterRight
+          %table.table-bordered.row.hover#tableOrderItemMasterRight
+            %thead
+              %tr
+                %th 
+                  ID
+                %th
+                  コード
+                %th
+                  商品名
+                %th
+                  仕入値
+                %th
+                  注文数
+            %tbody
+
+    %hr
+
+    %div.row
+      %div.col-md-9
+      %div.col-md-2
+        %div.input-group
+          %span.input-group-addon
+            注文金額合計
+          %input.form-control#lblOrderTotal(type="text" disabled style="text-align:right; font-size:18px")
+      %div.col-md-1
+        %a.btn.btn-primary.btn-sm#btnConfirmOrder(type="button" data-toggle="modal" data-target="#modalConfirmOrder")
+          注文確認
+
+
+
+<!-- 注文確認画面 -->
+%div.modal.fade#modalConfirmOrder(tabindex="-1")
+  %div.modal-dialog.modal-lg
+    %div.modal-content
+      %div.modal-header
+        %button.close(type="button" data-dismiss="modal")
+          %span
+            ×
+        %h4.modal-title#subFtitle
+          注文内容を確認してください。
+      %div.modal-body
+        %div.row
+          %div.col-md-10
+            %div#divTableOrderItemMasterConfirm
+              %table.table-bordered.row.hover#tableOrderItemMasterConfirm(width="100％")
+                %thead
+                  %tr
+                    %th 
+                      ID
+                    %th
+                      コード
+                    %th
+                      商品名
+                    %th
+                      仕入値
+                    %th
+                      注文数
+                    %th
+                      小計
+                %tbody
+
+      %div.modal-footer#modalConfirmOrderFooter
+        %div.row
+          %div.col-md-10
+            よろしければ、注文確定ボタンをクリックしてください。
+          %div.col-md-1
+            %a.btn.btn-default(type="button" data-dismiss="modal")
+              キャンセル
+          %div.col-md-1
+            %a.btn.btn-danger.btn-sm#btnSendOrder(type="button")
+              注文確定
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="../static/main/js/order.js"></script>
+{% endblock  %}
+
+
+
+

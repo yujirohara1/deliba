@@ -124,8 +124,8 @@ def SendMail_AccountToroku():
 def load_user(user_id):
   return users.get(int(user_id))
 
-# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用 
+db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
+# db_uri = os.environ.get('DATABASE_URL') #本番用 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -1230,6 +1230,39 @@ def login():
 def logout():
     logout_user()
     return render_template("login.haml")
+
+
+
+
+# 注文管理画面
+@app.route('/order', methods=["GET"])
+@login_required
+def openOrder():
+  return render_template("order.haml")
+
+
+@app.route('/createOrderData/<orderDate>/<hopeDate>/<param>')
+@login_required
+def dbUpdate_createOrderData(orderDate, hopeDate, param):
+  insParam = json.loads(param)
+  vals = param.split(DELIMIT)
+  
+  # if int(customerid) == 0 :
+  #   customer.del_flg = 0
+  #   customer.tenant_id = current_user.tenant_id
+  #   db.session.add(customer)
+
+  # else :
+  #   customer.biko2 = vals[6]
+  #   customer.biko1 = vals[7]
+  #   customer.list = vals[8]
+  #   customer.tenant_id = current_user.tenant_id
+
+  # # データを確定
+  # db.session.commit()
+  return param
+
+
 
 
 if __name__ == "__main__":
