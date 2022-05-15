@@ -6,6 +6,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, U
 from collections import defaultdict
 from datetime import timedelta
 import datetime
+import pytz
 from flask_bootstrap import Bootstrap
 from marshmallow_sqlalchemy import ModelSchema
 from reportlab.pdfgen import canvas
@@ -17,6 +18,7 @@ from reportlab.lib.units import mm
 from reportlab.lib import colors
 from api.database import db, ma
 from models.item import Item, ItemSchema, VItemGroup, VItemGroupSchema
+from models.orderitem import OrderItem, OrderItemSchema, VOrderItem, VOrderItemSchema
 from models.customer import Customer, CustomerSchema, CustomerNentuki, CustomerNentukiSchema
 from models.mstsetting import MstSetting, MstSettingSchema
 from models.daicho import Daicho, DaichoSchema, VDaichoA, VDaichoASchema
@@ -124,8 +126,8 @@ def SendMail_AccountToroku():
 def load_user(user_id):
   return users.get(int(user_id))
 
-db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
-# db_uri = os.environ.get('DATABASE_URL') #本番用 
+# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
+db_uri = os.environ.get('DATABASE_URL') #本番用 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -1241,12 +1243,58 @@ def openOrder():
   return render_template("order.haml")
 
 
-@app.route('/createOrderData/<orderDate>/<hopeDate>/<param>')
+
+
+# @app.route('/pdfMergeSeikyusho',methods=["GET", "POST"])
+# @login_required
+# def print_pdfMergeSeikyusho():
+#   timestamp = datetime.datetime.now()
+#   timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+#   vals = request.json["data"]
+#   merger = PyPDF2.PdfFileMerger()
+
+
+# @app.route('/createOrderData/<id>/<orderDate>/<hopeDate>/<param>')
+@app.route('/createOrderData',methods=["GET", "POST"])
 @login_required
-def dbUpdate_createOrderData(orderDate, hopeDate, param):
-  insParam = json.loads(param)
-  vals = param.split(DELIMIT)
+def dbUpdate_createOrderData():
+  #id, orderDate, hopeDate, param
+  insParam = json.loads(request.json["insParam"]) #json.loads(param)
+  hopeDate = request.json["hopeDate"]
+  orderDate = request.json["orderDate"]
+  id = request.json["id"]
+  # id = request.get
+  sendtime = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
+  #timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+  #vals = param.split(DELIMIT)
+  if int(id) == 0:
+    for row in insParam:
+      orderitem = OrderItem()
+      orderitem.item_id = row['id']
+      orderitem.hope_ymd = hopeDate
+      orderitem.item_code = row['code']
+      orderitem.item_name1 = row['name1']
+      orderitem.item_siire = row['tanka']
+      orderitem.order_ymd = orderDate
+      orderitem.quantity = row['quantity']
+      orderitem.send_stamp = sendtime # datetime.date().today.strftime("%Y%m%d")
+      orderitem.tenant_id = current_user.tenant_id
+      db.session.add(orderitem)
   
+  db.session.commit()
+
+  #   db.session.add(item)
+  # else:
+  #   item = Item.query.filter(Item.id==itemid, Item.tenant_id==current_user.tenant_id).first()
+  #   item.code = vals[1]
+  #   item.name1 = vals[2]
+  #   item.name2 = vals[3]
+  #   item.tanka = int(vals[4])
+  #   item.orosine = vals[5]
+  #   item.zei_kb = int(vals[6])
+  #   item.del_flg = int(vals[7])
+  #   item.tenant_id = current_user.tenant_id
+
   # if int(customerid) == 0 :
   #   customer.del_flg = 0
   #   customer.tenant_id = current_user.tenant_id
@@ -1260,8 +1308,15 @@ def dbUpdate_createOrderData(orderDate, hopeDate, param):
 
   # # データを確定
   # db.session.commit()
-  return param
+  return "1"
 
+
+@app.route('/getVOrderItem/')
+@login_required
+def resJson_getVOrderItem():
+  orderItem = VOrderItem.query.filter(Item.tenant_id=="hara").all()
+  schema = VOrderItemSchema(many=True)
+  return jsonify({'data': schema.dumps(orderItem, ensure_ascii=False)})
 
 
 

@@ -22,6 +22,8 @@ window.onload = function() {
     
     document.getElementById("inpOrderDate").value = strOrderDate;
     document.getElementById("inpHopeDate").value = strHopeDate;
+
+    $('#btnConfirmOrder').attr("disabled","disabled");
 };
 
 
@@ -34,6 +36,8 @@ document.getElementById("btnShowItemList").addEventListener('click', function(){
     createItemMasterTable("塚田カルセンド","tableOrderItemMasterLeft");
     createItemMasterTable("塚田カルセンド","tableOrderItemMasterCenter");
     createItemMasterTable("塚田カルセンド","tableOrderItemMasterRight");
+
+    $('#btnConfirmOrder').removeAttr("disabled","disabled");
 });
 
 
@@ -49,7 +53,7 @@ function createItemMasterTable(itemname1, tableId, updateAfter=false){
         destroy: true,
         "processing": true,
         ajax: {
-            url: "/getItem_Daicho/" + itemname1,
+            url: "/getVOrderItem",
             dataType: "json",
             dataSrc: function ( json ) {
                 return JSON.parse(json.data);
@@ -88,7 +92,7 @@ function createItemMasterTable(itemname1, tableId, updateAfter=false){
         language: {
            url: "../static/main/js/japanese.json"
         },
-        "scrollY":$(window).height() * 60 / 100,
+        "scrollY":$(window).height() * 55 / 100,
         order: [[ 4, "desc" ],[ 3, "asc" ]],
         "pageLength": 1000,
         searching: false,
@@ -128,7 +132,7 @@ function calcOrderTotal(){
         //document.getElementById("tableOrderItemMaster" + tableId[i]).rows[1].cells[4].firstChild.value
         //for(let r=1; r<=)
     }
-    document.getElementById("lblOrderTotal").value = Comma(orderTotal);
+    document.getElementById("lblOrderTotal").value = orderTotal.toLocaleString(); //Comma(orderTotal);
 }
 
 
@@ -185,11 +189,24 @@ function toNumber(val){
 
 
 var sendOrderData = [];
-
 $('#modalConfirmOrder').on("show.bs.modal", function (e) {
+    $('#btnSendOrder').removeAttr("disabled");
+    $('#lblMessage2').text("よろしければ、注文確定ボタンをクリックしてください。");
     sendOrderData = [];
+    calcOrderTotal();
+    if(document.getElementById("lblOrderTotal").value==0){
+        return false;
+    }
     createConfirmTable()
   
+});
+
+
+$('#modalConfirmOrder').on("hidden.bs.modal", function (e) {
+    //sectionOrderHistory
+    window.location.href = "#sectionOrderHistory";
+    //alert(1);
+    return;
 });
 
 
@@ -224,25 +241,15 @@ function createConfirmTable(){
         destroy: true,
         processing: true,
         "bAutoWidth": false,
-        // ajax: {
-        //     //url: data,
-        //     dataSrc: data,
-        //     dataType: "json",
-        //     // dataSrc: function ( json ) {
-        //     //     return JSON.parse(json.data);
-        //     // },
-        //     contentType:"application/json; charset=utf-8"
-        // },  
         data: sendOrderData,
         columns: [
             { data: 'id'     ,width: '5%'},
             { data: 'code'   ,width: '12%'},
             { data: 'name1'  ,width: '33%'},
-            { data: 'tanka'  ,width: '10%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+            { data: 'tanka'  ,width: '10%' ,className: 'dt-body-right' },
             { data: 'quantity'  ,width: '10%' ,className: 'dt-body-right' },
             { data: 'subTotal'  ,width: '10%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
         ],
-        //data.push({id:vid, code:vcode, name1:vname1, tanka:vtanka, quantity:vsuryo, subTotal:vshokei})
         language: {
            url: "../static/main/js/japanese.json"
         },
@@ -273,20 +280,26 @@ function createConfirmTable(){
 document.getElementById("btnSendOrder").addEventListener('click', function(){
     var editOrderDate = document.getElementById("inpOrderDate").value;
     var editHopeDate = document.getElementById("inpHopeDate").value;
-
+    var id = "0";
     $.ajax({
-        type: "GET",
-        url: "/createOrderData/" + editOrderDate + "/" + editHopeDate + "/" + JSON.stringify(sendOrderData) + "",
-        xhrFields    : {responseType : 'blob'},
-      }).done(function(data, textStatus, jqXHR ) {
-        var blob=new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64"});//
-        var link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = "" + Math.random().toString(32).substring(2) + ".xlsx";
-        link.click();
-      }).fail(function(data) {
-            alert("エラー：" + data.statusText);
-      }).always(function(data) {
+        type: "POST",
+        data: JSON.stringify({
+                "insParam":JSON.stringify(sendOrderData),
+                "id":id,
+                "orderDate": editOrderDate,
+                "hopeDate": editOrderDate
+            }),
+        url: "/createOrderData",
+        //url: "/createOrderData/" + id + "/" + editOrderDate + "/" + editHopeDate + "/" + JSON.stringify(sendOrderData) + "",
+        contentType:'application/json'
+        //xhrFields    : {responseType : 'blob'},
+    }).done(function(data) {
+        $('#lblMessage2').html("<div style='color:red; font-size:16px'>注文完了！</div>");
+        //$('#modalConfirmOrder').hide();
+    }).fail(function(data) {
+        $('#lblMessage2').html("注文できませんでした。やり直してください。");
+    }).always(function(data) {
+        $('#btnSendOrder').attr("disabled","disabled");
     });
 
 });

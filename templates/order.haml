@@ -17,6 +17,10 @@
       %div.col-md-4
         &nbsp;
 
+  %div.container-fluid
+    %h4
+      %span.label.label-success
+        注文情報入力フォーム
   %div.container-fluid#containerOrderForm
     %div.row
       %div.col-md-2
@@ -38,7 +42,7 @@
 
     %div.row
       %div.col-md-4
-        %div#divTableOrderItemMasterLeft
+        %div.container-fluid#divTableOrderItemMasterLeft
           %table.table-bordered.row.hover#tableOrderItemMasterLeft
             %thead
               %tr
@@ -55,7 +59,7 @@
             %tbody
 
       %div.col-md-4
-        %div#divTableOrderItemMasterCenter
+        %div.container-fluid#divTableOrderItemMasterCenter
           %table.table-bordered.row.hover#tableOrderItemMasterCenter
             %thead
               %tr
@@ -72,7 +76,7 @@
             %tbody
 
       %div.col-md-4
-        %div#divTableOrderItemMasterRight
+        %div.container-fluid#divTableOrderItemMasterRight
           %table.table-bordered.row.hover#tableOrderItemMasterRight
             %thead
               %tr
@@ -88,8 +92,10 @@
                   注文数
             %tbody
 
-    %hr
-
+  %div
+    &nbsp;
+  
+  %div.container-fluid#containerOrderForm
     %div.row
       %div.col-md-9
       %div.col-md-2
@@ -101,7 +107,12 @@
         %a.btn.btn-primary.btn-sm#btnConfirmOrder(type="button" data-toggle="modal" data-target="#modalConfirmOrder")
           注文確認
 
+    %hr
 
+  %div.container-fluid
+    %h4
+      %span.label.label-success#sectionOrderHistory
+        注文履歴
 
 <!-- 注文確認画面 -->
 %div.modal.fade#modalConfirmOrder(tabindex="-1")
@@ -136,10 +147,10 @@
 
       %div.modal-footer#modalConfirmOrderFooter
         %div.row
-          %div.col-md-10
+          %div.col-md-10#lblMessage2
             よろしければ、注文確定ボタンをクリックしてください。
           %div.col-md-1
-            %a.btn.btn-default(type="button" data-dismiss="modal")
+            %a.btn.btn-default#btnCloseOrderModal(type="button" data-dismiss="modal")
               キャンセル
           %div.col-md-1
             %a.btn.btn-danger.btn-sm#btnSendOrder(type="button")
