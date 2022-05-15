@@ -64,7 +64,7 @@ function createItemMasterTable(tableId, cdFrom, cdTo){
             { data: 'id'     ,width: '5%'},
             { data: 'code'   ,width: '12%',className: 'dt-body-right' ,render: function (data, type, row) { return (data*1);} },
             { data: 'name1'  ,width: '33%'},
-            { data: 'tanka'  ,width: '10%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+            { data: 'tanka'  ,width: '15%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
             { data: 'ordernum'  ,width: '15%',  className: 'dt-body-right',render: function (data, type, row) 
                 { 
                     var val = toNumber(data);
