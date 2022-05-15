@@ -1311,10 +1311,10 @@ def dbUpdate_createOrderData():
   return "1"
 
 
-@app.route('/getVOrderItem/')
+@app.route('/getVOrderItem/<cdFrom>/<cdTo>')
 @login_required
-def resJson_getVOrderItem():
-  orderItem = VOrderItem.query.filter(Item.tenant_id=="hara").all()
+def resJson_getVOrderItem(cdFrom, cdTo):
+  orderItem = VOrderItem.query.filter(VOrderItem.code>=cdFrom, VOrderItem.code<=cdTo).all()
   schema = VOrderItemSchema(many=True)
   return jsonify({'data': schema.dumps(orderItem, ensure_ascii=False)})
 

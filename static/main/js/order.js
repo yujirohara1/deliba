@@ -33,9 +33,9 @@ document.getElementById("btnShowItemList").addEventListener('click', function(){
     console.log(editOrderDate);
     console.log(editHopeDate);
 
-    createItemMasterTable("塚田カルセンド","tableOrderItemMasterLeft");
-    createItemMasterTable("塚田カルセンド","tableOrderItemMasterCenter");
-    createItemMasterTable("塚田カルセンド","tableOrderItemMasterRight");
+    createItemMasterTable("tableOrderItemMasterLeft","0001","0200");
+    createItemMasterTable("tableOrderItemMasterCenter","0201","0400");
+    createItemMasterTable("tableOrderItemMasterRight","0401","9999");
 
     $('#btnConfirmOrder').removeAttr("disabled","disabled");
 });
@@ -45,7 +45,7 @@ document.getElementById("btnShowItemList").addEventListener('click', function(){
 
 
 
-function createItemMasterTable(itemname1, tableId, updateAfter=false){
+function createItemMasterTable(tableId, cdFrom, cdTo){
 
     $('#' + tableId).DataTable({
         bInfo: false,
@@ -53,21 +53,16 @@ function createItemMasterTable(itemname1, tableId, updateAfter=false){
         destroy: true,
         "processing": true,
         ajax: {
-            url: "/getVOrderItem",
+            url: "/getVOrderItem/" + cdFrom + "/" + cdTo,
             dataType: "json",
             dataSrc: function ( json ) {
                 return JSON.parse(json.data);
             },
             contentType:"application/json; charset=utf-8"
         },  
-        "initComplete": function(settings, json) {
-          if(updateAfter){
-              $('#btnNewItem').click();
-          }
-        },
         columns: [
             { data: 'id'     ,width: '5%'},
-            { data: 'code'   ,width: '12%'},
+            { data: 'code'   ,width: '12%',className: 'dt-body-right' ,render: function (data, type, row) { return (data*1);} },
             { data: 'name1'  ,width: '33%'},
             { data: 'tanka'  ,width: '10%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
             { data: 'ordernum'  ,width: '15%',  className: 'dt-body-right',render: function (data, type, row) 
@@ -93,11 +88,11 @@ function createItemMasterTable(itemname1, tableId, updateAfter=false){
            url: "../static/main/js/japanese.json"
         },
         "scrollY":$(window).height() * 55 / 100,
-        order: [[ 4, "desc" ],[ 3, "asc" ]],
+        // order: [[ 3, "asc" ]],
+        // sort:false,
         "pageLength": 1000,
         searching: false,
         paging: false,
-        "lengthMenu": [100, 300, 500, 1000],
         // dom:"<'row'<'col-sm-6'l><'col-sm-6'f>>"+
         //     "<'row'<'col-sm-12'tr>>" +
         //     "<'row'<'col-sm-5'i><'col-sm-7'p>>",

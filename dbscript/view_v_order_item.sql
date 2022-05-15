@@ -2,7 +2,7 @@ drop view v_order_item cascade;
 CREATE VIEW v_order_item AS
 select
     min(id) id,
-    code,
+    lpad(code,4,'0') code,
     name1,
     orosine tanka,
     tenant_id
@@ -16,6 +16,7 @@ group by
     name1,
     orosine,
     tenant_id
+order by lpad(code,4,'0')
 ;
 -- 
 --     列     |        タイプ         | 照合順序 | Null 値を許容 |            デフォルト
