@@ -18,7 +18,7 @@ from reportlab.lib.units import mm
 from reportlab.lib import colors
 from api.database import db, ma
 from models.item import Item, ItemSchema, VItemGroup, VItemGroupSchema
-from models.orderitem import OrderItem, OrderItemSchema, VOrderItem, VOrderItemSchema
+from models.orderitem import OrderItem, OrderItemSchema, VOrderItem, VOrderItemSchema, VOrderedGroup, VOrderedGroupSchema
 from models.customer import Customer, CustomerSchema, CustomerNentuki, CustomerNentukiSchema
 from models.mstsetting import MstSetting, MstSettingSchema
 from models.daicho import Daicho, DaichoSchema, VDaichoA, VDaichoASchema
@@ -1318,6 +1318,13 @@ def resJson_getVOrderItem(cdFrom, cdTo):
   schema = VOrderItemSchema(many=True)
   return jsonify({'data': schema.dumps(orderItem, ensure_ascii=False)})
 
+
+@app.route('/getVOrderedGroup')
+@login_required
+def resJson_getVOrderedGroup():
+  orderedGroup = VOrderedGroup.query.filter(VOrderedGroup.tenant_id==current_user.tenant_id).all()
+  schema = VOrderedGroupSchema(many=True)
+  return jsonify({'data': schema.dumps(orderedGroup, ensure_ascii=False)})
 
 
 if __name__ == "__main__":

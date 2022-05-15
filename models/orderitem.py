@@ -48,3 +48,22 @@ class VOrderItemSchema(ma.SQLAlchemyAutoSchema):
       class Meta:
             model = VOrderItem
             load_instance = True
+
+
+class VOrderedGroup(db.Model): 
+    __tablename__ = "v_ordered_group" 
+    send_stamp = db.Column(db.DATETIME, nullable=False,primary_key=True)
+    tenant_id   = db.Column(db.String(), primary_key=True) 
+    min_id = db.Column(db.Integer, primary_key=False) 
+    max_id = db.Column(db.Integer, primary_key=False) 
+    order_ymd = db.Column(db.Date, nullable=False) 
+    hope_ymd = db.Column(db.Date, nullable=False) 
+    kensu = db.Column(db.Integer, primary_key=True) 
+    total = db.Column(db.Integer, primary_key=True) 
+    receive_stamp = db.Column(db.DATETIME, nullable=False,primary_key=False)
+    biko   = db.Column(db.String(), primary_key=True) 
+    
+class VOrderedGroupSchema(ma.SQLAlchemyAutoSchema):
+      class Meta:
+            model = VOrderedGroup
+            load_instance = True

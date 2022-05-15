@@ -24,6 +24,11 @@ window.onload = function() {
     document.getElementById("inpHopeDate").value = strHopeDate;
 
     $('#btnConfirmOrder').attr("disabled","disabled");
+    $('#divTableOrderItemMasterLeft').hide();
+    $('#divTableOrderItemMasterCenter').hide();
+    $('#divTableOrderItemMasterRight').hide();
+
+    createOrderdGroupTable();
 };
 
 
@@ -38,6 +43,9 @@ document.getElementById("btnShowItemList").addEventListener('click', function(){
     createItemMasterTable("tableOrderItemMasterRight","0401","9999");
 
     $('#btnConfirmOrder').removeAttr("disabled","disabled");
+    $('#divTableOrderItemMasterLeft').show();
+    $('#divTableOrderItemMasterCenter').show();
+    $('#divTableOrderItemMasterRight').show();
 });
 
 
@@ -201,6 +209,7 @@ $('#modalConfirmOrder').on("hidden.bs.modal", function (e) {
     //sectionOrderHistory
     window.location.href = "#sectionOrderHistory";
     //alert(1);
+    createOrderdGroupTable();
     return;
 });
 
@@ -272,6 +281,81 @@ function createConfirmTable(){
 }
 
 
+
+function createOrderdGroupTable(){
+    $('#tableOrderedGroup').DataTable({
+        bInfo: false,
+        bSort: true,
+        destroy: true,
+        "processing": true,
+        ajax: {
+            url: "/getVOrderedGroup",
+            dataType: "json",
+            dataSrc: function ( json ) {
+                return JSON.parse(json.data);
+            },
+            contentType:"application/json; charset=utf-8",
+            complete: function () {
+                return; 
+            }
+        },
+        columns: [
+            { data: 'tenant_id'    ,width: '5%',  className: 'dt-body-left'},
+            { data: 'send_stamp'   ,width: '15%',  className: 'dt-body-left',render: function (data, type, row) { return japaneseDateTime(data);} },
+            { data: 'hope_ymd'     ,width: '7%',  className: 'dt-body-left'},
+            { data: 'biko'         ,width: '40%',  className: 'dt-body-left'},
+            { data: 'total'        ,width: '6%',  className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+            { data: 'receive_stamp',width: '15%',  className: 'dt-body-left',render: function (data, type, row) { return japaneseDateTime(data);} },
+            { data: null           ,width: '3%',  className: 'dt-body-center',render: 
+                function (data, type, row) { 
+                    var stamp = '"' + row.send_stamp + '"';
+                    var tenant = '"' + row.tenant_id + '"';
+                    return "<a class='btn btn-warning btn-sm' onclick='funcCheckOrderedDate(" + stamp + "," + tenant + ");' >確認</a>";
+                } 
+            },
+        ],
+        language: {
+           url: "../static/main/js/japanese.json"
+        },
+        "scrollY":        "300",
+        searching: false,
+        "pageLength": 1000,
+        sort:true,
+        paging:false,
+        "order": [ 1, "desc" ],
+        "lengthMenu": [100, 300, 500, 1000],
+        dom:"<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+      "preDrawCallback": function (settings) {
+        return;
+      },
+    //   "drawCallback": function (settings) {
+    //       //$('div.dataTables_scrollBody').scrollTop(pageScrollPos);
+    //       $('#tableSeikyuKanri')[0].parentElement.scrollTop = pageScrollPos;
+    //   }
+    });
+
+
+}
+
+function funcCheckOrderedDate(stamp, tenant){
+    alert(tenant + "," + stamp);
+}
+
+function japaneseDateTime(datetime){
+    if(datetime==undefined){
+        return "";
+    }
+    if(datetime==""){
+        return "";
+    }
+    var str = datetime.replace("T","-").replace(":","-").replace(":","-").replace(".","-");
+    var arr = str.split("-");
+    str = arr[0] + "年" +  arr[1] + "月" +  arr[2] + "日" +  arr[3] + "時" +  arr[4] + "分" +  arr[5] + "秒";
+    return str;
+}
+
 document.getElementById("btnSendOrder").addEventListener('click', function(){
     var editOrderDate = document.getElementById("inpOrderDate").value;
     var editHopeDate = document.getElementById("inpHopeDate").value;
@@ -282,7 +366,7 @@ document.getElementById("btnSendOrder").addEventListener('click', function(){
                 "insParam":JSON.stringify(sendOrderData),
                 "id":id,
                 "orderDate": editOrderDate,
-                "hopeDate": editOrderDate
+                "hopeDate": editHopeDate
             }),
         url: "/createOrderData",
         //url: "/createOrderData/" + id + "/" + editOrderDate + "/" + editHopeDate + "/" + JSON.stringify(sendOrderData) + "",

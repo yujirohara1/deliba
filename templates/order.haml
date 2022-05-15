@@ -114,6 +114,28 @@
       %span.label.label-success#sectionOrderHistory
         注文履歴
 
+    %div.row
+      %div.col-md-12
+        %div.container-fluid#divTableOrderedGroup
+          %table.table-bordered.row.hover#tableOrderedGroup
+            %thead
+              %tr
+                %th 
+                  注文者
+                %th 
+                  注文日時
+                %th 
+                  納品<br>希望日
+                %th
+                  注文内容
+                %th
+                  合計額
+                %th
+                  確認日時
+                %th
+                  詳細
+            %tbody
+
 <!-- 注文確認画面 -->
 %div.modal.fade#modalConfirmOrder(tabindex="-1")
   %div.modal-dialog.modal-lg
