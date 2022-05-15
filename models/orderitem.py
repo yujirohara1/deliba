@@ -8,10 +8,10 @@ class OrderItem(db.Model):
     item_id = db.Column(db.Integer, primary_key=False) 
     item_code = db.Column(db.String(), nullable=False) 
     item_name1 = db.Column(db.String(), nullable=False) 
-    item_siire = db.Column(db.Integer, nullable=False) 
+    item_siire = db.Column(db.Float, nullable=False) 
     quantity = db.Column(db.Integer, nullable=False) 
     send_stamp = db.Column(db.DATETIME, nullable=False,primary_key=False)
-    receive_stamp = db.Column(db.DATETIME, nullable=False,primary_key=False)
+    receive_stamp = db.Column(db.DATETIME, primary_key=False)
     tenant_id   = db.Column(db.String(), primary_key=True) 
 
 class OrderItemSchema(ma.SQLAlchemyAutoSchema):
@@ -59,7 +59,7 @@ class VOrderedGroup(db.Model):
     order_ymd = db.Column(db.Date, nullable=False) 
     hope_ymd = db.Column(db.Date, nullable=False) 
     kensu = db.Column(db.Integer, primary_key=True) 
-    total = db.Column(db.Integer, primary_key=True) 
+    total = db.Column(db.Float, primary_key=True) 
     receive_stamp = db.Column(db.DATETIME, nullable=False,primary_key=False)
     biko   = db.Column(db.String(), primary_key=True) 
     

@@ -205,6 +205,13 @@ $('#modalConfirmOrder').on("show.bs.modal", function (e) {
 });
 
 
+$('#modalDetailOrder').on("hidden.bs.modal", function (e) {
+    window.location.href = "#sectionOrderHistory";
+    createOrderdGroupTable();
+    return;
+});
+
+
 $('#modalConfirmOrder').on("hidden.bs.modal", function (e) {
     //sectionOrderHistory
     window.location.href = "#sectionOrderHistory";
@@ -310,7 +317,12 @@ function createOrderdGroupTable(){
                 function (data, type, row) { 
                     var stamp = '"' + row.send_stamp + '"';
                     var tenant = '"' + row.tenant_id + '"';
-                    return "<a class='btn btn-warning btn-sm' onclick='funcCheckOrderedDate(" + stamp + "," + tenant + ");' >確認</a>";
+                    var tag = "";
+                    tag = tag + "<a class='btn btn-warning btn-sm' ";
+                    tag = tag + "   onclick='funcCheckOrderedDate(" + stamp + "," + tenant + ");' >" ; //確認</a>";
+                    tag = tag + "   確認";
+                    tag = tag + "</a>";
+                    return tag;
                 } 
             },
         ],
@@ -330,17 +342,70 @@ function createOrderdGroupTable(){
       "preDrawCallback": function (settings) {
         return;
       },
-    //   "drawCallback": function (settings) {
-    //       //$('div.dataTables_scrollBody').scrollTop(pageScrollPos);
-    //       $('#tableSeikyuKanri')[0].parentElement.scrollTop = pageScrollPos;
-    //   }
     });
 
 
 }
 
 function funcCheckOrderedDate(stamp, tenant){
-    alert(tenant + "," + stamp);
+    //alert(tenant + "," + stamp);
+    $('#modalDetailOrder').modal({},{
+        tenant:tenant,
+        stamp:stamp
+    });
+    //createOrderedDetail(tenant, stamp);
+}
+
+$('#modalDetailOrder').on("shown.bs.modal", function (e) {
+    $('#lblMessage3').text("注文内容を確認し、問題なければ「了承」してください。");
+    $('#subtitleOrderDetailModal').text("注文日時：" + japaneseDateTime(e.relatedTarget.stamp) + "　注文者" + e.relatedTarget.tenant + " ");
+    $('#btnReceivedOrder').removeAttr("title");
+    $('#btnReceivedOrder').attr("stamp",e.relatedTarget.stamp);
+    $('#btnReceivedOrder').attr("tenant",e.relatedTarget.tenant);
+    createOrderedDetail(e.relatedTarget.tenant, e.relatedTarget.stamp)
+});
+
+function createOrderedDetail(tenant, stamp){
+    $('#tableOrderItemMasterDetail').DataTable({
+        bInfo: false,
+        bSort: true,
+        destroy: true,
+        processing: true,
+        ajax: {
+            url: "/getOrderedItemDetailByKey/" + tenant + "/" + stamp,
+            dataType: "json",
+            dataSrc: function ( json ) {
+                return JSON.parse(json.data);
+            },
+            contentType:"application/json; charset=utf-8",
+            complete: function () {
+                return; 
+            }
+        },
+        columns: [
+            { data: 'item_id'   ,width: '5%',  className: 'dt-body-center'},
+            { data: 'item_code'   ,width: '5%',  className: 'dt-body-center'},
+            { data: 'item_name1'   ,width: '35%',  className: 'dt-body-left'},
+            { data: 'item_siire'   ,width: '5%',  className: 'dt-body-right'},
+            { data: 'quantity'   ,width: '5%',  className: 'dt-body-right'},
+        ],
+        language: {
+           url: "../static/main/js/japanese.json"
+        },
+        "scrollY":        "300",
+        searching: false,
+        "pageLength": 1000,
+        sort:true,
+        paging:false,
+        "lengthMenu": [100, 300, 500, 1000],
+        dom:"<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-6'l><'col-sm-6'f>>"+
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        "preDrawCallback": function (settings) {
+            return;
+        },
+    });
+
 }
 
 function japaneseDateTime(datetime){
@@ -355,6 +420,22 @@ function japaneseDateTime(datetime){
     str = arr[0] + "年" +  arr[1] + "月" +  arr[2] + "日" +  arr[3] + "時" +  arr[4] + "分" +  arr[5] + "秒";
     return str;
 }
+
+document.getElementById("btnReceivedOrder").addEventListener('click', function(){
+    var orderKey = $('#subtitleOrderDetailModal').text();
+    var tenant = document.getElementById("btnReceivedOrder").getAttribute("tenant");
+    var stamp = document.getElementById("btnReceivedOrder").getAttribute("stamp");
+    $.ajax({
+        type: "GET",
+        url: "/updateOrderReceived/" + tenant + "/" + stamp
+      }).done(function(data) {
+        $('#lblMessage3').html("<div style='color:red; font-size:16px'>確認完了！</div>");
+      }).fail(function(data) {
+        console.log(2);
+      }).always(function(data) {
+        console.log(3);
+      });
+});
 
 document.getElementById("btnSendOrder").addEventListener('click', function(){
     var editOrderDate = document.getElementById("inpOrderDate").value;

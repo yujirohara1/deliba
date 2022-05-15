@@ -1327,5 +1327,28 @@ def resJson_getVOrderedGroup():
   return jsonify({'data': schema.dumps(orderedGroup, ensure_ascii=False)})
 
 
+@app.route('/getOrderedItemDetailByKey/<tenant>/<stamp>')
+@login_required
+def resJson_getOrderedItemDetailByKey(tenant, stamp):
+  orderItem = OrderItem.query.filter(OrderItem.tenant_id==current_user.tenant_id, OrderItem.send_stamp==stamp).all()
+  schema = OrderItemSchema(many=True)
+  return jsonify({'data': schema.dumps(orderItem, ensure_ascii=False)})
+
+
+
+@app.route('/updateOrderReceived/<tenant>/<stamp>')
+@login_required
+def dbUpdate_updateOrderReceived(tenant, stamp):
+  receivetime = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
+
+  orderItems = OrderItem.query.filter(OrderItem.tenant_id==current_user.tenant_id, OrderItem.send_stamp==stamp).all()
+  for orderItem in orderItems:
+    orderItem.receive_stamp = receivetime
+
+  db.session.commit()
+  return "1"
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)

@@ -8,9 +8,9 @@ select
     order_ymd,
     hope_ymd,
     count(1) kensu,
-    sum(item_siire) total,
+    sum(item_siire*quantity) total,
     max(receive_stamp) receive_stamp,
-    array_to_string(array_agg(distinct item_name1),', ') biko
+    array_to_string(array_agg(distinct item_name1 || '(' || quantity || ')'),', ') biko
 from
     order_item
 group by

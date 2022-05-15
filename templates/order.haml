@@ -18,9 +18,13 @@
         &nbsp;
 
   %div.container-fluid
-    %h4
-      %span.label.label-success
-        注文情報入力フォーム
+    %div.row
+      %div.col-md-2
+        %h4(style="margin-top:0px !important")
+          %span.label.label-success
+            注文情報入力フォーム
+      %div.col-md-10
+        注文者は、注文日と納品希望日を設定し、「入力開始」ボタンをクリックしてください。
   %div.container-fluid#containerOrderForm
     %div.row
       %div.col-md-2
@@ -110,7 +114,7 @@
     %hr
 
   %div.container-fluid
-    %h4
+    %h4(style="margin-top:0px !important")
       %span.label.label-success#sectionOrderHistory
         注文履歴
 
@@ -169,14 +173,55 @@
 
       %div.modal-footer#modalConfirmOrderFooter
         %div.row
+          %div.col-md-1
+            %a.btn.btn-default#btnCloseOrderModal(type="button" data-dismiss="modal")
+              閉じる
           %div.col-md-10#lblMessage2
             よろしければ、注文確定ボタンをクリックしてください。
           %div.col-md-1
-            %a.btn.btn-default#btnCloseOrderModal(type="button" data-dismiss="modal")
-              キャンセル
-          %div.col-md-1
             %a.btn.btn-danger.btn-sm#btnSendOrder(type="button")
               注文確定
+
+
+<!-- 注文詳細 -->
+%div.modal.fade#modalDetailOrder(tabindex="-1")
+  %div.modal-dialog.modal-lg
+    %div.modal-content
+      %div.modal-header
+        %button.close(type="button" data-dismiss="modal")
+          %span
+            ×
+        %h4.modal-title#subtitleOrderDetailModal
+          注文内容詳細
+      %div.modal-body
+        %div.row
+          %div.col-md-10
+            %div#divTableOrderItemMasterDetail
+              %table.table-bordered.row.hover#tableOrderItemMasterDetail(width="100％")
+                %thead
+                  %tr
+                    %th 
+                      ID
+                    %th 
+                      コード
+                    %th 
+                      商品名
+                    %th 
+                      卸値
+                    %th 
+                      数量
+                %tbody
+
+      %div.modal-footer#modalDetailOrderFooter
+        %div.row
+          %div.col-md-1
+            %a.btn.btn-default(type="button" data-dismiss="modal")
+              閉じる
+          %div.col-md-9#lblMessage3
+            注文内容を確認し、問題なければ「了承」してください。
+          %div.col-md-2
+            %a.btn.btn-danger.btn-sm#btnReceivedOrder(type="button")
+              注文内容を了承する
 
 
 {% endblock %}
