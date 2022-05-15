@@ -8,6 +8,13 @@ $(function () {
         locale: 'ja',
         format : 'YYYY-MM-DD'
     });
+    
+    $.getJSON("/getMstSetting_Main/BACK_COLOR", function(json) {
+        list = JSON.parse(json.data);
+        $.each(list, function(i, item) {
+            document.body.style.backgroundColor=item.param_val1;
+        });
+    });
 });
 
 
