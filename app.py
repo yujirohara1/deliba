@@ -1314,7 +1314,7 @@ def dbUpdate_createOrderData():
 @app.route('/getVOrderItem/<cdFrom>/<cdTo>')
 @login_required
 def resJson_getVOrderItem(cdFrom, cdTo):
-  orderItem = VOrderItem.query.filter(VOrderItem.code>=cdFrom, VOrderItem.code<=cdTo).all()
+  orderItem = VOrderItem.query.filter(VOrderItem.tenant_id==current_user.tenant_id, VOrderItem.code>=cdFrom, VOrderItem.code<=cdTo).all()
   schema = VOrderItemSchema(many=True)
   return jsonify({'data': schema.dumps(orderItem, ensure_ascii=False)})
 

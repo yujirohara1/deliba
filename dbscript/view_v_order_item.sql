@@ -9,8 +9,7 @@ select
 from
     item
 where
-    coalesce(del_flg,0) = 0 and
-    tenant_id = 'hara'
+    coalesce(del_flg,0) = 0
 group by
     code,
     name1,
