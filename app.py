@@ -6,7 +6,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, U
 from collections import defaultdict
 from datetime import timedelta
 import datetime
-# import pytz
+import pytz
 from flask_bootstrap import Bootstrap
 from marshmallow_sqlalchemy import ModelSchema
 from reportlab.pdfgen import canvas
@@ -1264,8 +1264,7 @@ def dbUpdate_createOrderData():
   orderDate = request.json["orderDate"]
   id = request.json["id"]
   # id = request.get
-  # sendtime = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
-  sendtime = datetime.datetime.now()
+  sendtime = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
   #timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
   #vals = param.split(DELIMIT)
   if int(id) == 0:
@@ -1340,8 +1339,7 @@ def resJson_getOrderedItemDetailByKey(tenant, stamp):
 @app.route('/updateOrderReceived/<tenant>/<stamp>')
 @login_required
 def dbUpdate_updateOrderReceived(tenant, stamp):
-  # receivetime = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
-  receivetime = datetime.datetime.now()
+  receivetime = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
 
   orderItems = OrderItem.query.filter(OrderItem.tenant_id==current_user.tenant_id, OrderItem.send_stamp==stamp).all()
   for orderItem in orderItems:
