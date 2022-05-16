@@ -1264,7 +1264,7 @@ def dbUpdate_createOrderData():
   orderDate = request.json["orderDate"]
   id = request.json["id"]
   # id = request.get
-  sendtime = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
+  sendtime = getAsiaTokyoDateTimeNow() #datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
   #timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
   #vals = param.split(DELIMIT)
   if int(id) == 0:
@@ -1336,10 +1336,15 @@ def resJson_getOrderedItemDetailByKey(tenant, stamp):
 
 
 
+def getAsiaTokyoDateTimeNow():
+  tokyoTz = pytz.timezone('Asia/Tokyo')
+  now = datetime.datetime.now()
+  return tokyoTz.localize(now)
+
 @app.route('/updateOrderReceived/<tenant>/<stamp>')
 @login_required
 def dbUpdate_updateOrderReceived(tenant, stamp):
-  receivetime = datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
+  receivetime = getAsiaTokyoDateTimeNow() # datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
 
   orderItems = OrderItem.query.filter(OrderItem.tenant_id==current_user.tenant_id, OrderItem.send_stamp==stamp).all()
   for orderItem in orderItems:
