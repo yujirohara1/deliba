@@ -1337,9 +1337,11 @@ def resJson_getOrderedItemDetailByKey(tenant, stamp):
 
 
 def getAsiaTokyoDateTimeNow():
-  tokyoTz = pytz.timezone('Asia/Tokyo')
-  now = datetime.datetime.now()
-  return tokyoTz.localize(now)
+  # tokyoTz = pytz.timezone('Asia/Tokyo')
+  # now = datetime.datetime.now()
+  DIFF_JST_FROM_UTC = 9
+  now = datetime.datetime.utcnow() + datetime.timedelta(hours=DIFF_JST_FROM_UTC)
+  return now
 
 @app.route('/updateOrderReceived/<tenant>/<stamp>')
 @login_required
