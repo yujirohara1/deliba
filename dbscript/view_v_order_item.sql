@@ -9,7 +9,8 @@ select
 from
     item
 where
-    coalesce(del_flg,0) = 0
+    coalesce(del_flg,0) = 0 and
+    orosine > 0
 group by
     code,
     name1,
