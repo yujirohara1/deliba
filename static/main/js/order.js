@@ -525,7 +525,7 @@ $('#modalSettingItemOrderable').on("shown.bs.modal", function (e) {
         destroy: true,
         "processing": true,
         ajax: {
-            url: "/getVOrderItem/" + 0 + "/" + 100000 + "/full",
+            url: "/getVOrderItem/0000/9999/full",
             dataType: "json",
             dataSrc: function ( json ) {
                 return JSON.parse(json.data);
