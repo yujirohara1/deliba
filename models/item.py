@@ -11,6 +11,7 @@ class Item(db.Model):
     zei_kb = db.Column(db.Integer, nullable=True) 
     del_flg = db.Column(db.Integer, nullable=True) 
     tenant_id   = db.Column(db.String(), primary_key=True) 
+    orderable = db.Column(db.Integer, nullable=True) 
 
 class ItemSchema(ma.SQLAlchemyAutoSchema):
       class Meta:

@@ -19,16 +19,38 @@ $(function () {
 
 
 
+function getMonth12(m, add=0){
+    return ("0" + (toNumber(m+add)+1)).slice(-2);
+}
+
+function getLastDateOfMonth(yyyy,mm){
+    var tmp1 = new Date(yyyy, mm, 1);
+    tmp1.setMonth(toNumber(tmp1.getMonth())+1);
+    tmp1.setDate(0);
+    return tmp1;
+}
+function getFirstDateOfMonth(yyyy,mm){
+    var tmp1 = new Date(yyyy, mm, 1);
+    return tmp1;
+}
+
 window.onload = function() {
     var dtOrderDate = new Date();
     var dtHopeDate = new Date();
     dtHopeDate.setDate(new Date().getDate() + 7);
     
-    var strOrderDate = dtOrderDate.getFullYear() + "-" + dtOrderDate.getMonth() + "-" + dtOrderDate.getDate();
-    var strHopeDate = dtHopeDate.getFullYear() + "-" + dtHopeDate.getMonth() + "-" + dtHopeDate.getDate();
+    var strOrderDate = dtOrderDate.getFullYear() + "-" + getMonth12(dtOrderDate.getMonth()) + "-" + dtOrderDate.getDate();
+    var strHopeDate = dtHopeDate.getFullYear() + "-" + getMonth12(dtHopeDate.getMonth()) + "-" + dtHopeDate.getDate();
     
     document.getElementById("inpOrderDate").value = strOrderDate;
     document.getElementById("inpHopeDate").value = strHopeDate;
+
+    var d0 = new Date();
+    var d1 = new Date();
+    d0 = getFirstDateOfMonth(d1.getFullYear(), toNumber(d1.getMonth())+1);
+    d1 = getLastDateOfMonth(d1.getFullYear(), toNumber(d1.getMonth())+1);
+    document.getElementById("inpOrderDateJokenFrom").value = d0.getFullYear() + "-" + d0.getMonth() + "-" + d0.getDate();
+    document.getElementById("inpOrderDateJokenTo").value = d1.getFullYear() + "-" + d1.getMonth() + "-" + d1.getDate();
 
     $('#btnConfirmOrder').attr("disabled","disabled");
     $('#divTableOrderItemMasterLeft').hide();
@@ -68,7 +90,7 @@ function createItemMasterTable(tableId, cdFrom, cdTo){
         destroy: true,
         "processing": true,
         ajax: {
-            url: "/getVOrderItem/" + cdFrom + "/" + cdTo,
+            url: "/getVOrderItem/" + cdFrom + "/" + cdTo + "/filter",
             dataType: "json",
             dataSrc: function ( json ) {
                 return JSON.parse(json.data);
@@ -316,6 +338,7 @@ function createOrderdGroupTable(){
         columns: [
             { data: 'tenant_id'    ,width: '5%',  className: 'dt-body-left'},
             { data: 'send_stamp'   ,width: '15%',  className: 'dt-body-left',render: function (data, type, row) { return japaneseDateTime(data);} },
+            { data: 'order_ymd'     ,width: '7%',  className: 'dt-body-left'},
             { data: 'hope_ymd'     ,width: '7%',  className: 'dt-body-left'},
             { data: 'biko'         ,width: '40%',  className: 'dt-body-left'},
             { data: 'total'        ,width: '6%',  className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
@@ -472,3 +495,83 @@ document.getElementById("btnSendOrder").addEventListener('click', function(){
 });
 
 
+document.getElementById("btnPrintOrderSeikyu").addEventListener('click', function(){
+    var dateFrom = document.getElementById("inpOrderDateJokenFrom").value;
+    var dateTo = document.getElementById("inpOrderDateJokenTo").value;
+
+    $.ajax({
+        type: "GET",
+        url: "/OutputExcelSeikyushoOrder/" + dateFrom + "/" + dateTo,
+        xhrFields    : {responseType : 'blob'},
+      }).done(function(data, textStatus, jqXHR ) {
+        var blob=new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64"});//
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "" + Math.random().toString(32).substring(2) + ".xlsx";
+        link.click();
+      }).fail(function(data) {
+            alert("エラー：" + data.statusText);
+      }).always(function(data) {
+    });
+});
+
+
+
+$('#modalSettingItemOrderable').on("shown.bs.modal", function (e) {
+    
+    $('#tableSettingOrderable').DataTable({
+        bInfo: false,
+        bSort: false,
+        destroy: true,
+        "processing": true,
+        ajax: {
+            url: "/getVOrderItem/" + 0 + "/" + 100000 + "/full",
+            dataType: "json",
+            dataSrc: function ( json ) {
+                return JSON.parse(json.data);
+            },
+            contentType:"application/json; charset=utf-8"
+        },  
+        columns: [
+            { data: 'id'     ,width: '5%'},
+            { data: 'code'   ,width: '12%',className: 'dt-body-right' ,render: function (data, type, row) { return (data*1);} },
+            { data: 'name1'  ,width: '33%'},
+            { data: 'tanka'  ,width: '15%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
+            { data: 'orderable'  ,width: '15%',  className: 'dt-body-right',render: function (data, type, row) 
+                { 
+                    var inputtag = "";
+                    inputtag = inputtag + '<input id="chkOrderable" ';
+                    inputtag = inputtag + 'type="checkbox" ';
+                    inputtag = inputtag + 'class="checkbox" ';
+                    inputtag = inputtag + 'onchange="updateItemOrderable(' + row.id + ');" '; 
+                    inputtag = inputtag + ' ' + (toNumber(data)==1 ? 'checked':' ')  + ' />';
+                    return inputtag;
+                } 
+            }
+        ],
+        language: {
+           url: "../static/main/js/japanese.json"
+        },
+        "scrollY":$(window).height() * 55 / 100,
+        // order: [[ 3, "asc" ]],
+        // sort:false,
+        "pageLength": 1000,
+        searching: false,
+        paging: false,
+    });
+});
+
+
+function updateItemOrderable(id){
+    //alert(id);
+    $.ajax({
+        type: "GET",
+        url: "/updateItemOrderable/" + id + "/" + event.target.checked
+      }).done(function(data) {
+        console.log(1);
+      }).fail(function(data) {
+        console.log(2);
+      }).always(function(data) {
+        console.log(3);
+      });
+}

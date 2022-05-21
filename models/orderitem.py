@@ -43,6 +43,7 @@ class VOrderItem(db.Model):
     name1 = db.Column(db.String(), primary_key=False) 
     tanka = db.Column(db.Float, primary_key=False) 
     tenant_id   = db.Column(db.String(), primary_key=True) 
+    orderable   = db.Column(db.Integer, primary_key=True) 
 
 class VOrderItemSchema(ma.SQLAlchemyAutoSchema):
       class Meta:
