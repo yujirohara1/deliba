@@ -67,25 +67,28 @@ window.onload = function() {
 document.getElementById("btnShowItemList").addEventListener('click', function(){
     var editOrderDate = document.getElementById("inpOrderDate").value;
     var editHopeDate = document.getElementById("inpHopeDate").value;
-    console.log(editOrderDate);
-    console.log(editHopeDate);
+    //console.log(editOrderDate);
+    //console.log(editHopeDate);
 
-    createItemMasterTable("tableOrderItemMasterLeft","0001","0200");
-    createItemMasterTable("tableOrderItemMasterCenter","0201","0400");
-    createItemMasterTable("tableOrderItemMasterRight","0401","9999");
+    createItemMasterTable("tableOrderItemMasterLeft", editSelectTarget, "0001","0200");
+    createItemMasterTable("tableOrderItemMasterCenter", editSelectTarget, "0201","0400");
+    createItemMasterTable("tableOrderItemMasterRight", editSelectTarget, "0401","9999");
 
     $('#btnConfirmOrder').removeAttr("disabled","disabled");
     $('#divTableOrderItemMasterLeft').show();
     $('#divTableOrderItemMasterCenter').show();
     $('#divTableOrderItemMasterRight').show();
+
+    editSelectTarget = [];
 });
 
-
-
-
-
-
-function createItemMasterTable(tableId, cdFrom, cdTo){
+function createItemMasterTable(tableId, torokuKey, cdFrom, cdTo){
+    var stamp = "dummy";
+    var tenant = "dummy";
+    if(torokuKey.length ==2){
+        stamp = torokuKey[0];
+        tenant = torokuKey[1];
+    }
 
     $('#' + tableId).DataTable({
         bInfo: false,
@@ -93,9 +96,15 @@ function createItemMasterTable(tableId, cdFrom, cdTo){
         destroy: true,
         "processing": true,
         ajax: {
-            url: "/getVOrderItem/" + cdFrom + "/" + cdTo + "/filter",
+            url: "/getVOrderItem/" + cdFrom + "/" + cdTo + "/filter/" + stamp + "/" + tenant,
             dataType: "json",
             dataSrc: function ( json ) {
+                if(json.hopeDate!=null){
+                    document.getElementById("inpHopeDate").value = json.hopeDate;
+                }
+                if(json.orderDate!=null){
+                    document.getElementById("inpOrderDate").value = json.orderDate;
+                }
                 return JSON.parse(json.data);
             },
             contentType:"application/json; charset=utf-8"
@@ -105,7 +114,7 @@ function createItemMasterTable(tableId, cdFrom, cdTo){
             { data: 'code'   ,width: '12%',className: 'dt-body-right' ,render: function (data, type, row) { return (data*1);} },
             { data: 'name1'  ,width: '33%'},
             { data: 'tanka'  ,width: '15%' ,className: 'dt-body-right' ,render: function (data, type, row) { return (data*1).toLocaleString();} },
-            { data: 'ordernum'  ,width: '15%',  className: 'dt-body-right',render: function (data, type, row) 
+            { data: 'quantity'  ,width: '15%',  className: 'dt-body-right',render: function (data, type, row) 
                 { 
                     var val = toNumber(data);
                     var inputtag = "";
@@ -238,11 +247,29 @@ $('#modalConfirmOrder').on("show.bs.modal", function (e) {
 
 
 $('#modalDetailOrder').on("hidden.bs.modal", function (e) {
-    window.location.href = "#sectionOrderHistory";
+    // window.location.href = "#sectionOrderHistory";
     createOrderdGroupTable();
     return;
 });
 
+
+function editOrder(){
+    document.getElementById("btnCloseOrderDetail").click();
+    document.getElementById("btnShowItemList").click();
+    window.location.href = "#top";
+    //alert(editSelectTarget);
+}
+
+function getOrderKeybyOrderTitle(){
+    var a = $('#subtitleOrderDetailModal').text();
+    var aa = a.split("注文者");
+    var b,c;
+    if(aa.length==2){
+        b = aa[0].replace("秒","-");
+        c = aa[1];
+    }
+    return b + "," + c;
+}
 
 $('#modalConfirmOrder').on("hidden.bs.modal", function (e) {
     //sectionOrderHistory
@@ -389,14 +416,22 @@ function funcCheckOrderedDate(stamp, tenant){
     //createOrderedDetail(tenant, stamp);
 }
 
+var editSelectTarget = [];
 $('#modalDetailOrder').on("shown.bs.modal", function (e) {
+    editSelectTarget = [];
     $('#lblMessage3').text("注文内容を確認し、問題なければ「了承」してください。");
     $('#subtitleOrderDetailModal').text("注文日時：" + japaneseDateTime(e.relatedTarget.stamp) + "　注文者" + e.relatedTarget.tenant + " ");
+    $('#subtitleOrderDetailModal').append("<a onclick='editOrder();' class='btn btn-success btn-sm' style='margin-left:20px'>注文内容を修正する</a>");
+    //
     $('#btnReceivedOrder').removeAttr("title");
     $('#btnReceivedOrder').attr("stamp",e.relatedTarget.stamp);
     $('#btnReceivedOrder').attr("tenant",e.relatedTarget.tenant);
-    createOrderedDetail(e.relatedTarget.tenant, e.relatedTarget.stamp)
+    createOrderedDetail(e.relatedTarget.tenant, e.relatedTarget.stamp);
+    editSelectTarget.push(e.relatedTarget.stamp);
+    editSelectTarget.push(e.relatedTarget.tenant);
+    
 });
+
 
 function createOrderedDetail(tenant, stamp){
     $('#tableOrderItemMasterDetail').DataTable({
@@ -527,7 +562,7 @@ $('#modalSettingItemOrderable').on("shown.bs.modal", function (e) {
         destroy: true,
         "processing": true,
         ajax: {
-            url: "/getVOrderItem/0000/9999/full",
+            url: "/getVOrderItem/0000/9999/full/dummy/dummy",
             dataType: "json",
             dataSrc: function ( json ) {
                 return JSON.parse(json.data);

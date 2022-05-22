@@ -1352,19 +1352,62 @@ def dbUpdate_createOrderData():
   return "1"
 
 
-@app.route('/getVOrderItem/<cdFrom>/<cdTo>/<option>')
+@app.route('/getVOrderItem/<cdFrom>/<cdTo>/<option>/<stamp>/<tenant>')
 @login_required
-def resJson_getVOrderItem(cdFrom, cdTo, option):
+def resJson_getVOrderItem(cdFrom, cdTo, option, stamp, tenant):
+  resultset=[]
+  orderDate = None
+  hopeDate = None
+
   orderItem = VOrderItem.query.filter(
     VOrderItem.tenant_id==current_user.tenant_id, 
     VOrderItem.code>=cdFrom, 
     VOrderItem.code<=cdTo,
     (1 if option=="full" else VOrderItem.orderable)==1
   ).all()
-  
-  schema = VOrderItemSchema(many=True)
-  return jsonify({'data': schema.dumps(orderItem, ensure_ascii=False)})
 
+  if len(orderItem)!=0:
+    for i in orderItem:
+      resultset.append({
+        "id" : i.id,
+        "code" : i.code,
+        "name1" : i.name1,
+        "tanka" : i.tanka,
+        "tenant_id" : i.tenant_id,
+        "orderable" : i.orderable,
+        "quantity" : 0
+      })
+
+  if option=="filter" and stamp!="dummy" and tenant!="dummy":
+    # list = schema.dumps(orderItem, ensure_ascii=False)
+    for a in resultset:
+      itemQuantity = OrderItem.query.filter(
+        OrderItem.tenant_id == tenant,
+        OrderItem.send_stamp == stamp.replace("T"," "),
+        OrderItem.item_id == a["id"]
+      ).first()
+      
+      if itemQuantity is not None:
+        a["quantity"] = itemQuantity.quantity
+        orderDate = str(itemQuantity.order_ymd)
+        hopeDate = str(itemQuantity.hope_ymd)
+    
+  # schema = VOrderItemSchema(many=True)
+  return jsonify({'data': json.dumps(resultset), 'orderDate':orderDate, 'hopeDate':hopeDate})
+
+
+
+  # resultset=[]
+  # data_listA = None
+  # exist = False
+
+  # if db.session.execute(text(sql)).fetchone() is not None:
+  #   data_listA = db.session.execute(text(sql))
+
+  #   if data_listA is not None:
+  #     for row in data_listA:
+  #       tstr = row["deliver_ymd"].strftime('%Y/%m/%d')
+  #       resultset.append({"deliverYmd":tstr, "customerId":row["customer_id"], "customerName":row["customer_name1"], "sumPrice":row["sum_price"]})
 
 @app.route('/getVOrderedGroup')
 @login_required

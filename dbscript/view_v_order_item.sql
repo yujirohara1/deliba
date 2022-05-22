@@ -6,7 +6,8 @@ select
     name1,
     orosine tanka,
     tenant_id,
-    orderable
+    orderable,
+    0 quantity
 from
     item
 where
