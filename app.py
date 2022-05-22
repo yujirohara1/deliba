@@ -126,8 +126,8 @@ def SendMail_AccountToroku():
 def load_user(user_id):
   return users.get(int(user_id))
 
-# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用
+db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
+# db_uri = os.environ.get('DATABASE_URL') #本番用
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -1304,6 +1304,14 @@ def dbUpdate_createOrderData():
   hopeDate = request.json["hopeDate"]
   orderDate = request.json["orderDate"]
   id = request.json["id"]
+  stamp = request.json["stamp"].replace("T"," ")
+  tenant = request.json["tenant"]
+
+  if tenant!="dummy" and stamp!="dummy":
+    OrderItem.query.filter( \
+      OrderItem.tenant_id==tenant, \
+      OrderItem.send_stamp==stamp).delete()
+  
   # id = request.get
   sendtime = getAsiaTokyoDateTimeNow() #datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
   #timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')

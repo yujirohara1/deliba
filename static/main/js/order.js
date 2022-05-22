@@ -38,7 +38,7 @@ function getFirstDateOfMonth(yyyy,mm){
     return tmp1;
 }
 
-window.onload = function() {
+function initHeaderDate(){
     var dtOrderDate = new Date();
     var dtHopeDate = new Date();
     dtHopeDate.setDate(new Date().getDate() + 7);
@@ -48,6 +48,12 @@ window.onload = function() {
     
     document.getElementById("inpOrderDate").value = strOrderDate;
     document.getElementById("inpHopeDate").value = strHopeDate;
+    
+}
+
+window.onload = function() {
+
+    initHeaderDate();
 
     var d0 = new Date();
     var d1 = new Date();
@@ -65,6 +71,16 @@ window.onload = function() {
 
 
 document.getElementById("btnShowItemList").addEventListener('click', function(){
+    if($('#btnShowItemList').text()=="入力開始"){
+        ; //何もしない
+    } else { //修正モードから新規モードへの切り替え
+        $('#btnShowItemList').text("入力開始")
+        $('#inpHopeDate').removeAttr("disabled","disabled");
+        $('#inpOrderDate').removeAttr("disabled","disabled");
+        $('#divLabelStartGuide').text("注文者は、注文日と納品希望日を設定し、「入力開始」ボタンをクリックしてください。")
+        initHeaderDate();
+        editSelectTarget = [];
+    }
     var editOrderDate = document.getElementById("inpOrderDate").value;
     var editHopeDate = document.getElementById("inpHopeDate").value;
     //console.log(editOrderDate);
@@ -78,8 +94,8 @@ document.getElementById("btnShowItemList").addEventListener('click', function(){
     $('#divTableOrderItemMasterLeft').show();
     $('#divTableOrderItemMasterCenter').show();
     $('#divTableOrderItemMasterRight').show();
-
-    editSelectTarget = [];
+    calcOrderTotal();
+    //editSelectTarget = [];
 });
 
 function createItemMasterTable(tableId, torokuKey, cdFrom, cdTo){
@@ -99,11 +115,17 @@ function createItemMasterTable(tableId, torokuKey, cdFrom, cdTo){
             url: "/getVOrderItem/" + cdFrom + "/" + cdTo + "/filter/" + stamp + "/" + tenant,
             dataType: "json",
             dataSrc: function ( json ) {
-                if(json.hopeDate!=null){
-                    document.getElementById("inpHopeDate").value = json.hopeDate;
-                }
-                if(json.orderDate!=null){
-                    document.getElementById("inpOrderDate").value = json.orderDate;
+                if(torokuKey.length ==2){
+                    if(json.hopeDate!=null){
+                        document.getElementById("inpHopeDate").value = json.hopeDate;
+                    }
+                    if(json.orderDate!=null){
+                        document.getElementById("inpOrderDate").value = json.orderDate;
+                    }
+                    $('#inpHopeDate').attr("disabled","disabled");
+                    $('#inpOrderDate').attr("disabled","disabled");
+                    $('#btnShowItemList').text("新規注文モードに切り替える");
+                    $('#divLabelStartGuide').html("<p style='color:red'>注文済みデータの修正モードです。</p>")
                 }
                 return JSON.parse(json.data);
             },
@@ -238,7 +260,7 @@ $('#modalConfirmOrder').on("show.bs.modal", function (e) {
     $('#lblMessage2').text("よろしければ、注文確定ボタンをクリックしてください。");
     sendOrderData = [];
     calcOrderTotal();
-    if(document.getElementById("lblOrderTotal").value==0){
+    if(document.getElementById("lblOrderTotal").value==0 && $('#btnShowItemList').text()=="入力開始"){
         return false;
     }
     createConfirmTable()
@@ -258,17 +280,6 @@ function editOrder(){
     document.getElementById("btnShowItemList").click();
     window.location.href = "#top";
     //alert(editSelectTarget);
-}
-
-function getOrderKeybyOrderTitle(){
-    var a = $('#subtitleOrderDetailModal').text();
-    var aa = a.split("注文者");
-    var b,c;
-    if(aa.length==2){
-        b = aa[0].replace("秒","-");
-        c = aa[1];
-    }
-    return b + "," + c;
 }
 
 $('#modalConfirmOrder').on("hidden.bs.modal", function (e) {
@@ -508,6 +519,14 @@ document.getElementById("btnReceivedOrder").addEventListener('click', function()
 document.getElementById("btnSendOrder").addEventListener('click', function(){
     var editOrderDate = document.getElementById("inpOrderDate").value;
     var editHopeDate = document.getElementById("inpHopeDate").value;
+
+    var stamp = "dummy";
+    var tenant = "dummy";
+    if(editSelectTarget.length ==2){
+        stamp = editSelectTarget[0];
+        tenant = editSelectTarget[1];
+    }
+
     var id = "0";
     $.ajax({
         type: "POST",
@@ -515,7 +534,9 @@ document.getElementById("btnSendOrder").addEventListener('click', function(){
                 "insParam":JSON.stringify(sendOrderData),
                 "id":id,
                 "orderDate": editOrderDate,
-                "hopeDate": editHopeDate
+                "hopeDate": editHopeDate,
+                "stamp": stamp,
+                "tenant": tenant
             }),
         url: "/createOrderData",
         //url: "/createOrderData/" + id + "/" + editOrderDate + "/" + editHopeDate + "/" + JSON.stringify(sendOrderData) + "",
