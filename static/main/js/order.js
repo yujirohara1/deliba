@@ -69,17 +69,20 @@ window.onload = function() {
     createOrderdGroupTable();
 };
 
+function initMode(){
+    $('#btnShowItemList').text("入力開始")
+    $('#inpHopeDate').removeAttr("disabled","disabled");
+    $('#inpOrderDate').removeAttr("disabled","disabled");
+    $('#divLabelStartGuide').text("注文者は、注文日と納品希望日を設定し、「入力開始」ボタンをクリックしてください。")
+    initHeaderDate();
+    editSelectTarget = [];
+}
 
 document.getElementById("btnShowItemList").addEventListener('click', function(){
     if($('#btnShowItemList').text()=="入力開始"){
         ; //何もしない
     } else { //修正モードから新規モードへの切り替え
-        $('#btnShowItemList').text("入力開始")
-        $('#inpHopeDate').removeAttr("disabled","disabled");
-        $('#inpOrderDate').removeAttr("disabled","disabled");
-        $('#divLabelStartGuide').text("注文者は、注文日と納品希望日を設定し、「入力開始」ボタンをクリックしてください。")
-        initHeaderDate();
-        editSelectTarget = [];
+        initMode();
     }
     var editOrderDate = document.getElementById("inpOrderDate").value;
     var editHopeDate = document.getElementById("inpHopeDate").value;
@@ -279,6 +282,8 @@ function editOrder(){
     document.getElementById("btnCloseOrderDetail").click();
     document.getElementById("btnShowItemList").click();
     window.location.href = "#top";
+    // $('#btnShowItemList').text("新規注文モードに切り替える");
+    // $('#divLabelStartGuide').html("<p style='color:red'>注文済みデータの修正モードです。</p>");
     //alert(editSelectTarget);
 }
 
@@ -549,6 +554,7 @@ document.getElementById("btnSendOrder").addEventListener('click', function(){
         $('#lblMessage2').html("注文できませんでした。やり直してください。");
     }).always(function(data) {
         $('#btnSendOrder').attr("disabled","disabled");
+        initMode();
     });
 
 });
