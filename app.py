@@ -1423,14 +1423,15 @@ def resExcelFile_OutputExcelSeikyushoOrder(dateJoken):
     if data_listC is not None:
       for row in data_listC:
         resultsetC.append({
-          "zeinuki":row["zeinuki"], "customer_id":row["customer_id"], "customer_name1":row["customer_name1"],
+          "zeinuki":row["zeinuki"], 
+          "customer_id":row["customer_id"], 
+          "customer_name1":row["customer_name1"],
         })
 
   ccnt = 0
   if len(resultsetC) > 0:
     for c in resultsetC:
       
-      # sheet = wb.worksheets[ccnt]
       sheet = wb.copy_worksheet(wb['Sheet1'])
       sheet.title = c["customer_name1"]
 
@@ -1463,6 +1464,12 @@ def resExcelFile_OutputExcelSeikyushoOrder(dateJoken):
       prevItemId = 0
       for r in resultsetA:
         if prevItemId != r["item_id"]:
+
+          if itemIndex==7: #改シート
+            sheet = wb.copy_worksheet(wb['Sheet1'])
+            sheet.title = c["customer_name1"]
+            itemIndex = -1
+
           itemIndex += 1
           sheet[itemColumnId[itemIndex] + "7"] = r["item_name1"]
           sheet[itemColumnId[itemIndex] + "8"] = r["price"]
