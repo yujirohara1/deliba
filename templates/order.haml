@@ -122,19 +122,13 @@
         %h4(style="margin-top:0px !important")
           %span.label.label-success#sectionOrderHistory
             注文履歴
+      %div.col-md-7
       %div.col-md-2(style="text-align:right")
         注文日の範囲指定
-      %div.col-md-4
+      %div.col-md-1
         %div.form-group(style="float:left")
           %div.input-group
-            %input.form-control.date#inpOrderDateJokenFrom(type="text")
-        %div(style="float:left; padding-left:10px;padding-right:10px;text-align:left")
-          ～
-        %div.form-group(style="text-align:left")
-          %div.input-group
-            %input.form-control.date#inpOrderDateJokenTo(type="text")
-
-      %div.col-md-4
+            %input.form-control.date#inpOrderMonthJoken(type="text")
       %div.col-md-1
         %a.btn.btn-primary.btn-sm#btnPrintOrderSeikyu(type="button")
           請求書
@@ -258,7 +252,7 @@
           %span
             ×
         %h4.modal-title#subtitleOrderDetailModal
-          注文可能リストから除外する商品を選択してください。
+          注文フォームに掲載する商品にチェックを入れてください。
       %div.modal-body
         %div.row
           %div.col-md-8

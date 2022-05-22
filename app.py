@@ -410,9 +410,7 @@ def SeikyuExcelSqlD(nentuki, customerid):
   sql = sql + " order by c.name1, s.item_id, s.deliver_ymd "
   return sql
 
-def SeikyuExcelSqlOrderDetail(dateFrom, dateTo):
-  vfrom = (dateFrom.replace("-",""))
-  vto = (dateTo.replace("-",""))
+def SeikyuExcelSqlOrderDetail(dateJoken):
   sql = " "
   sql = sql + " select "
   sql = sql + "     s.order_ymd deliver_ymd, "
@@ -427,8 +425,7 @@ def SeikyuExcelSqlOrderDetail(dateFrom, dateTo):
   sql = sql + " where "
   sql = sql + "         c.param_id = 'TENPO_SEIKYUSHO' "
   sql = sql + "     and c.param_no = 1 "
-  sql = sql + "     and cast(to_char(s.order_ymd,'yyyymmdd') as integer)  "
-  sql = sql + "         between " + vfrom + " and " + vto + " "
+  sql = sql + "     and to_char(s.order_ymd,'yyyy-mm') = '" + dateJoken + "' "
   sql = sql + " order by s.item_id, s.order_ymd "
   return sql
 
@@ -473,9 +470,9 @@ def SeikyuExcelSqlC(nentuki):
   return sql
   
 
-def SeikyuExcelSqlOrder(dateFrom, dateTo):
-  vfrom = (dateFrom.replace("-",""))
-  vto = (dateTo.replace("-",""))
+def SeikyuExcelSqlOrder(dateJoken):
+  # vfrom = (dateFrom.replace("-",""))
+  # vto = (dateTo.replace("-",""))
   sql = " "
   sql = sql + " select "
   sql = sql + "     sum(s.item_siire * s.quantity) zeinuki, "
@@ -487,8 +484,7 @@ def SeikyuExcelSqlOrder(dateFrom, dateTo):
   sql = sql + " where "
   sql = sql + "         c.param_id = 'TENPO_SEIKYUSHO' "
   sql = sql + "     and c.param_no = 1 "
-  sql = sql + "     and cast(to_char(s.order_ymd,'yyyymmdd') as integer)  "
-  sql = sql + "         between " + vfrom + " and " + vto + " "
+  sql = sql + "     and to_char(s.order_ymd,'yyyy-mm') = '" + dateJoken + "' "
   sql = sql + " group by "
   sql = sql + "     c.param_no, "
   sql = sql + "     c.param_val1 "
@@ -1407,19 +1403,19 @@ def dbUpdate_updateOrderReceived(tenant, stamp):
   return "1"
 
 
-@app.route('/OutputExcelSeikyushoOrder/<dateFrom>/<dateTo>')
+@app.route('/OutputExcelSeikyushoOrder/<dateJoken>')
 @login_required
-def resExcelFile_OutputExcelSeikyushoOrder(dateFrom, dateTo):
+def resExcelFile_OutputExcelSeikyushoOrder(dateJoken):
   
   timestamp = datetime.datetime.now()
   timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
-  filename = "file_" + dateFrom + dateTo + "_" + timestampStr + "_" + current_user.name + "_" + current_user.tenant_id
+  filename = "file_" + dateJoken + "_" + timestampStr + "_" + current_user.name + "_" + current_user.tenant_id
   
-  wb = openpyxl.load_workbook('ExcelTemplate/hoiku/請求書_指定B.xlsx')
+  wb = openpyxl.load_workbook('ExcelTemplate/order/請求書_月間.xlsx')
 
   resultsetC=[]
   data_listC = None
-  sql = SeikyuExcelSqlOrder(dateFrom, dateTo)
+  sql = SeikyuExcelSqlOrder(dateJoken)
 
   if db.session.execute(text(sql)).fetchone() is not None:
     data_listC = db.session.execute(text(sql))
@@ -1441,11 +1437,12 @@ def resExcelFile_OutputExcelSeikyushoOrder(dateFrom, dateTo):
       ccnt = ccnt + 1
       sheet['A1'] = "　" + c["customer_name1"] + "　様"
       sheet['F4'] = c["zeinuki"] 
-      sheet['A4'] = "注文日：" + dateFrom + " ～ " + dateFrom + ""
+      dd = dateJoken.split("-")
+      sheet['A4'] = dd[0] + "年" + str(int(dd[1])) + "月分"
       
       resultsetA=[]
       data_listA = None
-      sql = SeikyuExcelSqlOrderDetail(dateFrom, dateTo)
+      sql = SeikyuExcelSqlOrderDetail(dateJoken)
 
       if db.session.execute(text(sql)).fetchone() is not None:
         data_listA = db.session.execute(text(sql))

@@ -4,11 +4,15 @@ var systemMode = 0;
 
     
 $(function () {
+    $('#inpOrderMonthJoken').datetimepicker({
+        locale: 'ja',
+        format : 'YYYY-MM'
+    });
+
     $('.date').datetimepicker({
         locale: 'ja',
         format : 'YYYY-MM-DD'
     });
-    
     $.getJSON("/getMstSetting_Main/BACK_COLOR", function(json) {
         list = JSON.parse(json.data);
         $.each(list, function(i, item) {
@@ -49,8 +53,7 @@ window.onload = function() {
     var d1 = new Date();
     d0 = getFirstDateOfMonth(d1.getFullYear(), toNumber(d1.getMonth())+1);
     d1 = getLastDateOfMonth(d1.getFullYear(), toNumber(d1.getMonth())+1);
-    document.getElementById("inpOrderDateJokenFrom").value = d0.getFullYear() + "-" + d0.getMonth() + "-" + d0.getDate();
-    document.getElementById("inpOrderDateJokenTo").value = d1.getFullYear() + "-" + d1.getMonth() + "-" + d1.getDate();
+    document.getElementById("inpOrderMonthJoken").value = d0.getFullYear() + "-" + d0.getMonth();
 
     $('#btnConfirmOrder').attr("disabled","disabled");
     $('#divTableOrderItemMasterLeft').hide();
@@ -496,12 +499,11 @@ document.getElementById("btnSendOrder").addEventListener('click', function(){
 
 
 document.getElementById("btnPrintOrderSeikyu").addEventListener('click', function(){
-    var dateFrom = document.getElementById("inpOrderDateJokenFrom").value;
-    var dateTo = document.getElementById("inpOrderDateJokenTo").value;
+    var monthJoken = document.getElementById("inpOrderMonthJoken").value;
 
     $.ajax({
         type: "GET",
-        url: "/OutputExcelSeikyushoOrder/" + dateFrom + "/" + dateTo,
+        url: "/OutputExcelSeikyushoOrder/" + monthJoken,
         xhrFields    : {responseType : 'blob'},
       }).done(function(data, textStatus, jqXHR ) {
         var blob=new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64"});//
