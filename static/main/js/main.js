@@ -3539,3 +3539,10 @@ $('#printKaniNouhinsho').on('click', function() { //printKaniNouhinsho
       }).always(function(data) {
     });
  });
+
+
+
+ 
+ document.getElementById("btnOrder").addEventListener('click', function(){
+    window.open('/order');
+});

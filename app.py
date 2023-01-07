@@ -6,6 +6,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, U
 from collections import defaultdict
 from datetime import timedelta
 import datetime
+import pytz
 from flask_bootstrap import Bootstrap
 from marshmallow_sqlalchemy import ModelSchema
 from reportlab.pdfgen import canvas
@@ -17,6 +18,7 @@ from reportlab.lib.units import mm
 from reportlab.lib import colors
 from api.database import db, ma
 from models.item import Item, ItemSchema, VItemGroup, VItemGroupSchema
+from models.orderitem import OrderItem, OrderItemSchema, VOrderItem, VOrderItemSchema, VOrderedGroup, VOrderedGroupSchema
 from models.customer import Customer, CustomerSchema, CustomerNentuki, CustomerNentukiSchema
 from models.mstsetting import MstSetting, MstSettingSchema
 from models.daicho import Daicho, DaichoSchema, VDaichoA, VDaichoASchema
@@ -38,7 +40,6 @@ import csv
 import shutil
 import openpyxl
 from openpyxl.worksheet.pagebreak import Break 
-
 # import logging 
 # logging.basicConfig()
 # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -124,8 +125,8 @@ def SendMail_AccountToroku():
 def load_user(user_id):
   return users.get(int(user_id))
 
-db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
-# db_uri = os.environ.get('DATABASE_URL') #本番用 
+# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
+db_uri = os.environ.get('DATABASE_URL') #本番用
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -408,6 +409,25 @@ def SeikyuExcelSqlD(nentuki, customerid):
   sql = sql + " order by c.name1, s.item_id, s.deliver_ymd "
   return sql
 
+def SeikyuExcelSqlOrderDetail(dateJoken):
+  sql = " "
+  sql = sql + " select "
+  sql = sql + "     s.order_ymd deliver_ymd, "
+  sql = sql + "     s.item_id, "
+  sql = sql + "     s.item_siire price, "
+  sql = sql + "     s.quantity, "
+  sql = sql + "     s.item_name1 item_name1, "
+  sql = sql + "     c.param_val1 customer_name1 "
+  sql = sql + " from "
+  sql = sql + "     " + TableWhereTenantId("order_item") + " s, "
+  sql = sql + "     " + TableWhereTenantId("mst_setting") + " c "
+  sql = sql + " where "
+  sql = sql + "         c.param_id = 'TENPO_SEIKYUSHO' "
+  sql = sql + "     and c.param_no = 1 "
+  sql = sql + "     and to_char(s.order_ymd,'yyyy-mm') = '" + dateJoken + "' "
+  sql = sql + " order by s.item_id, s.order_ymd "
+  return sql
+
 def SeikyuExcelSqlB(nentuki, customerid):
   sql = " "
   sql = sql + " select "
@@ -446,6 +466,28 @@ def SeikyuExcelSqlC(nentuki):
   sql = sql + "     s.customer_id, "
   sql = sql + "     c.name1 "
   sql = sql + " order by s.customer_id "
+  return sql
+  
+
+def SeikyuExcelSqlOrder(dateJoken):
+  # vfrom = (dateFrom.replace("-",""))
+  # vto = (dateTo.replace("-",""))
+  sql = " "
+  sql = sql + " select "
+  sql = sql + "     sum(s.item_siire * s.quantity) zeinuki, "
+  sql = sql + "     c.param_no customer_id, "
+  sql = sql + "     c.param_val1 customer_name1 "
+  sql = sql + " from "
+  sql = sql + "     " + TableWhereTenantId("order_item") + " s, "
+  sql = sql + "     " + TableWhereTenantId("mst_setting") + " c "
+  sql = sql + " where "
+  sql = sql + "         c.param_id = 'TENPO_SEIKYUSHO' "
+  sql = sql + "     and c.param_no = 1 "
+  sql = sql + "     and to_char(s.order_ymd,'yyyy-mm') = '" + dateJoken + "' "
+  sql = sql + " group by "
+  sql = sql + "     c.param_no, "
+  sql = sql + "     c.param_val1 "
+  sql = sql + " order by 1 "
   return sql
   
 
@@ -1103,7 +1145,7 @@ def resJson_getCsvData(viewnm, nentuki, groupkb, tanto):
   elif viewnm == "v_csv_uriage_kokyakubetu":
     sqlwhere = sqlwhere + " and nen = '" + nentuki[0:4] + "' and tuki = '" + nentuki[4:6] + "' and group_id = " + groupkb + " and tanto_id = '" + tanto + "' " 
   elif viewnm == "v_csv_hikiotosi":
-    sqlwhere = sqlwhere + " and nen = '" + nentuki[0:4] + "' and tuki = '" + nentuki[4:6] + "' and group_id = " + groupkb + " and tanto_id = '" + tanto + "' " 
+    sqlwhere = sqlwhere + " and nen = '" + nentuki[0:4] + "' and tuki = '" + nentuki[4:6] + "' " 
   elif viewnm == "v_csv_takuhai":
     sqlwhere = sqlwhere + " and group_id = " + groupkb + " and tanto_id = '" + tanto + "' " 
   else:
@@ -1232,5 +1274,280 @@ def logout():
     return render_template("login.haml")
 
 
+
+
+# 注文管理画面
+@app.route('/order', methods=["GET"])
+@login_required
+def openOrder():
+  return render_template("order.haml")
+
+
+
+
+# @app.route('/pdfMergeSeikyusho',methods=["GET", "POST"])
+# @login_required
+# def print_pdfMergeSeikyusho():
+#   timestamp = datetime.datetime.now()
+#   timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+#   vals = request.json["data"]
+#   merger = PyPDF2.PdfFileMerger()
+
+
+# @app.route('/createOrderData/<id>/<orderDate>/<hopeDate>/<param>')
+@app.route('/createOrderData',methods=["GET", "POST"])
+@login_required
+def dbUpdate_createOrderData():
+  #id, orderDate, hopeDate, param
+  insParam = json.loads(request.json["insParam"]) #json.loads(param)
+  hopeDate = request.json["hopeDate"]
+  orderDate = request.json["orderDate"]
+  id = request.json["id"]
+  stamp = request.json["stamp"].replace("T"," ")
+  tenant = request.json["tenant"]
+
+  if tenant!="dummy" and stamp!="dummy":
+    OrderItem.query.filter( \
+      OrderItem.tenant_id==tenant, \
+      OrderItem.send_stamp==stamp).delete()
+  
+  # id = request.get
+  sendtime = getAsiaTokyoDateTimeNow() #datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
+  #timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+  #vals = param.split(DELIMIT)
+  if int(id) == 0:
+    for row in insParam:
+      orderitem = OrderItem()
+      orderitem.item_id = row['id']
+      orderitem.hope_ymd = hopeDate
+      orderitem.item_code = row['code']
+      orderitem.item_name1 = row['name1']
+      orderitem.item_siire = row['tanka']
+      orderitem.order_ymd = orderDate
+      orderitem.quantity = row['quantity']
+      orderitem.send_stamp = sendtime # datetime.date().today.strftime("%Y%m%d")
+      orderitem.tenant_id = current_user.tenant_id
+      db.session.add(orderitem)
+  
+  db.session.commit()
+
+  #   db.session.add(item)
+  # else:
+  #   item = Item.query.filter(Item.id==itemid, Item.tenant_id==current_user.tenant_id).first()
+  #   item.code = vals[1]
+  #   item.name1 = vals[2]
+  #   item.name2 = vals[3]
+  #   item.tanka = int(vals[4])
+  #   item.orosine = vals[5]
+  #   item.zei_kb = int(vals[6])
+  #   item.del_flg = int(vals[7])
+  #   item.tenant_id = current_user.tenant_id
+
+  # if int(customerid) == 0 :
+  #   customer.del_flg = 0
+  #   customer.tenant_id = current_user.tenant_id
+  #   db.session.add(customer)
+
+  # else :
+  #   customer.biko2 = vals[6]
+  #   customer.biko1 = vals[7]
+  #   customer.list = vals[8]
+  #   customer.tenant_id = current_user.tenant_id
+
+  # # データを確定
+  # db.session.commit()
+  return "1"
+
+
+@app.route('/getVOrderItem/<cdFrom>/<cdTo>/<option>/<stamp>/<tenant>')
+@login_required
+def resJson_getVOrderItem(cdFrom, cdTo, option, stamp, tenant):
+  resultset=[]
+  orderDate = None
+  hopeDate = None
+
+  orderItem = VOrderItem.query.filter(
+    VOrderItem.tenant_id==current_user.tenant_id, 
+    VOrderItem.code>=cdFrom, 
+    VOrderItem.code<=cdTo,
+    (1 if option=="full" else VOrderItem.orderable)==1
+  ).all()
+
+  if len(orderItem)!=0:
+    for i in orderItem:
+      resultset.append({
+        "id" : i.id,
+        "code" : i.code,
+        "name1" : i.name1,
+        "tanka" : i.tanka,
+        "tenant_id" : i.tenant_id,
+        "orderable" : i.orderable,
+        "quantity" : 0
+      })
+
+  if option=="filter" and stamp!="dummy" and tenant!="dummy":
+    # list = schema.dumps(orderItem, ensure_ascii=False)
+    for a in resultset:
+      itemQuantity = OrderItem.query.filter(
+        OrderItem.tenant_id == tenant,
+        OrderItem.send_stamp == stamp.replace("T"," "),
+        OrderItem.item_id == a["id"]
+      ).first()
+      
+      if itemQuantity is not None:
+        a["quantity"] = itemQuantity.quantity
+        orderDate = str(itemQuantity.order_ymd)
+        hopeDate = str(itemQuantity.hope_ymd)
+    
+  # schema = VOrderItemSchema(many=True)
+  return jsonify({'data': json.dumps(resultset), 'orderDate':orderDate, 'hopeDate':hopeDate})
+
+
+
+  # resultset=[]
+  # data_listA = None
+  # exist = False
+
+  # if db.session.execute(text(sql)).fetchone() is not None:
+  #   data_listA = db.session.execute(text(sql))
+
+  #   if data_listA is not None:
+  #     for row in data_listA:
+  #       tstr = row["deliver_ymd"].strftime('%Y/%m/%d')
+  #       resultset.append({"deliverYmd":tstr, "customerId":row["customer_id"], "customerName":row["customer_name1"], "sumPrice":row["sum_price"]})
+
+@app.route('/getVOrderedGroup')
+@login_required
+def resJson_getVOrderedGroup():
+  orderedGroup = VOrderedGroup.query.filter(VOrderedGroup.tenant_id==current_user.tenant_id).all()
+  schema = VOrderedGroupSchema(many=True)
+  return jsonify({'data': schema.dumps(orderedGroup, ensure_ascii=False)})
+
+
+@app.route('/getOrderedItemDetailByKey/<tenant>/<stamp>')
+@login_required
+def resJson_getOrderedItemDetailByKey(tenant, stamp):
+  orderItem = OrderItem.query.filter(OrderItem.tenant_id==current_user.tenant_id, OrderItem.send_stamp==stamp).all()
+  schema = OrderItemSchema(many=True)
+  return jsonify({'data': schema.dumps(orderItem, ensure_ascii=False)})
+
+
+
+def getAsiaTokyoDateTimeNow():
+  # tokyoTz = pytz.timezone('Asia/Tokyo')
+  # now = datetime.datetime.now()
+  DIFF_JST_FROM_UTC = 9
+  now = datetime.datetime.utcnow() + datetime.timedelta(hours=DIFF_JST_FROM_UTC)
+  return now
+
+@app.route('/updateOrderReceived/<tenant>/<stamp>')
+@login_required
+def dbUpdate_updateOrderReceived(tenant, stamp):
+  receivetime = getAsiaTokyoDateTimeNow() # datetime.datetime.now(pytz.timezone('Asia/Tokyo'))
+
+  orderItems = OrderItem.query.filter(OrderItem.tenant_id==current_user.tenant_id, OrderItem.send_stamp==stamp).all()
+  for orderItem in orderItems:
+    orderItem.receive_stamp = receivetime
+
+  db.session.commit()
+  return "1"
+
+
+@app.route('/OutputExcelSeikyushoOrder/<dateJoken>')
+@login_required
+def resExcelFile_OutputExcelSeikyushoOrder(dateJoken):
+  
+  timestamp = datetime.datetime.now()
+  timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+  filename = "file_" + dateJoken + "_" + timestampStr + "_" + current_user.name + "_" + current_user.tenant_id
+  
+  wb = openpyxl.load_workbook('ExcelTemplate/order/請求書_月間.xlsx')
+
+  resultsetC=[]
+  data_listC = None
+  sql = SeikyuExcelSqlOrder(dateJoken)
+
+  if db.session.execute(text(sql)).fetchone() is not None:
+    data_listC = db.session.execute(text(sql))
+
+    if data_listC is not None:
+      for row in data_listC:
+        resultsetC.append({
+          "zeinuki":row["zeinuki"], 
+          "customer_id":row["customer_id"], 
+          "customer_name1":row["customer_name1"],
+        })
+
+  ccnt = 0
+  if len(resultsetC) > 0:
+    for c in resultsetC:
+      
+      sheet = wb.copy_worksheet(wb['Sheet1'])
+      sheet.title = c["customer_name1"]
+
+      ccnt = ccnt + 1
+      sheet['A1'] = "　" + c["customer_name1"] + "　様"
+      sheet['F4'] = c["zeinuki"] 
+      dd = dateJoken.split("-")
+      sheet['A4'] = dd[0] + "年" + str(int(dd[1])) + "月分"
+      
+      resultsetA=[]
+      data_listA = None
+      sql = SeikyuExcelSqlOrderDetail(dateJoken)
+
+      if db.session.execute(text(sql)).fetchone() is not None:
+        data_listA = db.session.execute(text(sql))
+
+        if data_listA is not None:
+          for row in data_listA:
+            resultsetA.append({
+              "deliver_ymd":row["deliver_ymd"], "item_id":row["item_id"], 
+              "price":row["price"], "quantity":row["quantity"],
+              "item_name1":row["item_name1"], "customer_name1":row["customer_name1"],
+            })
+
+      itemColumnId = ["B","D","F","H","J","L","N","P"]
+      nikkei = 0
+      gyoNum = 0
+      idx = 1
+      itemIndex = -1
+      prevItemId = 0
+      for r in resultsetA:
+        if prevItemId != r["item_id"]:
+
+          if itemIndex==7: #改シート
+            sheet = wb.copy_worksheet(wb['Sheet1'])
+            sheet.title = c["customer_name1"]
+            itemIndex = -1
+
+          itemIndex += 1
+          sheet[itemColumnId[itemIndex] + "7"] = r["item_name1"]
+          sheet[itemColumnId[itemIndex] + "8"] = r["price"]
+
+        gyoNum = int(r["deliver_ymd"].strftime('%d')) + 10
+        sheet[itemColumnId[itemIndex] + str(gyoNum)] = r["quantity"]
+        prevItemId = r["item_id"]
+        idx += 1
+
+  wb.remove(wb['Sheet1'])
+  wb.save('tmp/' + filename + '.xlsx')
+
+  return send_file('tmp/' + filename + '.xlsx', as_attachment=True, mimetype=XLSX_MIMETYPE, attachment_filename = filename + '.xlsx')
+
+
+
+@app.route('/updateItemOrderable/<item_id>/<orderable>')
+@login_required
+def dbUpdate_updateItemOrderable(item_id, orderable):
+  aItem = Item.query.filter(Item.id==item_id,Item.tenant_id==current_user.tenant_id).first()
+  targetItems = Item.query.filter(Item.name1==aItem.name1,Item.tenant_id==current_user.tenant_id,Item.orosine==aItem.orosine).all()
+  for item in targetItems:
+    item.orderable = (0 if orderable=="false" else 1)
+
+  db.session.commit()
+  return "1"
+
+
 if __name__ == "__main__":
     app.run(debug=True)
+
