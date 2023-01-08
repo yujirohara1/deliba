@@ -331,13 +331,17 @@ def print_string_sub(pdf_canvas, start_x, start_y, data, paramlist):
       pdf_canvas.drawString(start_x+178+155+6, start_y+170, comment[0])
       if len(comment)==2: 
         pdf_canvas.drawString(start_x+178+155+6, start_y+181, comment[1]) 
+
+      if len(comment)==3: 
+        pdf_canvas.drawString(start_x+178+155+6, start_y+181, comment[1]) 
+        pdf_canvas.drawString(start_x+178+155+6, start_y+192, comment[2]) 
       
       pdf_canvas.setFont(def_font_type, def_font_size+6)
-      pdf_canvas.drawString(start_x+178+155, start_y+206, get_param_val(paramlist, "TENPO_SEIKYUSHO", 1, 1, row) ) 
+      pdf_canvas.drawString(start_x+178+155, start_y+210, get_param_val(paramlist, "TENPO_SEIKYUSHO", 1, 1, row) ) 
       pdf_canvas.setFont(def_font_type, def_font_size+1)
-      pdf_canvas.drawString(start_x+178+155, start_y+206+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 2, 1, row) ) 
+      pdf_canvas.drawString(start_x+178+155, start_y+210+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 2, 1, row) ) 
       pdf_canvas.setFont(def_font_type, def_font_size)
-      pdf_canvas.drawString(start_x+178+155, start_y+206+15+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 3, 1, row) ) 
+      pdf_canvas.drawString(start_x+178+155, start_y+210+15+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 3, 1, row) ) 
 
       # カレンダー 1日～15日 見出し
       font_size = def_font_size-1
