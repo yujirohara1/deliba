@@ -348,7 +348,7 @@ def resExcelFile_OutputExcelNouhinsho(customerid, deliverYmd):
   if len(resultset) > 0:
     sheet = wb['納品書']
     # cell = sheet['A2']
-    sheet['A2'] = resultset[0]["customer_name1"]
+    sheet['A2'] = resultset[0]["customer_name1"] + "　" + "御中"
     dd = vDeliverYmd.split("/")
     sheet['P2'] = dd[0] + "年 " + dd[1] + "月 " + dd[2] + "日"
 
@@ -1145,7 +1145,7 @@ def resJson_getCsvData(viewnm, nentuki, groupkb, tanto):
   elif viewnm == "v_csv_uriage_kokyakubetu":
     sqlwhere = sqlwhere + " and nen = '" + nentuki[0:4] + "' and tuki = '" + nentuki[4:6] + "' and group_id = " + groupkb + " and tanto_id = '" + tanto + "' " 
   elif viewnm == "v_csv_hikiotosi":
-    sqlwhere = sqlwhere + " and nen = '" + nentuki[0:4] + "' and tuki = '" + nentuki[4:6] + "' " 
+    sqlwhere = " nen = '" + nentuki[0:4] + "' and tuki = '" + nentuki[4:6] + "' " 
   elif viewnm == "v_csv_takuhai":
     sqlwhere = sqlwhere + " and group_id = " + groupkb + " and tanto_id = '" + tanto + "' " 
   else:
