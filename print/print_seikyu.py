@@ -339,9 +339,11 @@ def print_string_sub(pdf_canvas, start_x, start_y, data, paramlist):
       pdf_canvas.setFont(def_font_type, def_font_size+6)
       pdf_canvas.drawString(start_x+178+155, start_y+200, get_param_val(paramlist, "TENPO_SEIKYUSHO", 1, 1, row) ) 
       pdf_canvas.setFont(def_font_type, def_font_size+1)
-      pdf_canvas.drawString(start_x+178+155, start_y+200+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 2, 1, row) ) 
+      pdf_canvas.drawString(start_x+178+155, start_y+200+12, get_param_val(paramlist, "TENPO_SEIKYUSHO", 2, 1, row) ) 
       pdf_canvas.setFont(def_font_type, def_font_size)
-      pdf_canvas.drawString(start_x+178+155, start_y+200+15+15, get_param_val(paramlist, "TENPO_SEIKYUSHO", 3, 1, row) ) 
+      pdf_canvas.drawString(start_x+178+155, start_y+200+12+12, get_param_val(paramlist, "TENPO_SEIKYUSHO", 3, 1, row) ) 
+      pdf_canvas.setFont(def_font_type, def_font_size)
+      pdf_canvas.drawString(start_x+178+155, start_y+200+12+12+12, get_param_val(paramlist, "TENPO_SEIKYUSHO", 4, 1, row) ) 
 
       # カレンダー 1日～15日 見出し
       font_size = def_font_size-1
