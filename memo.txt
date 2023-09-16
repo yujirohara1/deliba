@@ -1,5 +1,3 @@
-<meta name="Keywords" content="牛乳宅配管理システム,牛乳宅配管理ソフト,宅配PRO,宅配プロ,姫路コンピュータ">
-<meta name="Description" content="多岐にわたりご活用頂ける安心サポート付き牛乳宅配管理システム『宅配プロ』でお客様のあらゆるニーズにお応えします。発注や請求書作成にとても便利。">
 
 C:\Users\yujir>psql -U postgres newdb3
 ユーザ postgres のパスワード:yjrhr1102
