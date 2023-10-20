@@ -451,13 +451,13 @@ def print_string_sub(pdf_canvas, start_x, start_y, data, paramlist):
   pdf_canvas.drawString(start_x+178,      start_y+106+14+10+30+20, '　　　　　年　　　月　　　日') 
 
   pdf_canvas.setFont(def_font_type, def_font_size+6)
-  pdf_canvas.drawString(start_x+178+2, start_y+200, get_param_val(paramlist, "TENPO_RYOSYUSHO", 1, 1, row) ) #'デモ牛乳販売店') 
+  pdf_canvas.drawString(start_x+174+2, start_y+200, get_param_val(paramlist, "TENPO_RYOSYUSHO", 1, 1, row) ) #'デモ牛乳販売店') 
   pdf_canvas.setFont(def_font_type, def_font_size+1)
-  pdf_canvas.drawString(start_x+178+2, start_y+200+12, get_param_val(paramlist, "TENPO_RYOSYUSHO", 2, 1, row) ) 
+  pdf_canvas.drawString(start_x+174+2, start_y+200+12, get_param_val(paramlist, "TENPO_RYOSYUSHO", 2, 1, row) ) 
   pdf_canvas.setFont(def_font_type, def_font_size)
-  pdf_canvas.drawString(start_x+178+2, start_y+200+12+12, get_param_val(paramlist, "TENPO_RYOSYUSHO", 3, 1, row) ) 
+  pdf_canvas.drawString(start_x+174+2, start_y+200+12+12, get_param_val(paramlist, "TENPO_RYOSYUSHO", 3, 1, row) ) 
   pdf_canvas.setFont(def_font_type, def_font_size)
-  pdf_canvas.drawString(start_x+178+2, start_y+200+12+12+12, get_param_val(paramlist, "TENPO_RYOSYUSHO", 4, 1, row) ) 
+  pdf_canvas.drawString(start_x+174+2, start_y+200+12+12+12, get_param_val(paramlist, "TENPO_RYOSYUSHO", 4, 1, row) ) 
 
 
 def tonum(val):
