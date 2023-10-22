@@ -125,8 +125,8 @@ def SendMail_AccountToroku():
 def load_user(user_id):
   return users.get(int(user_id))
 
-# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用
+db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
+# db_uri = os.environ.get('DATABASE_URL') #本番用
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -855,6 +855,10 @@ def resPdf_printSeikyu(customerid, customeridB, nentuki, randnum):
   sql = sql + "  inner join " + TableWhereTenantId("customer") + " customer                                                                             " 
   sql = sql + "  on                                                                                                                                     " 
   sql = sql + "      seikyu.customer_id = customer.id                                                                                                   " 
+  sql = sql + "  left outer join " + "(select distinct customer_id, item_id from " + TableWhereTenantId("daicho") + " daicho) daicho                    " 
+  sql = sql + "  on                                                                                                                                     " 
+  sql = sql + "      seikyu.customer_id = daicho.customer_id                                                                                                   " 
+  sql = sql + "      and seikyu.item_id = daicho.item_id                                                                                                   " 
   sql = sql + "  where                                                                                                                                  " 
   sql = sql + "       to_char(seikyu.deliver_ymd,'yyyy') = '" + nentuki[0:4] + "' and                                                                   " 
   sql = sql + "       to_char(seikyu.deliver_ymd,'mm') = '" + nentuki[4:6] + "' and                                                                     " 
@@ -864,6 +868,7 @@ def resPdf_printSeikyu(customerid, customeridB, nentuki, randnum):
   sql = sql + "            to_char(seikyu.deliver_ymd,'mm'),                                                                                            " 
   sql = sql + "            customer.list,                                                                                                               " 
   sql = sql + "            seikyu.customer_id,                                                                                                          " 
+  sql = sql + "            daicho.item_id asc nulls last,                                                                                                              " 
   sql = sql + "            seikyu.item_id,                                                                                                              " 
   sql = sql + "            seikyu.deliver_ymd;                                                                                                          " 
 
