@@ -1150,7 +1150,7 @@ def resJson_getCsvData(viewnm, nentuki, groupkb, tanto):
   elif viewnm == "v_csv_uriage_kokyakubetu":
     sqlwhere = sqlwhere + " and nen = '" + nentuki[0:4] + "' and tuki = '" + nentuki[4:6] + "' and group_id = " + groupkb + " and tanto_id = '" + tanto + "' " 
   elif viewnm == "v_csv_hikiotosi":
-    sqlwhere = " nen = '" + nentuki[0:4] + "' and tuki = '" + nentuki[4:6] + "' " 
+    sqlwhere = " nen = '" + nentuki[0:4] + "' and tuki = '" + nentuki[4:6] + "' order by nen, tuki, harai_kb, name2, list, customer_id" 
   elif viewnm == "v_csv_takuhai":
     sqlwhere = sqlwhere + " and group_id = " + groupkb + " and tanto_id = '" + tanto + "' " 
   else:
