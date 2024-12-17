@@ -77,6 +77,7 @@ users = {
     4: User(4, "seiya2", "seiya7294", "sato"),
     5: User(5, "setu", "0301", "hoiku"),
     6: User(6, "seiya3", "seiya7295", "hoiku"),
+    11: User(11, "aramaki", "dL7eDQ9x", "aramaki"),
     100: User(100, "demo", "demo", "demo")
 }
 
