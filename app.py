@@ -381,7 +381,7 @@ def resExcelFile_OutputExcelOrderSlip(orderYmd, hopeYmd, sendStamp):
   sql = sql + "     oi.item_siire price, "
   sql = sql + "     oi.quantity quantity, "
   sql = sql + "     oi.item_name1 item_name1, "
-  sql = sql + "     'dummy' customer_name1 "
+  sql = sql + "     'さとう牛乳販売店' customer_name1 "
   sql = sql + " from "
   sql = sql + "     " + TableWhereTenantId("order_item") + " oi "
   sql = sql + " where "

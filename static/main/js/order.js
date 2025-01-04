@@ -648,10 +648,10 @@ $('#modalSettingItemOrderable').on("shown.bs.modal", function (e) {
            url: "../static/main/js/japanese.json"
         },
         "scrollY":$(window).height() * 55 / 100,
-        // order: [[ 3, "asc" ]],
-        // sort:false,
+        order: [[ 2, "asc" ]],
+        sort:true,
         "pageLength": 1000,
-        searching: false,
+        searching: true,
         paging: false,
     });
 });
