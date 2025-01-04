@@ -287,6 +287,27 @@ function editOrder(){
     //alert(editSelectTarget);
 }
 
+
+function printOrder(orderYmd, hopeYmd, sendStamp){
+    $.ajax({
+        type: "GET",
+        url: "/OutputExcelOrderSlip/" + orderYmd + "/" + hopeYmd + "/" + sendStamp.replace("T"," ") + "",
+        xhrFields    : {responseType : 'blob'},
+      }).done(function(data, textStatus, jqXHR ) {
+        var blob=new Blob([data], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64"});//
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "" + Math.random().toString(32).substring(2) + ".xlsx";
+        link.click();
+      }).fail(function(data) {
+            alert("エラー：" + data.statusText);
+      }).always(function(data) {
+    });
+}
+
+
+
+
 $('#modalConfirmOrder').on("hidden.bs.modal", function (e) {
     //sectionOrderHistory
     window.location.href = "#sectionOrderHistory";
@@ -393,9 +414,11 @@ function createOrderdGroupTable(){
                 function (data, type, row) { 
                     var stamp = '"' + row.send_stamp + '"';
                     var tenant = '"' + row.tenant_id + '"';
+                    var hopeYmd = '"' + row.hope_ymd + '"';
+                    var orderYmd = '"' + row.order_ymd + '"';
                     var tag = "";
                     tag = tag + "<a class='btn btn-warning btn-sm' ";
-                    tag = tag + "   onclick='funcCheckOrderedDate(" + stamp + "," + tenant + ");' >" ; //確認</a>";
+                    tag = tag + "   onclick='funcCheckOrderedDate(" + stamp + "," + tenant + "," + hopeYmd + "," + orderYmd + ");' >" ; //確認</a>";
                     tag = tag + "   確認";
                     tag = tag + "</a>";
                     return tag;
@@ -423,11 +446,13 @@ function createOrderdGroupTable(){
 
 }
 
-function funcCheckOrderedDate(stamp, tenant){
+function funcCheckOrderedDate(stamp, tenant, hopeYmd, orderYmd){
     //alert(tenant + "," + stamp);
     $('#modalDetailOrder').modal({},{
         tenant:tenant,
-        stamp:stamp
+        stamp:stamp,
+        orderYmd:orderYmd,
+        hopeYmd:hopeYmd
     });
     //createOrderedDetail(tenant, stamp);
 }
@@ -435,9 +460,15 @@ function funcCheckOrderedDate(stamp, tenant){
 var editSelectTarget = [];
 $('#modalDetailOrder').on("shown.bs.modal", function (e) {
     editSelectTarget = [];
+
+    var orderYmd = '"' + e.relatedTarget.orderYmd + '"';
+    var hopeYmd = '"' + e.relatedTarget.hopeYmd + '"';
+    var sendStamp = '"' + e.relatedTarget.stamp + '"';
+
     $('#lblMessage3').text("注文内容を確認し、問題なければ「了承」してください。");
     $('#subtitleOrderDetailModal').text("注文日時：" + japaneseDateTime(e.relatedTarget.stamp) + "　注文者" + e.relatedTarget.tenant + " ");
     $('#subtitleOrderDetailModal').append("<a onclick='editOrder();' class='btn btn-success btn-sm' style='margin-left:20px'>注文内容を修正する</a>");
+    $('#subtitleOrderDetailModal').append("<a onclick='printOrder(" + orderYmd + "," + hopeYmd + "," + sendStamp + ");' class='btn btn-info btn-sm' style='margin-left:20px'>納品書出力</a>");
     //
     $('#btnReceivedOrder').removeAttr("title");
     $('#btnReceivedOrder').attr("stamp",e.relatedTarget.stamp);
