@@ -367,6 +367,72 @@ def resExcelFile_OutputExcelNouhinsho(customerid, deliverYmd):
   return send_file('tmp/' + filename + '.xlsx', as_attachment=True, mimetype=XLSX_MIMETYPE, attachment_filename = filename + '.xlsx')
 
 
+@app.route('/OutputExcelOrderSlip/<orderYmd>/<hopeYmd>/<sendStamp>')
+@login_required
+def resExcelFile_OutputExcelOrderSlip(orderYmd, hopeYmd, sendStamp):
+  resultset=[]
+  vOrderYmd = orderYmd # .replace("-","/")
+  vHopeYmd = hopeYmd # .replace("-","/")
+  vSendStamp = sendStamp # .replace("-","/")
+
+  sql = " "
+  sql = sql + " select "
+  sql = sql + "     oi.item_code item_id, "
+  sql = sql + "     oi.item_siire price, "
+  sql = sql + "     oi.quantity quantity, "
+  sql = sql + "     oi.item_name1 item_name1, "
+  sql = sql + "     'dummy' customer_name1 "
+  sql = sql + " from "
+  sql = sql + "     " + TableWhereTenantId("order_item") + " oi "
+  sql = sql + " where "
+  sql = sql + "         oi.order_ymd = '" + vOrderYmd + "' "
+  sql = sql + "     and oi.hope_ymd = '" + vHopeYmd + "' "
+  sql = sql + "     and oi.send_stamp = '" + vSendStamp + "' "
+  sql = sql + " order by cast(oi.item_code as integer) "
+  
+  resultset=[]
+  data_listA = None
+
+  if db.session.execute(text(sql)).fetchone() is not None:
+    data_listA = db.session.execute(text(sql))
+
+    if data_listA is not None:
+      for row in data_listA:
+        resultset.append({
+          "item_id":row["item_id"], 
+          "price":row["price"], 
+          "quantity":row["quantity"],
+          "item_name1":row["item_name1"],
+          "customer_name1":row["customer_name1"],
+        })
+  
+  timestamp = datetime.datetime.now()
+  timestampStr = timestamp.strftime('%Y%m%d%H%M%S%f')
+  filename = "file_" + timestampStr + "_" + current_user.name + "_" + current_user.tenant_id
+  
+  wb = openpyxl.load_workbook('ExcelTemplate/order/納品書_日次.xlsx')
+
+  if len(resultset) > 0:
+    sheet = wb['納品書']
+    # cell = sheet['A2']
+    sheet['A2'] = resultset[0]["customer_name1"] + "　" + "御中"
+    dd = vOrderYmd.split("-")
+    sheet['P2'] = dd[0] + "年 " + dd[1] + "月 " + dd[2] + "日"
+
+    idx = 1
+    for r in resultset:
+      sheet['A' + str(9 + idx)] = idx
+      sheet['C' + str(9 + idx)] = r["item_id"]
+      sheet['E' + str(9 + idx)] = r["item_name1"]
+      sheet['Q' + str(9 + idx)] = r["quantity"]
+      # sheet['N' + str(9 + idx)] = r["price"]
+
+      idx += 1
+
+  wb.save('tmp/' + filename + '.xlsx')
+
+  return send_file('tmp/' + filename + '.xlsx', as_attachment=True, mimetype=XLSX_MIMETYPE, attachment_filename = filename + '.xlsx')
+
 def SeikyuExcelSqlA(nentuki, customerid):
   sql = " "
   sql = sql + " select "
