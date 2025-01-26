@@ -1560,10 +1560,11 @@ def resExcelFile_OutputExcelSeikyushoOrder(dateJoken):
       sheet.title = c["customer_name1"]
 
       ccnt = ccnt + 1
-      sheet['A1'] = "　" + c["customer_name1"] + "　様"
-      sheet['F4'] = c["zeinuki"] 
+      sheet['A2'] = "　さとう牛乳販売店　様"
+      # sheet['F4'] = c["zeinuki"] 
       dd = dateJoken.split("-")
-      sheet['A4'] = dd[0] + "年" + str(int(dd[1])) + "月分"
+      sheet['K2'] = dd[0] + "年" + str(int(dd[1])) + "月分"
+      sheet['C5'] = dd[0] + "年" + str(int(dd[1])) + "月"
       
       resultsetA=[]
       data_listA = None
@@ -1581,25 +1582,31 @@ def resExcelFile_OutputExcelSeikyushoOrder(dateJoken):
             })
 
       itemColumnId = ["B","D","F","H","J","L","N","P"]
+      dateColumnId = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG",]
       nikkei = 0
-      gyoNum = 0
+      gyoNum = 6
       idx = 1
       itemIndex = -1
       prevItemId = 0
       for r in resultsetA:
         if prevItemId != r["item_id"]:
+          gyoNum = gyoNum + 1
+        #  if itemIndex==7: #改シート
+        #    sheet = wb.copy_worksheet(wb['Sheet1'])
+        #    sheet.title = c["customer_name1"]
+        #    itemIndex = -1
 
-          if itemIndex==7: #改シート
-            sheet = wb.copy_worksheet(wb['Sheet1'])
-            sheet.title = c["customer_name1"]
-            itemIndex = -1
+        #  itemIndex += 1
+          # sheet[itemColumnId[itemIndex] + "7"] = r["item_name1"]
+          # sheet[itemColumnId[itemIndex] + "8"] = r["price"]
+        
+          sheet["A"+ str(gyoNum)] = r["item_name1"]
+          sheet["B"+ str(gyoNum)] = r["price"]
+        
+        sheet[dateColumnId[int(r["deliver_ymd"].strftime('%d')) +1] + str(gyoNum)] = r["quantity"]
 
-          itemIndex += 1
-          sheet[itemColumnId[itemIndex] + "7"] = r["item_name1"]
-          sheet[itemColumnId[itemIndex] + "8"] = r["price"]
-
-        gyoNum = int(r["deliver_ymd"].strftime('%d')) + 10
-        sheet[itemColumnId[itemIndex] + str(gyoNum)] = r["quantity"]
+        # gyoNum = int(r["deliver_ymd"].strftime('%d')) + 10
+        # sheet[itemColumnId[itemIndex] + str(gyoNum)] = r["quantity"]
         prevItemId = r["item_id"]
         idx += 1
 
