@@ -59,7 +59,7 @@ window.onload = function() {
     var d1 = new Date();
     d0 = getFirstDateOfMonth(d1.getFullYear(), toNumber(d1.getMonth())+1);
     d1 = getLastDateOfMonth(d1.getFullYear(), toNumber(d1.getMonth())+1);
-    document.getElementById("inpOrderMonthJoken").value = d0.getFullYear() + "-" + d0.getMonth();
+    document.getElementById("inpOrderMonthJoken").value = d0.getFullYear() + "-" + ("0"+d0.getMonth()).slice(-2);
 
     $('#btnConfirmOrder').attr("disabled","disabled");
     $('#divTableOrderItemMasterLeft').hide();
