@@ -1563,7 +1563,7 @@ def resExcelFile_OutputExcelSeikyushoOrder(dateJoken):
       sheet['A2'] = "　さとう牛乳販売店　様"
       # sheet['F4'] = c["zeinuki"] 
       dd = dateJoken.split("-")
-      sheet['K2'] = dd[0] + "年" + str(int(dd[1])) + "月分"
+      sheet['H2'] = dd[0] + "年" + str(int(dd[1])) + "月分"
       sheet['C5'] = dd[0] + "年" + str(int(dd[1])) + "月"
       
       resultsetA=[]
