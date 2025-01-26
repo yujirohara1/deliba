@@ -479,7 +479,7 @@ def SeikyuExcelSqlD(nentuki, customerid):
 def SeikyuExcelSqlOrderDetail(dateJoken):
   sql = " "
   sql = sql + " select "
-  sql = sql + "     s.order_ymd deliver_ymd, "
+  sql = sql + "     s.hope_ymd deliver_ymd, "
   sql = sql + "     s.item_id, "
   sql = sql + "     s.item_siire price, "
   sql = sql + "     s.quantity, "
@@ -491,8 +491,8 @@ def SeikyuExcelSqlOrderDetail(dateJoken):
   sql = sql + " where "
   sql = sql + "         c.param_id = 'TENPO_SEIKYUSHO' "
   sql = sql + "     and c.param_no = 1 "
-  sql = sql + "     and to_char(s.order_ymd,'yyyy-mm') = '" + dateJoken + "' "
-  sql = sql + " order by s.item_id, s.order_ymd "
+  sql = sql + "     and to_char(s.hope_ymd,'yyyy-mm') = '" + dateJoken + "' "
+  sql = sql + " order by s.item_id, s.hope_ymd "
   return sql
 
 def SeikyuExcelSqlB(nentuki, customerid):
@@ -550,7 +550,7 @@ def SeikyuExcelSqlOrder(dateJoken):
   sql = sql + " where "
   sql = sql + "         c.param_id = 'TENPO_SEIKYUSHO' "
   sql = sql + "     and c.param_no = 1 "
-  sql = sql + "     and to_char(s.order_ymd,'yyyy-mm') = '" + dateJoken + "' "
+  sql = sql + "     and to_char(s.hope_ymd,'yyyy-mm') = '" + dateJoken + "' "
   sql = sql + " group by "
   sql = sql + "     c.param_no, "
   sql = sql + "     c.param_val1 "
