@@ -492,8 +492,10 @@ def SeikyuExcelSqlOrderDetail(dateJoken):
   sql = sql + "         c.param_id = 'TENPO_SEIKYUSHO' "
   sql = sql + "     and c.param_no = 1 "
   sql = sql + "     and to_char(s.hope_ymd,'yyyy-mm') = '" + dateJoken + "' "
-  sql = sql + " order by s.item_id, s.hope_ymd "
+  sql = sql + " order by s.item_name1 COLLATE \"ja_JP.utf8\", s.item_id, s.hope_ymd "
   return sql
+
+#order by nen, tuki, harai_kb, name2 COLLATE \"ja_JP.utf8\", list
 
 def SeikyuExcelSqlB(nentuki, customerid):
   sql = " "
