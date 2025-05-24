@@ -3546,3 +3546,6 @@ $('#printKaniNouhinsho').on('click', function() { //printKaniNouhinsho
  document.getElementById("btnOrder").addEventListener('click', function(){
     window.open('/order');
 });
+document.getElementById("btnSales").addEventListener('click', function(){
+   window.open('/sales');
+});
