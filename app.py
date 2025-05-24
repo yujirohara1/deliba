@@ -40,6 +40,7 @@ import csv
 import shutil
 import openpyxl
 from openpyxl.worksheet.pagebreak import Break 
+from decimal import Decimal
 # import logging 
 # logging.basicConfig()
 # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -557,6 +558,100 @@ def SeikyuExcelSqlOrder(dateJoken):
   sql = sql + "     c.param_no, "
   sql = sql + "     c.param_val1 "
   sql = sql + " order by 1 "
+  return sql
+  
+
+def SalesFullDataSql(date1, date2):
+  # vfrom = (dateFrom.replace("-",""))
+  # vto = (dateTo.replace("-",""))
+  sql = " "
+  sql = sql + " select                                                                         "
+  sql = sql + "     s.customer_id sei_customer_id,                                             "
+  sql = sql + "     to_char(s.deliver_ymd,'yyyy-mm-dd') sei_deliver_ymd,                       "
+  sql = sql + "     s.item_id sei_item_id,                                                     "
+  sql = sql + "     s.price sei_price,                                                         "
+  sql = sql + "     s.price_sub sei_price_sub,                                                 "
+  sql = sql + "     s.quantity sei_quantity,                                                   "
+  sql = sql + "     s.user_id sei_user_id,                                                     "
+  sql = sql + "     s.ymdt sei_ymdt,                                                           "
+  sql = sql + "     s.tenant_id sei_tenant_id,                                                 "
+  sql = sql + "     c.id customer_id,                                                          "
+  sql = sql + "     c.name1 customer_name1,                                                    "
+  sql = sql + "     c.name2 customer_name2,                                                    "
+  sql = sql + "     c.address1 customer_address1,                                              "
+  sql = sql + "     c.address2 customer_address2,                                              "
+  sql = sql + "     c.address3 customer_address3,                                              "
+  sql = sql + "     c.tel1 customer_tel1,                                                      "
+  sql = sql + "     c.tel2 customer_tel2,                                                      "
+  sql = sql + "     c.group_id customer_group_id,                                              "
+  sql = sql + "     c.list customer_list,                                                      "
+  sql = sql + "     to_char(c.keiyaku_ymd,'yyyy-mm-dd') customer_keiyaku_ymd,                       "
+  sql = sql + "     to_char(c.start_ymd,'yyyy-mm-dd') customer_start_ymd,                       "
+  sql = sql + "     to_char(c.end_ymd,'yyyy-mm-dd') customer_end_ymd,                       "
+  sql = sql + "     to_char(c.stop_ymd,'yyyy-mm-dd') customer_stop_ymd,                       "
+  sql = sql + "     c.harai_kb customer_harai_kb,                                              "
+  sql = sql + "     c.zei_kb customer_zei_kb,                                                  "
+  sql = sql + "     c.del_flg customer_del_flg,                                                "
+  sql = sql + "     c.biko1 customer_biko1,                                                    "
+  sql = sql + "     c.biko2 customer_biko2,                                                    "
+  sql = sql + "     c.biko3 customer_biko3,                                                    "
+  sql = sql + "     c.tenant_id customer_tenant_id,                                            "
+  sql = sql + "     i.id item_id,                                                              "
+  sql = sql + "     i.code item_code,                                                          "
+  sql = sql + "     i.name1 item_name1,                                                        "
+  sql = sql + "     i.name2 item_name2,                                                        "
+  sql = sql + "     i.tanka item_tanka,                                                        "
+  sql = sql + "     i.orosine item_orosine,                                                    "
+  sql = sql + "     i.zei_kb item_zei_kb,                                                      "
+  sql = sql + "     i.del_flg item_del_flg,                                                    "
+  sql = sql + "     i.tenant_id item_tenant_id,                                                "
+  sql = sql + "     i.orderable item_orderable                                                 "
+  sql = sql + " from                                                                           "
+  sql = sql + "     seikyu s                                                                   "
+  sql = sql + "     join                                                                       "
+  sql = sql + "         customer c                                                             "
+  sql = sql + "     on  s.customer_id = c.id                                                   "
+  sql = sql + "     join                                                                       "
+  sql = sql + "         item i                                                                 "
+  sql = sql + "     on  s.item_id = i.id                                                       "
+  sql = sql + " where                                                                          "
+  sql = sql + "     to_char(s.deliver_ymd, 'yyyy-mm-dd') between '" + date1 + "' and '" + date2 + "' "
+  sql = sql + "     and s.tenant_id = '" + current_user.tenant_id + "' "
+  sql = sql + "     and i.tenant_id = '" + current_user.tenant_id + "' "
+  sql = sql + "     and c.tenant_id = '" + current_user.tenant_id + "' "
+  return sql
+  
+
+
+def SalesFullDataGroupByDateSql(date1, date2):
+  # vfrom = (dateFrom.replace("-",""))
+  # vto = (dateTo.replace("-",""))
+  sql = " "
+  sql = sql + " select                                                                               "
+  sql = sql + "     to_char(s.deliver_ymd,'yyyy-mm-dd') sei_deliver_ymd,                             "
+  sql = sql + " 	i.code item_code,                                                                "
+  sql = sql + " 	CASE                                                                             "
+  sql = sql + " 		WHEN min(i.name1) = max(i.name1) THEN max(i.name1)                           "
+  sql = sql + " 		ELSE min(i.name1) || ' 外'                                                   "
+  sql = sql + " 	END AS item_name1,                                                               "
+  sql = sql + "     sum(s.price) sum_sei_price,                                                      "  
+  sql = sql + "     sum(s.quantity) cnt_sei_quantity                                                 "
+  sql = sql + " from                                                                                 "
+  sql = sql + "     seikyu s                                                                         "
+  sql = sql + "     join                                                                             "
+  sql = sql + "         customer c                                                                   "
+  sql = sql + "     on  s.customer_id = c.id                                                         "
+  sql = sql + "     join                                                                             "
+  sql = sql + "         item i                                                                       "
+  sql = sql + "     on  s.item_id = i.id                                                             "
+  sql = sql + " where                                                                                "
+  sql = sql + "     to_char(s.deliver_ymd, 'yyyy-mm-dd') between '" + date1 + "' and '" + date2 + "' "
+  sql = sql + "     and s.tenant_id = '" + current_user.tenant_id + "' "
+  sql = sql + "     and i.tenant_id = '" + current_user.tenant_id + "' "
+  sql = sql + "     and c.tenant_id = '" + current_user.tenant_id + "' "
+  sql = sql + " group by                                                                             "
+  sql = sql + " 	to_char(s.deliver_ymd,'yyyy-mm-dd'),                                             "
+  sql = sql + " 	i.code                                                                           "
   return sql
   
 
@@ -1359,6 +1454,13 @@ def openOrder():
   return render_template("order.haml")
 
 
+# 売上管理画面
+@app.route('/sales', methods=["GET"])
+@login_required
+def openSales():
+  return render_template("sales.haml")
+
+
 
 
 # @app.route('/pdfMergeSeikyusho',methods=["GET", "POST"])
@@ -1629,6 +1731,33 @@ def dbUpdate_updateItemOrderable(item_id, orderable):
 
   db.session.commit()
   return "1"
+
+
+
+@app.route('/getSalesData/<dateFrom>/<dateTo>')
+@login_required
+def getSalesData(dateFrom, dateTo):
+    sql = SalesFullDataSql(dateFrom, dateTo)
+    sqlEx1 = SalesFullDataGroupByDateSql(dateFrom, dateTo)
+
+    result = db.session.execute(text(sql))
+    result_ex1 = db.session.execute(text(sqlEx1))
+
+    def convert(row):
+        return {
+            key: float(value) if isinstance(value, Decimal) else value
+            for key, value in dict(row).items()
+        }
+
+    result_list = [convert(row) for row in result]
+    result_ex1_list = [convert(row) for row in result_ex1]
+
+    return jsonify({
+        "fullData": result_list,
+        "groupedData": result_ex1_list
+    })
+
+
 
 
 if __name__ == "__main__":
