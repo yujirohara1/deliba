@@ -127,8 +127,8 @@ def SendMail_AccountToroku():
 def load_user(user_id):
   return users.get(int(user_id))
 
-# db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
-db_uri = os.environ.get('DATABASE_URL') #本番用
+db_uri = "postgresql://postgres:yjrhr1102@localhost:5432/newdb3" #開発用
+# db_uri = os.environ.get('DATABASE_URL') #本番用
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -605,7 +605,10 @@ def SalesFullDataSql(date1, date2):
   sql = sql + "     i.zei_kb item_zei_kb,                                                      "
   sql = sql + "     i.del_flg item_del_flg,                                                    "
   sql = sql + "     i.tenant_id item_tenant_id,                                                "
-  sql = sql + "     i.orderable item_orderable                                                 "
+  sql = sql + "     i.orderable item_orderable,                                                "
+  sql = sql + "     m1.param_val1 TANTO_NAME,                                                  "
+  sql = sql + "     m2.param_val1 GROUP_ID_NAME,                                                  "
+  sql = sql + "     m3.param_val1 SIHARAI_KB_NAME                                                   "
   sql = sql + " from                                                                           "
   sql = sql + "     seikyu s                                                                   "
   sql = sql + "     join                                                                       "
@@ -614,6 +617,15 @@ def SalesFullDataSql(date1, date2):
   sql = sql + "     join                                                                       "
   sql = sql + "         item i                                                                 "
   sql = sql + "     on  s.item_id = i.id                                                       "
+  sql = sql + "     left join                                                                       "
+  sql = sql + "         (select * from mst_setting where param_id = 'HONTEN_KB' and tenant_id = '" + current_user.tenant_id + "') m1  "
+  sql = sql + "     on  c.biko1 = cast(m1.param_no as TEXT)                                                       "
+  sql = sql + "     left join                                                                       "
+  sql = sql + "         (select * from mst_setting where param_id = 'GROUP_KB' and tenant_id = '" + current_user.tenant_id + "') m2    "
+  sql = sql + "     on  c.group_id = m2.param_no                                                       "
+  sql = sql + "     left join                                                                       "
+  sql = sql + "         (select * from mst_setting where param_id = 'SIHARAI_KB' and tenant_id = '" + current_user.tenant_id + "') m3    "
+  sql = sql + "     on  c.HARAI_KB = m3.param_no                                                       "
   sql = sql + " where                                                                          "
   sql = sql + "     to_char(s.deliver_ymd, 'yyyy-mm-dd') between '" + date1 + "' and '" + date2 + "' "
   sql = sql + "     and s.tenant_id = '" + current_user.tenant_id + "' "

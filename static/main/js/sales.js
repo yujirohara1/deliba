@@ -97,7 +97,8 @@ document.getElementById("btnSalesTermSelect").addEventListener('click', function
         type: "GET",
         url: "/getSalesData/" + editSalesDateFrom + "/" + editSalesDateTo
     }).done(function (data) {
-        renderSummaryTable(data.groupedData);
+        window._salesData = data;
+        renderSummaryTable(); // 引数なしに変更
     }).fail(function (data) {
         alert("エラー：" + data.statusText);
     }).always(function () {
@@ -160,35 +161,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     controlPanel.addEventListener("change", function (e) {
         if (e.target.name === "displayMode") {
-            renderSummaryTable(window._groupedData, e.target.value);
+            renderSummaryTable(e.target.value);
         }
     });
 });
 
 
-// 表描画関数（mode = "price" または "quantity"）
-function renderSummaryTable(groupedData, mode = "price") {
-    window._groupedData = groupedData; // 再描画用に保持
+
+
+
+
+
+
+
+function renderSummaryTable(mode = "price") {
+    const groupedData = window._salesData.groupedData;
+    const fullData = window._salesData.fullData;
+
     const container = document.getElementById("divMainContainer");
     container.innerHTML = "";
     container.style.position = "relative";
 
     const scrollWrapper = document.createElement("div");
     scrollWrapper.style.overflow = "auto";
-    scrollWrapper.style.maxHeight = "500px";
+    scrollWrapper.style.maxHeight = "400px";
     scrollWrapper.style.position = "relative";
     scrollWrapper.style.width = "100%";
     scrollWrapper.style.boxSizing = "border-box";
-
-    const mask = document.createElement("div");
-    mask.style.position = "absolute";
-    mask.style.top = "60px";
-    mask.style.left = "0";
-    mask.style.width = "150px";
-    mask.style.height = "calc(100% - 60px)";
-    mask.style.backgroundColor = "#ffffff";
-    mask.style.zIndex = "9";
-    //container.appendChild(mask);
 
     const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
     const dates = [...new Set(groupedData.map(d => d.sei_deliver_ymd))].sort();
@@ -225,7 +224,7 @@ function renderSummaryTable(groupedData, mode = "price") {
 
     const colgroup = document.createElement("colgroup");
     const col1 = document.createElement("col");
-    col1.style.width = "150px";
+    col1.style.width = "230px";
     colgroup.appendChild(col1);
     dates.forEach(() => {
         const col = document.createElement("col");
@@ -237,39 +236,52 @@ function renderSummaryTable(groupedData, mode = "price") {
     const headRow1 = document.createElement("tr");
     const thFixed1 = document.createElement("th");
     thFixed1.rowSpan = 2;
-    thFixed1.innerText = "商品コード　商品名";
-    thFixed1.style.position = "sticky";
-    thFixed1.style.left = "0";
-    thFixed1.style.top = "0";
-    thFixed1.style.backgroundColor = "#ffffff";
-    thFixed1.style.zIndex = "11";
-    thFixed1.style.border = "1px solid #ccc";
-    thFixed1.style.whiteSpace = "nowrap";
-    thFixed1.style.overflow = "hidden";
+    thFixed1.innerText = "商品コード　商品名　　指定期間計";
+    Object.assign(thFixed1.style, {
+        position: "sticky",
+        left: "0",
+        top: "0",
+        backgroundColor: "#337ab7",
+        color: "white",
+        zIndex: "11",
+        border: "1px solid #ccc",
+        whiteSpace: "nowrap",
+        overflow: "hidden"
+    });
     headRow1.appendChild(thFixed1);
 
     dateLabels.forEach(label => {
         const th = document.createElement("th");
         th.innerText = label;
-        th.style.position = "sticky";
-        th.style.top = "0";
-        th.style.backgroundColor = "#f0f0f0";
-        th.style.zIndex = "2";
-        th.style.border = "1px solid #ccc";
-        th.style.textAlign = "center";
+        Object.assign(th.style, {
+            position: "sticky",
+            top: "0",
+            backgroundColor: "#337ab7",
+            color: "white",
+            zIndex: "2",
+            border: "1px solid #ccc",
+            textAlign: "center"
+        });
         headRow1.appendChild(th);
     });
 
     const headRow2 = document.createElement("tr");
+    const thSpacer = document.createElement("th");
+    thSpacer.style.display = "none";
+    headRow2.appendChild(thSpacer);
+
     weekdayLabels.forEach(label => {
         const th = document.createElement("th");
         th.innerText = label;
-        th.style.position = "sticky";
-        th.style.top = "18px";
-        th.style.backgroundColor = "#f9f9f9";
-        th.style.zIndex = "1";
-        th.style.border = "1px solid #ccc";
-        th.style.textAlign = "center";
+        Object.assign(th.style, {
+            position: "sticky",
+            top: "18px",
+            backgroundColor: "#337ab7",
+            color: "white",
+            zIndex: "1",
+            border: "1px solid #ccc",
+            textAlign: "center"
+        });
         headRow2.appendChild(th);
     });
 
@@ -283,21 +295,49 @@ function renderSummaryTable(groupedData, mode = "price") {
         const tr = document.createElement("tr");
 
         const tdMerged = document.createElement("td");
+
         const spanCode = document.createElement("span");
         spanCode.innerText = item.item_code;
         spanCode.style.display = "inline-block";
         spanCode.style.width = "60px";
+
         const spanName = document.createElement("span");
         spanName.innerText = item.item_name1;
+        spanName.style.marginRight = "10px";
+        spanName.style.display = "inline-block";
+        spanName.style.width = "140px";
+
+        // 指定期間計（合計）
+        let sum = 0;
+        dates.forEach(date => {
+            const key = (item.item_code || "") + "|" + item.item_name1 + "|" + date;
+            const val = valueMap[key];
+            if (val !== undefined) sum += val;
+        });
+        const spanTotal = document.createElement("span");
+        spanTotal.innerText = mode === "price" ? Comma(sum) : sum;
+        spanTotal.title = "指定期間計";
+        spanTotal.style.display = "inline-block";
+        //spanTotal.style.float = "right";
+        spanTotal.style.textAlign = mode === "price" ? "right" : "right";
+        spanTotal.style.width = "80px";
+        spanTotal.style.color = "#337ab7";
+        spanTotal.style.fontWeight = "bold";
+
         tdMerged.appendChild(spanCode);
         tdMerged.appendChild(spanName);
-        tdMerged.style.position = "sticky";
-        tdMerged.style.left = "0";
-        tdMerged.style.backgroundColor = "#ffffff";
-        tdMerged.style.zIndex = "10";
-        tdMerged.style.border = "1px solid #ccc";
-        tdMerged.style.whiteSpace = "nowrap";
-        tdMerged.style.overflow = "hidden";
+        tdMerged.appendChild(spanTotal);
+
+        Object.assign(tdMerged.style, {
+            position: "sticky",
+            left: "0",
+            backgroundColor: "#ffffff",
+            zIndex: "10",
+            border: "1px solid #ccc",
+            whiteSpace: "nowrap",
+            overflow: "hidden"
+        });
+
         tr.appendChild(tdMerged);
 
         dates.forEach(date => {
@@ -305,8 +345,138 @@ function renderSummaryTable(groupedData, mode = "price") {
             const key = (item.item_code || "") + "|" + item.item_name1 + "|" + date;
             td.innerText = valueMap[key] !== undefined ? valueMap[key] : "";
             td.innerText = mode === "price" ? Comma(td.innerText) : td.innerText;
-            td.style.border = "1px solid #ccc";
-            td.style.textAlign = mode === "price" ? "right":"center";
+            Object.assign(td.style, {
+                border: "1px solid #ccc",
+                textAlign: mode === "price" ? "right" : "center",
+                backgroundColor: "#ffffff",
+                cursor: "pointer",
+                paddingRight:"5px",
+                paddingLeft:"5px"
+            });
+
+            td.addEventListener("mouseover", () => {
+                td.style.backgroundColor = "#ffe5b4";
+            });
+            td.addEventListener("mouseout", () => {
+                td.style.backgroundColor = "#ffffff";
+            });
+
+
+            td.addEventListener("click", () => {
+                const fullData = window._salesData.fullData;
+            
+                const filteredDetails = fullData.filter(fd =>
+                    fd.item_code === item.item_code && fd.sei_deliver_ymd === date
+                );
+            
+                                
+                // 並び替えを追加
+                filteredDetails.sort((a, b) => {
+                    if (a.customer_group_id !== b.customer_group_id) {
+                        return a.customer_group_id - b.customer_group_id;
+                    }
+                    return a.customer_list - b.customer_list;
+                });
+
+                let detailContainer = document.getElementById("divDetailContainer");
+                if (!detailContainer) {
+                    detailContainer = document.createElement("div");
+                    detailContainer.id = "divDetailContainer";
+                    container.parentNode.appendChild(detailContainer);
+                }
+                detailContainer.innerHTML = "";
+            
+                const detailWrapper = document.createElement("div");
+                detailWrapper.style.maxHeight = "300px";
+                detailWrapper.style.overflowY = "auto";
+                detailWrapper.style.border = "0px";
+                detailWrapper.style.marginTop = "20px";
+            
+                const detailTable = document.createElement("table");
+                detailTable.style.borderCollapse = "collapse";
+                detailTable.style.width = "auto";
+                detailTable.style.maxWidth = "100%";
+                detailTable.style.tableLayout = "auto";
+            
+                // ヘッダー
+                const headers = [
+                    "グループ", "配達順", "担当", "顧客ID", "顧客名",
+                    "支払方法", "住所", "単価", "数量", "削除フラグ"
+                ];
+                const thead = document.createElement("thead");
+                const headerRow = document.createElement("tr");
+            
+                headers.forEach(text => {
+                    const th = document.createElement("th");
+                    th.innerText = text;
+                    th.style.border = "1px solid #999";
+                    th.style.backgroundColor = "#337ab7";
+                    th.style.color="white";
+                    th.style.padding = "4px";
+                    th.style.position = "sticky";
+                    th.style.top = "0";
+                    th.style.zIndex = "1";
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                detailTable.appendChild(thead);
+            
+                // 明細行
+                const tbody = document.createElement("tbody");
+                
+
+                filteredDetails.forEach(detail => {
+                    const row = document.createElement("tr");
+                    const address = (detail.customer_address1 || "") + (detail.customer_address2 || "");
+                
+                    // 削除フラグが立っていたら行全体をグレーに
+                    if (detail.customer_del_flg === 1) {
+                        row.style.backgroundColor = "#f0f0f0";
+                    }
+                
+                    const values = [
+                        detail.group_id_name,
+                        detail.customer_list,
+                        detail.tanto_name,
+                        detail.customer_id,
+                        detail.customer_name1,
+                        detail.siharai_kb_name,
+                        address,
+                        detail.sei_price,
+                        detail.sei_quantity,
+                        detail.customer_del_flg
+                    ];
+                
+                    values.forEach((val, index) => {
+                        const td = document.createElement("td");
+                
+                        if (index === 7) { // 単価
+                            td.innerText = Comma(val);
+                            td.style.textAlign = "right";
+                        } else if (index === 8) { // 数量
+                            td.innerText = val;
+                            td.style.textAlign = "center";
+                        } else if (index === 9) { // 削除フラグ
+                            td.innerText = val === 1 ? "1" : "";
+                        } else {
+                            td.innerText = val;
+                        }
+                
+                        td.style.border = "1px solid #ccc";
+                        td.style.padding = "1px 1px";
+                        row.appendChild(td);
+                    });
+                
+                    tbody.appendChild(row);
+                });
+                
+
+                detailTable.appendChild(tbody);
+                detailWrapper.appendChild(detailTable);
+                detailContainer.appendChild(detailWrapper);
+            });
+            
+
             tr.appendChild(td);
         });
 
@@ -317,11 +487,6 @@ function renderSummaryTable(groupedData, mode = "price") {
     scrollWrapper.appendChild(table);
     container.appendChild(scrollWrapper);
 }
-
-
-
-
-
 
 
 

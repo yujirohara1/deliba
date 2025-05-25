@@ -435,8 +435,9 @@ $('#btnUpdateCustomer').on('click', function() {
       type: "GET",
       url: "/updateCustomer/" + customerid + "/" + param + ""
     }).done(function(data) {
-        $("#mainUpdCustomerMessageArea").append("<p style='color:red'>更新しました。</p>");
-        setTimeout('$("#mainUpdCustomerMessageArea")[0].innerText="";', 3000);
+        $("#mainUpdCustomerMessageArea").append("<p style='color:red'>更新しました。経路の「変更」ボタンから配達順を設定できます。</p>");
+        document.getElementById("btnListHenko").style.backgroundColor="#f3a3a0";
+        setTimeout('$("#mainUpdCustomerMessageArea")[0].innerText=""; document.getElementById("btnListHenko").style.backgroundColor="#fff";', 5000);
           createCustomerTables_Main();
     }).fail(function(data) {
           alert("エラー：" + data.statusText);
